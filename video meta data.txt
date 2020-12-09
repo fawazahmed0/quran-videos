@@ -16,7 +16,7 @@ In case you find any problem with this video, let me know at
 https://github.com/fawazahmed0/quran-videos/issues/new
 
 
-{Title, include chapter name+translated chapter}:   + Quran + {90+ language subtitles}
+{Title, include chapter name+translated chapter}:   +{languagename} Quran + {90+ language subtitles}
 Most Heart soothing
 Most Heart touching
 Soul touching

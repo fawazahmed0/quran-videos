@@ -6,7 +6,7 @@ const path = require('path');
 // Assuming all the numbers in sequecing order & 6236 files, otherwise it will create issue
 // This will create a file with timings in 6236 lines
 
-let audioPath = 'D:\\Files\\Quran\\English Recitation only\\quran ibrahim walk parts recitation'
+let audioPath = 'mishary'
 
 // holds the duration of each file
 let timeHolder = []

@@ -17,6 +17,10 @@ https://stackoverflow.com/a/11175851/2437224
 
 https://video.stackexchange.com/questions/12905/repeat-loop-input-video-with-ffmpeg
 
+Repeat video:
+ffmpeg -stream_loop -1 -i input.mp4 -c copy output.mp4
+// https://video.stackexchange.com/a/17389
+
 
 hardcode sub:
 ffmpeg -i mymovie.mp4 -vf subtitles=subtitles.srt mysubtitledmovie.mp4
@@ -40,3 +44,8 @@ fontfile=/Windows/Fonts/arial.ttf , instead of fontname
 
 https://stackoverflow.com/questions/8103808/ffmpeg-drawtext-could-not-load-fontface-from-file
 
+
+reduce video size:
+ffmpeg -i input.avi -vcodec libx264 -crf 24 output.avi
+
+https://unix.stackexchange.com/a/38380

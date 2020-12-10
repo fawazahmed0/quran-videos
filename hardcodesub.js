@@ -30,7 +30,7 @@ const maxuploads = 95
 let uploaded = 0
 
 // generate random video larger than chapter
-function generateVideos () {
+async function generateVideos () {
   const pixabayFiles = fs.readdirSync(pixabayPath).sort()
   let [editionName, chap] = getState()
 
@@ -68,9 +68,9 @@ function generateVideos () {
   }
 }
 
-function begin () {
-  generateVideos()
-  generateVideos()
+async function begin () {
+  await generateVideos()
+  await generateVideos()
 }
 
 begin()

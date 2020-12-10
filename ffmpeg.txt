@@ -1,0 +1,42 @@
+sudo apt update
+sudo apt install ffmpeg
+
+
+merge audio & video
+ffmpeg -i video.mp4 -i audio.wav -map 0:v -map 1:a -c:v copy -shortest output.mp4
+https://stackoverflow.com/a/11783474/2437224
+
+merge videos:
+mylist.txt:
+file '/path/to/file1'
+file '/path/to/file2'
+
+ffmpeg -f concat -safe 0 -i mylist.txt -c copy output.mp4
+
+https://stackoverflow.com/a/11175851/2437224
+
+https://video.stackexchange.com/questions/12905/repeat-loop-input-video-with-ffmpeg
+
+
+hardcode sub:
+ffmpeg -i mymovie.mp4 -vf subtitles=subtitles.srt mysubtitledmovie.mp4
+
+ffmpeg -i video.mp4 -vf "subtitles=subtitles.srt:force_style='Alignment=10,Fontsize=24,PrimaryColour=&H0000ff&'" -c:a copy output.mp4
+
+With fontName:
+ffmpeg -i k2.mp4 -lavfi "subtitles=subtitles.srt:force_style='FontName=Noto Sans,Alignment=0,OutlineColour=&H100000000,BorderStyle=3,Outline=1,Shadow=0,Fontsize=18,MarginL=5,MarginV=25'" -crf 1 -c:a copy "output.mp4"
+
+without fontname
+ffmpeg -i k2.mp4 -lavfi "subtitles=subtitles.srt:force_style='Alignment=2,OutlineColour=&H100000000,BorderStyle=3,Outline=1,Shadow=0,Fontsize=18,MarginL=0,MarginV=60'" -crf 1 -c:a copy "output.mp4"
+
+https://stackoverflow.com/questions/8672809/use-ffmpeg-to-add-text-subtitles
+
+https://stackoverflow.com/questions/21363334/how-to-add-font-size-in-subtitles-in-ffmpeg-video-filter
+
+https://stackoverflow.com/questions/57869367/ffmpeg-subtitles-alignment-and-position
+
+giving fontfile:
+fontfile=/Windows/Fonts/arial.ttf , instead of fontname
+
+https://stackoverflow.com/questions/8103808/ffmpeg-drawtext-could-not-load-fontface-from-file
+

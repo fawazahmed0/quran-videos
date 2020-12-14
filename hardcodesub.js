@@ -96,8 +96,119 @@ const gTransToEditionLang = {
   'kurdish(kurmanji)': 'kurmanji',
   sesotho: 'sotho'
 }
-
+// Holds Edition name to Edition Language mapping
 let edHolder
+
+// youtube dropdown to edition name mappings
+const submapped = {
+  'Chinese (China)': 'zho-mazhonggang',
+  'Chinese (Hong Kong)': 'zho-muhammadmakin',
+  'Chinese (Simplified)': 'zho-majian',
+  'Chinese (Singapore)': 'zho-muhammadmakin-la',
+  'Chinese (Taiwan)': 'zho-majian1',
+  'Chinese (Traditional)': 'zho-anonymousgroupo',
+  'Dutch (Belgium)': 'nld-fredleemhuis',
+  'Dutch (Netherlands)': 'nld-salomokeyzer',
+  'English (Canada)': 'eng-ummmuhammad',
+  'English (India)': 'eng-miraneesuddin',
+  'English (Ireland)': 'eng-themonotheistgr',
+  'English (United Kingdom)': 'eng-thestudyquran',
+  'English (United States)': 'eng-safikaskas',
+  'French (Belgium)': 'fra-islamicfoundati',
+  'French (Canada)': 'fra-muhammadhameedu',
+  'French (France)': 'fra-shahnazsaidiben',
+  'French (Switzerland)': 'fra-muhammadhamidul',
+  Kyrgyz: 'kir-shamsaldinhakim',
+  'German (Austria)': 'deu-aburidamuhammad',
+  'German (Germany)': 'deu-adeltheodorkhou',
+  'German (Switzerland)': 'deu-amirzaidan',
+  'Hindi (Latin)': 'hin-suhelfarooqkhan-la',
+  Pashto: 'pus-abdulwalikhan',
+  'Persian (Afghanistan)': 'fas-abdolmohammaday',
+  'Persian (Iran)': 'fas-abolfazlbahramp',
+  'Portuguese (Brazil)': 'por-helminasr',
+  'Portuguese (Portugal)': 'por-samirelhayek',
+  Punjabi: 'pan-drmuhamadhabibb',
+  'Russian (Latin)': 'rus-abuadel_la',
+  'Southern Sotho': 'sot-sheikheliaskeke',
+  'Spanish (Latin America)': 'spa-abdulqadermouhe',
+  'Spanish (Mexico)': 'spa-juliocorte',
+  'Spanish (Spain)': 'spa-islamicfoundati',
+  'Spanish (United States)': 'spa-muhammadasadabd',
+  Bangla: 'ben-abubakrzakaria',
+  Afar: 'aar-sheikhmahmoudab',
+  Afrikaans: 'afr-imammabaker',
+  Albanian: 'sqi-unknown',
+  Amharic: 'amh-muhammedsadiqan',
+  Arabic: 'ara-sirajtafseer',
+  Assamese: 'asm-shaykhrafeequli',
+  Azerbaijani: 'aze-vasimmammadaliy',
+  Bosnian: 'bos-wwwislamhouseco',
+  Bulgarian: 'bul-tzvetantheophan',
+  Burmese: 'mya-hashimtinmyint',
+  Catalan: 'cat-yousseflyoussi',
+  Croatian: 'hrv-unknown',
+  Czech: 'ces-prekladihrbek',
+  Danish: 'dan-vandetaal',
+  Dutch: 'nld-unknown',
+  English: 'eng-wahiduddinkhan',
+  Esperanto: 'epo-hadiabdollahian',
+  Filipino: 'fil-wwwislamhouseco',
+  Finnish: 'fin-unknown',
+  French: 'fra-shahnazsaidiben',
+  German: 'deu_frankbubenheim',
+  Gujarati: 'guj-rabilaalomari',
+  Hausa: 'hau-abubakarmahmoud',
+  Hebrew: 'heb-unknown',
+  Hindi: 'hin-suhelfarooqkhan',
+  Hungarian: 'hun-drahmedabdelrah',
+  Indonesian: 'ind-unknown',
+  Italian: 'ita-hamzarobertopic',
+  Japanese: 'jpn-ryoichimita',
+  Javanese: 'jav-unknown',
+  Kannada: 'kan-abdussalamputhi',
+  Kazakh: 'kaz-khalifahaltaich',
+  Khmer: 'khm-cambodianmuslim',
+  Kinyarwanda: 'kin-rmcrwanda',
+  Korean: 'kor-unknown',
+  Kurdish: 'kur-muhammadsalehba',
+  Latin: 'lat-hadiabdollahian',
+  Macedonian: 'mkd-sheikhhassangil',
+  Malay: 'msa-abdullahmuhamma',
+  Malayalam: 'mal-muhammadkarakun',
+  Maltese: 'mlt-martinrzammitmu',
+  Marathi: 'mar-muhammadshafiia',
+  Nepali: 'nep-ahlalhadithcent',
+  Norwegian: 'nor-einarberg',
+  Oromo: 'orm-ghaliapapurapag',
+  Persian: 'fas-unknown',
+  Polish: 'pol-jozefabielawski',
+  Portuguese: 'por-samirelhayek',
+  Romanian: 'ron-unknown',
+  Rundi: 'run-sheikhamissirad',
+  Russian: 'rus-vporokhova',
+  Shona: 'sna-abdullahjmadini',
+  Sindhi: 'snd-tajmehmoodamrot',
+  Sinhala: 'sin-wwwislamhouseco',
+  Slovak: 'slk-hadiabdollahian',
+  Somali: 'som-shaykhmahmoodmu',
+  Spanish: 'spa-raulgonzalezbor',
+  Swahili: 'swa-alimuhsinalbarw',
+  Swedish: 'swe-knutbernstrom',
+  Tajik: 'tgk-wwwislamhouseco',
+  Tamil: 'tam-janturstfoundat',
+  Tatar: 'tat-yakubibnnugman',
+  Telugu: 'tel-abdulraheemmoha',
+  Thai: 'tha-kingfahadquranc',
+  Turkish: 'tur-ynozturk',
+  Ukrainian: 'ukr-yakubovych',
+  Urdu: 'urd-syedzeeshanhaid',
+  Uzbek: 'uzb-muhammadsodikmu',
+  Vietnamese: 'vie-hassanabdulkari',
+  Xhosa: 'xho-imaamismaaeelng',
+  Yoruba: 'yor-shaykhaburahima',
+  Zulu: 'zul-iqembulezifundi'
+}
 
 // capitalizes all the first letters in a sentense
 const capitalize = words => words.split(' ').map(w => w[0].toUpperCase() + w.substring(1)).join(' ')
@@ -106,7 +217,7 @@ const capitalize = words => words.split(' ').map(w => w[0].toUpperCase() + w.sub
 async function generateVideos () {
   const [editionsJSON] = await getLinksJSON([editionsLink + '.min.json'])
   // Edition name to Edition Language mapping
-  edHolder = {};
+  edHolder = {}
   for (const value of Object.values(editionsJSON)) { edHolder[value.name] = value.language }
 
   const pixabayFiles = fs.readdirSync(pixabayPath).sort()
@@ -131,12 +242,12 @@ async function generateVideos () {
     spawnSync('ffmpeg', ['-stream_loop', repeat, '-i', pixaFileWithPath, '-i', path.join(audioPath, paddedI + '.mp3'), '-vf', 'subtitles=subtitles/' + editionName + '/' + chap + ".srt:force_style='Alignment=2,OutlineColour=&H100000000,BorderStyle=3,Outline=1,Shadow=0,Fontsize=18,MarginL=0,MarginV=60'", '-crf', '24', '-vcodec', 'libx264', '-map', '0:v', '-map', '1:a', '-c:a', 'copy', '-shortest', fileSavePath])
 
     // write code to upload the video using actions script
-    await upload(fileSavePath, editionLang, chap)
+    await uploadWithSub(fileSavePath, editionLang, chap)
 
     uploaded++
 
     // Delete the uploaded video to save space in actions
-     fs.unlinkSync(fileSavePath)
+    fs.unlinkSync(fileSavePath)
 
     // stop if uploaded files had reached the youtube upload limit
     if (uploaded >= maxuploads) { break }
@@ -147,7 +258,7 @@ async function generateVideos () {
   if (chap > 114) { saveState(editionsList[editionIndex + 1], 1) }
   // if the break is due to reaching max upload rates, then save the editionName & next chapter to be uploaded next time
   else {
-    saveState(editionName,chap + 1)
+    saveState(editionName, chap + 1)
   }
 }
 
@@ -167,7 +278,7 @@ function getState () {
 }
 
 // save the state
-function saveState (editionNameArg,chap) {
+function saveState (editionNameArg, chap) {
   fs.writeFileSync(stateFile, editionNameArg + '\n' + chap + '\n' + playlistToSelect)
 }
 
@@ -218,7 +329,7 @@ async function getLinksJSON (urls) {
   ).catch(console.error)
 }
 // keep playlistBool true, only if its 1 chap
-async function upload (pathToFile, lang, chapter) {
+async function uploadWithSub (pathToFile, lang, chapter) {
   const chapTitlePath = path.join(titlePath, chapter + '.json')
   titleJSON = readJSON(chapTitlePath)
   // if language exists, then use the language name, otherwise get it from mappings objects
@@ -318,7 +429,7 @@ async function upload (pathToFile, lang, chapter) {
   await sleep(10000)
   // wait until uploading is done
   await page.waitForXPath('//*[contains(text(),"Finished processing")]', { timeout: 0 })
-
+  // upload the subtitles
   await uploadSub(chapter, videoLang)
 }
 
@@ -326,224 +437,92 @@ async function sleep (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
+// upload the subtitles
+async function uploadSub (chapter, videoLang) {
+  const holdersubmap = { ...submapped }
 
-async function uploadSub(chapter, videoLang){
+  await page.goto(studioURL)
 
-  let holdersubmap = {...submapped};
+  const subtitlesTab = await page.$x('//*[normalize-space(text())=\'Subtitles\']')
+  await page.evaluate(el => el.click(), subtitlesTab[0])
 
-await page.goto(studioURL)
+  await page.waitForNavigation()
 
-const subtitlesTab = await page.$x(`//*[normalize-space(text())='Subtitles']`)
-await page.evaluate(el => el.click(), subtitlesTab[0])
+  await page.waitForSelector('[id="video-title"]')
+  await page.waitForFunction('document.querySelectorAll(\'[id="video-title"]\').length > 5')
 
-await page.waitForNavigation()
+  const link = await page.evaluate(() => Array.from(document.querySelectorAll('[id="video-title"]')).map(e => e.href).filter(e => /.*?translations$/.test(e))[0])
+  await page.goto(link)
+  // upload the subtitle for current language
+  await subPart(path.join(subtitlesPath, holdersubmap[videoLang], chapter + '.srt'))
+  delete holdersubmap[videoLang]
 
-await page.waitForSelector('[id="video-title"]')
-await page.waitForFunction(`document.querySelectorAll('[id="video-title"]').length > 5`);
+  for (const [key, value] of Object.entries(holdersubmap)) {
+    await sleep(2000)
+    await addNewLang(key)
 
-let link = await page.evaluate(() => Array.from(document.querySelectorAll('[id="video-title"]')).map(e=>e.href).filter(e=>/.*?translations$/.test(e))[0]);
- await page.goto(link)
+    const lang = edHolder[value].toLowerCase()
+    const gtransLang = titleJSON[lang] ? lang : getKeyByValue(gTransToEditionLang, lang)
+    const title = titleJSON[gtransLang] ? titleJSON[gtransLang] : titleJSON.english + ' | ' + lang
+    const description = descriptionJSON[gtransLang] ? descriptionJSON[gtransLang] : descriptionJSON.english
 
-await subPart(path.join(subtitlesPath, holdersubmap[videoLang], chapter+'.srt' ))
-delete holdersubmap[videoLang];
-
-for(const [key, value] of Object.entries(holdersubmap)){
-  
-  await sleep(2000)
-  await addNewLang(key)
-  
-  const lang = edHolder[value].toLowerCase()
-  const gtransLang = titleJSON[lang] ? lang : getKeyByValue(gTransToEditionLang, lang)
-  const title = titleJSON[gtransLang] ? titleJSON[gtransLang] : titleJSON.english + ' | ' + lang
-  const description = descriptionJSON[gtransLang] ? descriptionJSON[gtransLang] : descriptionJSON.english
-  await sleep(2000)
-  await titleDescPart(title, description )
-  await sleep(2000)
-  await subPart(path.join(subtitlesPath, value, chapter+'.srt' ))
-
+    await sleep(1000)
+    await titleDescPart(title, description)
+    await sleep(1000)
+    await subPart(path.join(subtitlesPath, value, chapter + '.srt'))
+  }
 }
-
-
-
-}
-
-async function subPart(pathToFile){
-
+// subtitles upload
+async function subPart (pathToFile) {
   await page.waitForSelector('[id="add-translation"]')
-  await page.evaluate(() => document.querySelectorAll('[id="add-translation"]')[0].click());
+  await page.evaluate(() => document.querySelectorAll('[id="add-translation"]')[0].click())
   await page.waitForSelector('[id="choose-upload-file"]')
   await page.click('#choose-upload-file')
- 
-  const continueBtn = await page.$x(`//*[normalize-space(text())='Continue']`)
- 
- // click ion Select Files & upload the file
- const [fileChooser] = await Promise.all([
-   page.waitForFileChooser(),
-   continueBtn[0].click()
- //  page.click('#choose-upload-file') // button that triggers file selection
- ])
- 
- //await page.click('text=CONTINUE');
- 
- //await page.click('text=PUBLISH');
- 
- await fileChooser.accept([pathToFile])
- await sleep(3000)
- let publish = await page.$x('//*[normalize-space(text())=\'Publish\']')
- await publish[publish.length-1].click()
- 
 
-}
+  const continueBtn = await page.$x('//*[normalize-space(text())=\'Continue\']')
 
-async function titleDescPart(title, desc ){
+  // click ion Select Files & upload the file
+  const [fileChooser] = await Promise.all([
+    page.waitForFileChooser(),
+    continueBtn[0].click() // button that triggers upload
+  ])
 
-  
-await page.waitForSelector('[id="add-translation"]')
-await page.evaluate(() => document.querySelectorAll('[id="add-translation"]')[0].click());
-
-
-//*[@aria-label="Title *"] 
-
-await page.waitForSelector('[aria-label="Title *"]')
-// Add the title value
-await page.focus(`[aria-label="Title *"]`)
-await sleep(1000)
-await page.type(`[aria-label="Title *"]`,title)
-await sleep(500)
- // Add the title value
-// await page.focus(`[placeholder="Description"]`)
-// await sleep(1000)
- await page.type(`[placeholder="Description"][spellcheck="true"]:enabled`,desc)
-
- await sleep(3000)
+  await fileChooser.accept([pathToFile])
+  await sleep(2000)
   const publish = await page.$x('//*[normalize-space(text())=\'Publish\']')
- await publish[publish.length-1].click()
-
- // change attribute values to avoid problems
- await page.evaluate(() => document.querySelector('[aria-label="Title *"]').setAttribute("aria-label", "old title"));
- await page.evaluate(() => document.querySelector('[placeholder="Description"][spellcheck="true"]:enabled').setAttribute("placeholder", "desc"));
+  await publish[publish.length - 1].click()
 }
 
-async function addNewLang(langVal){
+// Add title & description in subtitles pages
+async function titleDescPart (title, desc) {
+  await page.waitForSelector('[id="add-translation"]')
+  await page.evaluate(() => document.querySelectorAll('[id="add-translation"]')[0].click())
 
+  await page.waitForSelector('[aria-label="Title *"]')
+  // Add the title value
+  await page.focus('[aria-label="Title *"]')
+  await sleep(1000)
+  await page.type('[aria-label="Title *"]', title)
+  await sleep(500)
+  // Add the title value
+  // await page.focus(`[placeholder="Description"]`)
+  // await sleep(1000)
+  await page.type('[placeholder="Description"][spellcheck="true"]:enabled', desc)
+
+  await sleep(3000)
+  const publish = await page.$x('//*[normalize-space(text())=\'Publish\']')
+  await publish[publish.length - 1].click()
+
+  // change attribute values to avoid problems
+  await page.evaluate(() => document.querySelector('[aria-label="Title *"]').setAttribute('aria-label', 'old title'))
+  await page.evaluate(() => document.querySelector('[placeholder="Description"][spellcheck="true"]:enabled').setAttribute('placeholder', 'desc'))
+}
+// Select new language
+async function addNewLang (langVal) {
   // Adding new language
-const Addlang = await page.$x(`//*[normalize-space(text())='Add language']`)
-await page.evaluate(el => el.click(), Addlang[0])
+  const Addlang = await page.$x('//*[normalize-space(text())=\'Add language\']')
+  await page.evaluate(el => el.click(), Addlang[0])
 
-const langName = await page.$x(`//*[normalize-space(text())='`+langVal+`']`)
-await page.evaluate(el => el.click(), langName[langName.length - 1])
-
+  const langName = await page.$x('//*[normalize-space(text())=\'' + langVal + '\']')
+  await page.evaluate(el => el.click(), langName[langName.length - 1])
 }
-
-
-const submapped = {
-  'Chinese (China)': 'zho-mazhonggang',
-  'Chinese (Hong Kong)': 'zho-muhammadmakin',
-  'Chinese (Simplified)': 'zho-majian',
-  'Chinese (Singapore)': 'zho-muhammadmakin-la',
-  'Chinese (Taiwan)': 'zho-majian1',
-  'Chinese (Traditional)': 'zho-anonymousgroupo',
-  'Dutch (Belgium)': "nld-fredleemhuis",
-  'Dutch (Netherlands)': 'nld-salomokeyzer',
-  'English (Canada)': 'eng-ummmuhammad',
-  'English (India)': 'eng-miraneesuddin',
-  'English (Ireland)': 'eng-themonotheistgr',
-  'English (United Kingdom)': 'eng-thestudyquran',
-  'English (United States)': 'eng-safikaskas',
-  'French (Belgium)': 'fra-islamicfoundati',
-  'French (Canada)': 'fra-muhammadhameedu',
-  'French (France)': 'fra-shahnazsaidiben',
-  'French (Switzerland)': 'fra-muhammadhamidul',
-  'Kyrgyz': 'kir-shamsaldinhakim',
-  'German (Austria)': 'deu-aburidamuhammad',
-  'German (Germany)': 'deu-adeltheodorkhou',
-  'German (Switzerland)': 'deu-amirzaidan',
-  'Hindi (Latin)': 'hin-suhelfarooqkhan-la',
-  'Pashto': 'pus-abdulwalikhan',
-  'Persian (Afghanistan)': 'fas-abdolmohammaday',
-  'Persian (Iran)': 'fas-abolfazlbahramp',
-  'Portuguese (Brazil)': 'por-helminasr',
-  'Portuguese (Portugal)': 'por-samirelhayek',
-  'Punjabi': 'pan-drmuhamadhabibb',
-  'Russian (Latin)': 'rus-abuadel_la',
-  'Southern Sotho': 'sot-sheikheliaskeke',
-  'Spanish (Latin America)': 'spa-abdulqadermouhe',
-  'Spanish (Mexico)': 'spa-juliocorte',
-  'Spanish (Spain)': 'spa-islamicfoundati',
-  'Spanish (United States)': 'spa-muhammadasadabd',
-  Bangla: 'ben-abubakrzakaria',
-  Afar: 'aar-sheikhmahmoudab',
-  Afrikaans: 'afr-imammabaker',
-  Albanian: 'sqi-unknown',
-  Amharic: 'amh-muhammedsadiqan',
-  Arabic: 'ara-sirajtafseer',
-  Assamese: 'asm-shaykhrafeequli',
-  Azerbaijani: 'aze-vasimmammadaliy',
-  Bosnian: 'bos-wwwislamhouseco',
-  Bulgarian: 'bul-tzvetantheophan',
-  Burmese: 'mya-hashimtinmyint',
-  Catalan: 'cat-yousseflyoussi',
-  Croatian: 'hrv-unknown',
-  Czech: 'ces-prekladihrbek',
-  Danish: 'dan-vandetaal',
-  Dutch: 'nld-unknown',
-  English: 'eng-wahiduddinkhan',
-  Esperanto: 'epo-hadiabdollahian',
-  Filipino: 'fil-wwwislamhouseco',
-  Finnish: 'fin-unknown',
-  French: 'fra-shahnazsaidiben',
-  German: 'deu_frankbubenheim',
-  Gujarati: 'guj-rabilaalomari',
-  Hausa: 'hau-abubakarmahmoud',
-  Hebrew: 'heb-unknown',
-  Hindi: 'hin-suhelfarooqkhan',
-  Hungarian: 'hun-drahmedabdelrah',
-  Indonesian: 'ind-unknown',
-  Italian: 'ita-hamzarobertopic',
-  Japanese: 'jpn-ryoichimita',
-  Javanese: 'jav-unknown',
-  Kannada: 'kan-abdussalamputhi',
-  Kazakh: 'kaz-khalifahaltaich',
-  Khmer: 'khm-cambodianmuslim',
-  Kinyarwanda: 'kin-rmcrwanda',
-  Korean: 'kor-unknown',
-  Kurdish: 'kur-muhammadsalehba',
-  Latin: 'lat-hadiabdollahian',
-  Macedonian: 'mkd-sheikhhassangil',
-  Malay: 'msa-abdullahmuhamma',
-  Malayalam: 'mal-muhammadkarakun',
-  Maltese: 'mlt-martinrzammitmu',
-  Marathi: 'mar-muhammadshafiia',
-  Nepali: 'nep-ahlalhadithcent',
-  Norwegian: 'nor-einarberg',
-  Oromo: 'orm-ghaliapapurapag',
-  Persian: 'fas-unknown',
-  Polish: 'pol-jozefabielawski',
-  Portuguese: 'por-samirelhayek',
-  Romanian: 'ron-unknown',
-  Rundi: 'run-sheikhamissirad',
-  Russian: 'rus-vporokhova',
-  Shona: 'sna-abdullahjmadini',
-  Sindhi: 'snd-tajmehmoodamrot',
-  Sinhala: 'sin-wwwislamhouseco',
-  Slovak: 'slk-hadiabdollahian',
-  Somali: 'som-shaykhmahmoodmu',
-  Spanish: 'spa-raulgonzalezbor',
-  Swahili: 'swa-alimuhsinalbarw',
-  Swedish: 'swe-knutbernstrom',
-  Tajik: 'tgk-wwwislamhouseco',
-  Tamil: 'tam-janturstfoundat',
-  Tatar: 'tat-yakubibnnugman',
-  Telugu: 'tel-abdulraheemmoha',
-  Thai: 'tha-kingfahadquranc',
-  Turkish: 'tur-ynozturk',
-  Ukrainian: 'ukr-yakubovych',
-  Urdu: 'urd-syedzeeshanhaid',
-  Uzbek: 'uzb-muhammadsodikmu',
-  Vietnamese: 'vie-hassanabdulkari',
-  Xhosa: 'xho-imaamismaaeelng',
-  Yoruba: 'yor-shaykhaburahima',
-  Zulu: 'zul-iqembulezifundi'
-}
-
-

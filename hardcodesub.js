@@ -145,7 +145,7 @@ async function generateVideos () {
   if (chap > 114) { saveState(editionsList[editionIndex + 1], 1) }
   // if the break is due to reaching max upload rates, then save the editionName & next chapter to be uploaded next time
   else {
-    saveState(chap + 1)
+    saveState(editionName,chap + 1)
   }
 }
 
@@ -165,8 +165,8 @@ function getState () {
 }
 
 // save the state
-function saveState (chap) {
-  fs.writeFileSync(stateFile, editionName + '\n' + chap + '\n' + playlistToSelect)
+function saveState (editionNameArg,chap) {
+  fs.writeFileSync(stateFile, editionNameArg + '\n' + chap + '\n' + playlistToSelect)
 }
 
 // Generates random number
@@ -315,14 +315,16 @@ async function upload (pathToFile, lang, chapter) {
   await sleep(10000)
   // wait until uploading is done
   await page.waitForXPath('//*[contains(text(),"Finished processing")]', { timeout: 0 })
+
+  await uploadSub(chapter, videoLang)
 }
 
 async function sleep (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-/*
-async function uploadSub(pathToSubDir, chapter){
+
+async function uploadSub(chapter, videoLang){
 await page.goto(studioURL)
 
 const subtitlesTab = await page.$x(`//*[normalize-space(text())='Subtitles']`)
@@ -494,4 +496,4 @@ let submapped = {
   Zulu: 'zul-iqembulezifundi'
 }
 
-*/
+

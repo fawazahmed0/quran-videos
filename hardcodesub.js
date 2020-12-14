@@ -134,7 +134,7 @@ async function generateVideos () {
     uploaded++
 
     // Delete the uploaded video to save space in actions
-    // fs.unlinkSync(path.join(hardcodedSubPath, paddedI + '.mp4'))
+     fs.unlinkSync(fileSavePath)
 
     // stop if uploaded files had reached the youtube upload limit
     if (uploaded >= maxuploads) { break }

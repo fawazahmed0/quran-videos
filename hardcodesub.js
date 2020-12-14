@@ -64,6 +64,7 @@ const tagsPath = path.join(metadataPath, 'tags.json')
 const tagsJSON = readJSON(tagsPath)
 const descriptionPath = path.join(metadataPath, 'description.json')
 const descriptionJSON = readJSON(descriptionPath)
+let titleJSON
 // Youtube dropdown languages
 let ytLangs = ['Abkhazian', 'Afar', 'Afrikaans', 'Akan', 'Albanian', 'American Sign Language', 'Amharic', 'Arabic', 'Aramaic', 'Armenian', 'Assamese', 'Aymara', 'Azerbaijani', 'Bangla', 'Bashkir', 'Basque', 'Belarusian', 'Bhojpuri', 'Bislama', 'Bosnian', 'Breton', 'Bulgarian', 'Burmese', 'Cantonese', 'Cantonese (Hong Kong)', 'Catalan', 'Cherokee', 'Chinese', 'Chinese (China)', 'Chinese (Hong Kong)', 'Chinese (Simplified)', 'Chinese (Singapore)', 'Chinese (Taiwan)', 'Chinese (Traditional)', 'Choctaw', 'Corsican', 'Croatian', 'Czech', 'Danish', 'Dutch', 'Dutch (Belgium)', 'Dutch (Netherlands)', 'Dzongkha', 'English', 'English (Canada)', 'English (India)', 'English (Ireland)', 'English (United Kingdom)', 'English (United States)', 'Esperanto', 'Estonian', 'Faroese', 'Fijian', 'Filipino', 'Filipino', 'Finnish', 'French', 'French (Belgium)', 'French (Canada)', 'French (France)', 'French (Switzerland)', 'Fulah', 'Galician', 'Georgian', 'German', 'German (Austria)', 'German (Germany)', 'German (Switzerland)', 'Greek', 'Guarani', 'Gujarati', 'Haitian Creole', 'Hakka Chinese', 'Hakka Chinese (Taiwan)', 'Hausa', 'Hebrew', 'Hindi', 'Hindi (Latin)', 'Hiri Motu', 'Hungarian', 'Icelandic', 'Igbo', 'Indonesian', 'Interlingua', 'Interlingue', 'Inuktitut', 'Inupiaq', 'Irish', 'Italian', 'Japanese', 'Javanese', 'Kalaallisut', 'Kannada', 'Kashmiri', 'Kazakh', 'Khmer', 'Kinyarwanda', 'Klingon', 'Korean', 'Kurdish', 'Kyrgyz', 'Lao', 'Latin', 'Latvian', 'Lingala', 'Lithuanian', 'Luxembourgish', 'Macedonian', 'Malagasy', 'Malay', 'Malayalam', 'Maltese', 'Manipuri', 'Maori', 'Marathi', 'Masai', 'Min Nan Chinese', 'Min Nan Chinese (Taiwan)', 'Mizo', 'Mongolian', 'Nauru', 'Navajo', 'Nepali', 'Norwegian', 'Occitan', 'Odia', 'Oromo', 'Pashto', 'Persian', 'Persian (Afghanistan)', 'Persian (Iran)', 'Polish', 'Portuguese', 'Portuguese (Brazil)', 'Portuguese (Portugal)', 'Punjabi', 'Quechua', 'Romanian', 'Romanian', 'Romansh', 'Rundi', 'Russian', 'Russian (Latin)', 'Samoan', 'Sango', 'Sanskrit', 'Sardinian', 'Scottish Gaelic', 'Serbian', 'Serbian (Cyrillic)', 'Serbian (Latin)', 'Serbian (Latin)', 'Sherdukpen', 'Shona', 'Sicilian', 'Sindhi', 'Sinhala', 'Slovak', 'Slovenian', 'Somali', 'Southern Sotho', 'Spanish', 'Spanish (Latin America)', 'Spanish (Mexico)', 'Spanish (Spain)', 'Spanish (United States)', 'Sundanese', 'Swahili', 'Swati', 'Swedish', 'Tajik', 'Tamil', 'Tatar', 'Telugu', 'Thai', 'Tibetan', 'Tigrinya', 'Tok Pisin', 'Tongan', 'Tsonga', 'Tswana', 'Turkish', 'Turkmen', 'Ukrainian', 'Urdu', 'Uzbek', 'Vietnamese', 'Volapük', 'Võro', 'Welsh', 'Western Frisian', 'Wolof', 'Xhosa', 'Yiddish', 'Yoruba', 'Zulu']
 ytLangs = ytLangs.map(e => e.toLowerCase())
@@ -96,6 +97,8 @@ const gTransToEditionLang = {
   sesotho: 'sotho'
 }
 
+let edHolder
+
 // capitalizes all the first letters in a sentense
 const capitalize = words => words.split(' ').map(w => w[0].toUpperCase() + w.substring(1)).join(' ')
 
@@ -103,7 +106,7 @@ const capitalize = words => words.split(' ').map(w => w[0].toUpperCase() + w.sub
 async function generateVideos () {
   const [editionsJSON] = await getLinksJSON([editionsLink + '.min.json'])
   // Edition name to Edition Language mapping
-  const edHolder = {}
+  edHolder = {};
   for (const value of Object.values(editionsJSON)) { edHolder[value.name] = value.language }
 
   const pixabayFiles = fs.readdirSync(pixabayPath).sort()
@@ -128,7 +131,6 @@ async function generateVideos () {
     spawnSync('ffmpeg', ['-stream_loop', repeat, '-i', pixaFileWithPath, '-i', path.join(audioPath, paddedI + '.mp3'), '-vf', 'subtitles=subtitles/' + editionName + '/' + chap + ".srt:force_style='Alignment=2,OutlineColour=&H100000000,BorderStyle=3,Outline=1,Shadow=0,Fontsize=18,MarginL=0,MarginV=60'", '-crf', '24', '-vcodec', 'libx264', '-map', '0:v', '-map', '1:a', '-c:a', 'copy', '-shortest', fileSavePath])
 
     // write code to upload the video using actions script
-
     await upload(fileSavePath, editionLang, chap)
 
     uploaded++
@@ -194,6 +196,7 @@ async function login () {
   await page.waitForNavigation({
     waitUntil: 'networkidle0'
   })
+  await sleep(1000)
   await page.waitForSelector('input[type="password"]')
   await page.type('input[type="password"]', pass)
 
@@ -214,11 +217,10 @@ async function getLinksJSON (urls) {
     urls.map(url => fetch(url).then(response => response.json()))
   ).catch(console.error)
 }
-
 // keep playlistBool true, only if its 1 chap
 async function upload (pathToFile, lang, chapter) {
   const chapTitlePath = path.join(titlePath, chapter + '.json')
-  const titleJSON = readJSON(chapTitlePath)
+  titleJSON = readJSON(chapTitlePath)
   // if language exists, then use the language name, otherwise get it from mappings objects
   const gtransLang = titleJSON[lang] ? lang : getKeyByValue(gTransToEditionLang, lang)
   const ytLang = ytLangs.includes(lang) ? capitalize(lang) : getKeyByValue(ytToEditionLang, lang)
@@ -233,10 +235,11 @@ async function upload (pathToFile, lang, chapter) {
   if (gtransLang !== 'english') { tags = tags.concat(tagsJSON.english) }
 
   await page.goto(uploadURL)
-
+  const selectBtn = await page.$x('//*[normalize-space(text())=\'Select files\']')
   const [fileChooser] = await Promise.all([
     page.waitForFileChooser(),
-    page.click('#select-files-button > div') // button that triggers file selection
+    selectBtn[0].click()
+  //  page.click('#select-files-button > div') // button that triggers file selection
   ])
   await fileChooser.accept([pathToFile])
   // Wait until title & description box pops up
@@ -245,7 +248,7 @@ async function upload (pathToFile, lang, chapter) {
   // Add the title value
   await textBoxes[0].focus()
   await sleep(1000)
-  await textBoxes[0].type(title, { delay: 100 })
+  await textBoxes[0].type(title)
   // Add the Description content
   await textBoxes[1].type(description)
 
@@ -267,7 +270,7 @@ async function upload (pathToFile, lang, chapter) {
     const createplaylist = await page.$x(newPlaylistXPath)
     await page.evaluate(el => el.click(), createplaylist[0])
     // Enter new playlist name
-    await page.keyboard.type(' ' + newPlaylist, { delay: 100 })
+    await page.keyboard.type(' ' + newPlaylist)
     // click create & then done button
     const createplaylistbtn = await page.$x('//*[normalize-space(text())=\'Create\']')
     await page.evaluate(el => el.click(), createplaylistbtn[1])
@@ -325,6 +328,9 @@ async function sleep (ms) {
 
 
 async function uploadSub(chapter, videoLang){
+
+  let holdersubmap = {...submapped};
+
 await page.goto(studioURL)
 
 const subtitlesTab = await page.$x(`//*[normalize-space(text())='Subtitles']`)
@@ -337,56 +343,100 @@ await page.waitForFunction(`document.querySelectorAll('[id="video-title"]').leng
 
 let link = await page.evaluate(() => Array.from(document.querySelectorAll('[id="video-title"]')).map(e=>e.href).filter(e=>/.*?translations$/.test(e))[0]);
  await page.goto(link)
- await page.waitForSelector('[id="add-translation"]')
- await page.evaluate(() => document.querySelectorAll('[id="add-translation"]')[0].click());
- await page.waitForSelector('[id="choose-upload-file"]')
- await page.click('#choose-upload-file')
 
- const continueBtn = await page.$x(`//*[normalize-space(text())='Continue']`)
+await subPart(path.join(subtitlesPath, holdersubmap[videoLang], chapter+'.srt' ))
+delete holdersubmap[videoLang];
 
-// click ion Select Files & upload the file
-const [fileChooser] = await Promise.all([
-  page.waitForFileChooser(),
-  continueBtn[0].click()
-//  page.click('#choose-upload-file') // button that triggers file selection
-])
+for(const [key, value] of Object.entries(holdersubmap)){
+  
+  await sleep(2000)
+  await addNewLang(key)
+  
+  const lang = edHolder[value].toLowerCase()
+  const gtransLang = titleJSON[lang] ? lang : getKeyByValue(gTransToEditionLang, lang)
+  const title = titleJSON[gtransLang] ? titleJSON[gtransLang] : titleJSON.english + ' | ' + lang
+  const description = descriptionJSON[gtransLang] ? descriptionJSON[gtransLang] : descriptionJSON.english
+  await sleep(2000)
+  await titleDescPart(title, description )
+  await sleep(2000)
+  await subPart(path.join(subtitlesPath, value, chapter+'.srt' ))
 
-//await page.click('text=CONTINUE');
+}
 
-//await page.click('text=PUBLISH');
 
-await fileChooser.accept(['test/' + filename])
-await sleep(3000)
-let publish = await page.$x('//*[normalize-space(text())=\'Publish\']')
-await publish[1].click()
 
-// Adding new language
-const Addlang = await page.$x(`//*[normalize-space(text())='Add language']`)
-await page.evaluate(el => el.click(), Addlang[0])
+}
 
-const langName = await page.$x(`//*[normalize-space(text())='Hindi']`)
-await page.evaluate(el => el.click(), langName[langName.length - 1])
+async function subPart(pathToFile){
 
+  await page.waitForSelector('[id="add-translation"]')
+  await page.evaluate(() => document.querySelectorAll('[id="add-translation"]')[0].click());
+  await page.waitForSelector('[id="choose-upload-file"]')
+  await page.click('#choose-upload-file')
+ 
+  const continueBtn = await page.$x(`//*[normalize-space(text())='Continue']`)
+ 
+ // click ion Select Files & upload the file
+ const [fileChooser] = await Promise.all([
+   page.waitForFileChooser(),
+   continueBtn[0].click()
+ //  page.click('#choose-upload-file') // button that triggers file selection
+ ])
+ 
+ //await page.click('text=CONTINUE');
+ 
+ //await page.click('text=PUBLISH');
+ 
+ await fileChooser.accept([pathToFile])
+ await sleep(3000)
+ let publish = await page.$x('//*[normalize-space(text())=\'Publish\']')
+ await publish[publish.length-1].click()
+ 
+
+}
+
+async function titleDescPart(title, desc ){
+
+  
 await page.waitForSelector('[id="add-translation"]')
 await page.evaluate(() => document.querySelectorAll('[id="add-translation"]')[0].click());
 
+
+//*[@aria-label="Title *"] 
+
+await page.waitForSelector('[aria-label="Title *"]')
 // Add the title value
 await page.focus(`[aria-label="Title *"]`)
 await sleep(1000)
-await page.type(`[aria-label="Title *"]`,title, { delay: 100 })
+await page.type(`[aria-label="Title *"]`,title)
 await sleep(500)
  // Add the title value
 // await page.focus(`[placeholder="Description"]`)
 // await sleep(1000)
- await page.type(`[placeholder="Description"][spellcheck="true"]:enabled`,"hello", { delay: 100 })
+ await page.type(`[placeholder="Description"][spellcheck="true"]:enabled`,desc)
 
- await sleep(500)
-  publish = await page.$x('//*[normalize-space(text())=\'Publish\']')
- await publish[0].click()
+ await sleep(3000)
+  const publish = await page.$x('//*[normalize-space(text())=\'Publish\']')
+ await publish[publish.length-1].click()
+
+ // change attribute values to avoid problems
+ await page.evaluate(() => document.querySelector('[aria-label="Title *"]').setAttribute("aria-label", "old title"));
+ await page.evaluate(() => document.querySelector('[placeholder="Description"][spellcheck="true"]:enabled').setAttribute("placeholder", "desc"));
+}
+
+async function addNewLang(langVal){
+
+  // Adding new language
+const Addlang = await page.$x(`//*[normalize-space(text())='Add language']`)
+await page.evaluate(el => el.click(), Addlang[0])
+
+const langName = await page.$x(`//*[normalize-space(text())='`+langVal+`']`)
+await page.evaluate(el => el.click(), langName[langName.length - 1])
 
 }
 
-let submapped = {
+
+const submapped = {
   'Chinese (China)': 'zho-mazhonggang',
   'Chinese (Hong Kong)': 'zho-muhammadmakin',
   'Chinese (Simplified)': 'zho-majian',

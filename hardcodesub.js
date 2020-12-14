@@ -406,8 +406,10 @@ async function uploadWithSub (pathToFile, lang, chapter) {
   const langHandler = await page.$x('//*[normalize-space(text())=\'Video language\']')
   await page.evaluate(el => el.click(), langHandler[0])
 
-  const langName = await page.$x('//*[normalize-space(text())=\'' + videoLang + '\']')
+  let langName = await page.$x('//*[normalize-space(text())=\'' + videoLang + '\']')
   await page.evaluate(el => el.click(), langName[langName.length - 1])
+
+
   // click next button
   const nextBtnXPath = '//*[normalize-space(text())=\'Next\']'
   let next = await page.$x(nextBtnXPath)
@@ -449,10 +451,33 @@ async function uploadSub (chapter, videoLang) {
   await page.waitForNavigation()
 
   await page.waitForSelector('[id="video-title"]')
-  await page.waitForFunction('document.querySelectorAll(\'[id="video-title"]\').length > 5')
+  //await page.waitForFunction('document.querySelectorAll(\'[id="video-title"]\').length > 5')
+  await sleep(2000)
 
-  const link = await page.evaluate(() => Array.from(document.querySelectorAll('[id="video-title"]')).map(e => e.href).filter(e => /.*?translations$/.test(e))[0])
-  await page.goto(link)
+  const editLink = await page.evaluate(() => Array.from(document.querySelectorAll('[id="video-title"]')).map(e => e.href).filter(e => /.*?edit$/.test(e))[0])
+  const subLink = await page.evaluate(() => Array.from(document.querySelectorAll('[id="video-title"]')).map(e => e.href).filter(e => /.*?translations$/.test(e))[0])
+  await page.goto(editLink)
+  // Wait until title & description box pops up
+  await page.waitForFunction('document.querySelectorAll(\'[id="textbox"]\').length > 1')
+ // Set the title & description language to videoLang
+  const moreOption = await page.$x('//*[normalize-space(text())=\'Show more\']')
+  await moreOption[0].click()
+
+  await page.waitForXPath('//*[normalize-space(text())=\'Title and description language\']')
+  await sleep(3000)
+     // Selecting Title & description Language
+     const langTitleHandler = await page.$x('//*[normalize-space(text())=\'Title and description language\']')
+     await page.evaluate(el => el.click(), langTitleHandler[0])
+   //  await page.evaluate(el => el.click(), langTitleHandler[0])
+  langName = await page.$x('//*[normalize-space(text())=\'' + videoLang + '\']')
+  await page.evaluate(el => el.click(), langName[langName.length - 1])
+  await sleep(2000)
+  const saveBtn = await page.$x('//*[normalize-space(text())=\'Save\']')
+  await page.evaluate(el => el.click(), saveBtn[0])
+  await sleep(2000)
+
+// Go to upload subtitles link
+  await page.goto(subLink)
   // upload the subtitle for current language
   await subPart(path.join(subtitlesPath, holdersubmap[videoLang], chapter + '.srt'))
   delete holdersubmap[videoLang]

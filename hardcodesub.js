@@ -309,9 +309,9 @@ async function login () {
     waitUntil: 'networkidle0'
   })
   await sleep(1000)
-  
+
   await page.waitForXPath('//*[normalize-space(text())=\'Show password\']')
- // await page.waitForSelector('input[type="password"]')
+  // await page.waitForSelector('input[type="password"]')
   await page.type('input[type="password"]', pass)
 
   await page.keyboard.press('Enter')
@@ -410,9 +410,8 @@ async function uploadWithSub (pathToFile, lang, chapter) {
   const langHandler = await page.$x('//*[normalize-space(text())=\'Video language\']')
   await page.evaluate(el => el.click(), langHandler[0])
 
-  let langName = await page.$x('//*[normalize-space(text())=\'' + videoLang + '\']')
+  const langName = await page.$x('//*[normalize-space(text())=\'' + videoLang + '\']')
   await page.evaluate(el => el.click(), langName[langName.length - 1])
-
 
   // click next button
   const nextBtnXPath = '//*[normalize-space(text())=\'Next\']'
@@ -461,10 +460,10 @@ async function uploadSub (chapter, videoLang) {
 
   const subLink = await page.evaluate(() => Array.from(document.querySelectorAll(videoTitleId)).map(e => e.href).filter(e => /.*?translations$/.test(e))[0])
 
-// Go to upload subtitles link
+  // Go to upload subtitles link
   await page.goto(subLink)
   // upload the subtitle for english language, as it is the default title & description language
-  await subPart(path.join(subtitlesPath, holdersubmap['English'], chapter + '.srt'))
+  await subPart(path.join(subtitlesPath, holdersubmap.English, chapter + '.srt'))
   delete holdersubmap[videoLang]
   for (const [key, value] of Object.entries(holdersubmap)) {
     await sleep(2000)
@@ -474,35 +473,32 @@ async function uploadSub (chapter, videoLang) {
     const gtransLang = titleJSON[lang] ? lang : getKeyByValue(gTransToEditionLang, lang)
     const title = titleJSON[gtransLang] ? titleJSON[gtransLang] : titleJSON.english + ' | ' + lang
     const description = descriptionJSON[gtransLang] ? descriptionJSON[gtransLang] : descriptionJSON.english
-    console.log('title\n',title,'desc\n',description)
+    console.log('title\n', title, 'desc\n', description)
     await sleep(1000)
     try {
       await titleDescPart(title, description)
     } catch (error) {
       console.error(error)
       // remove the reload site? dialog
-      await page.evaluate(() => window.onbeforeunload = null)
+      await page.evaluate(() => { window.onbeforeunload = null })
       await page.goto(subLink)
       await titleDescPart(title, description)
-      counter=0
     }
     await sleep(1000)
     try {
-      await subPart(path.join(subtitlesPath, value, chapter + '.srt')) 
+      await subPart(path.join(subtitlesPath, value, chapter + '.srt'))
     } catch (error) {
       console.error(error)
       // remove the reload site? dialog
-      await page.evaluate(() => window.onbeforeunload = null)
+      await page.evaluate(() => { window.onbeforeunload = null })
       await page.goto(subLink)
       await subPart(path.join(subtitlesPath, value, chapter + '.srt'))
-      counter=0
     }
-
   }
 }
 // subtitles upload
 async function subPart (pathToFile) {
-  console.log("inside subpart")
+  console.log('inside subpart')
   await page.waitForSelector('[id="add-translation"]')
   await page.evaluate(() => document.querySelectorAll('[id="add-translation"]')[0].click())
   await page.waitForSelector('[id="choose-upload-file"]')
@@ -521,16 +517,14 @@ async function subPart (pathToFile) {
   await sleep(2000)
   const publish = await page.$x('//*[normalize-space(text())=\'Publish\']')
 
-    await publish[publish.length - 1].click()
+  await publish[publish.length - 1].click()
 
- for(let val of publish)
-  await page.evaluate(el => el.textContent='old publish', val)
-  
+  for (const val of publish) { await page.evaluate(el => { el.textContent = 'old publish' }, val) }
 }
 
 // Add title & description in subtitles pages
 async function titleDescPart (title, desc) {
-  console.log("inside titleDesc")
+  console.log('inside titleDesc')
   await page.waitForSelector('[id="add-translation"]')
   await page.evaluate(() => document.querySelectorAll('[id="add-translation"]')[0].click())
   const titleXPath = '[aria-label="Title *"]'
@@ -546,16 +540,13 @@ async function titleDescPart (title, desc) {
   await page.type('[placeholder="Description"][spellcheck="true"]:enabled', desc)
 
   await sleep(3000)
-  const publishBtnXPath
+  const publishBtnXPath = '//*[normalize-space(text())=\'Publish\']'
   await page.waitForXPath(publishBtnXPath)
   const publish = await page.$x(publishBtnXPath)
-await publish[publish.length - 1].click()
+  await publish[publish.length - 1].click()
 
+  for (const val of publish) { await page.evaluate(el => { el.textContent = 'old publish' }, val) }
 
-  for(let val of publish)
-  await page.evaluate(el => el.textContent='old publish', val)
-  
-  
   // change attribute values to avoid problems
   await page.evaluate(() => document.querySelector('[aria-label="Title *"]').setAttribute('aria-label', 'old title'))
   await page.evaluate(() => document.querySelector('[placeholder="Description"][spellcheck="true"]:enabled').setAttribute('placeholder', 'desc'))
@@ -571,5 +562,4 @@ async function addNewLang (langVal) {
   await page.waitForXPath(langValXPath)
   const langName = await page.$x(langValXPath)
   await page.evaluate(el => el.click(), langName[langName.length - 1])
-
 }

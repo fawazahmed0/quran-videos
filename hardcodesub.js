@@ -225,7 +225,13 @@ async function generateVideos () {
   [editionName, chap, playlistToSelect] = getState()
 
   const editionLang = edHolder[editionName].toLowerCase()
-  await login()
+  try {
+    await login()
+  } catch (error) {
+    console.error(error)
+    await login()
+  }
+  
 
   for (;chap <= 114; chap++) {
     const randomNo = getRandomNo(pixabayFiles.length)
@@ -294,7 +300,7 @@ function getKeyByValue (obj, value) {
 // context and browser is a global variable and it can be accessed from anywhere
 // function that launches a browser
 async function launchBrowser () {
-  browser = await puppeteer.launch({ headless: false })
+  browser = await puppeteer.launch({ headless: true })
   page = await browser.newPage()
   await page.setDefaultTimeout(timeout)
   await page.setViewport({ width: width, height: height })
@@ -348,6 +354,7 @@ async function uploadWithSub (pathToFile, lang, chapter) {
   // Also add english tags in addition to translated tags
   if (gtransLang !== 'english') { tags = tags.concat(tagsJSON.english) }
 
+  await page.evaluate(() => { window.onbeforeunload = null })
   await page.goto(uploadURL)
   const selectBtnXPath = '//*[normalize-space(text())=\'Select files\']'
   await page.waitForXPath(selectBtnXPath)
@@ -446,6 +453,7 @@ async function sleep (ms) {
 async function uploadSub (chapter, videoLang) {
   const holdersubmap = { ...submapped }
 
+  await page.evaluate(() => { window.onbeforeunload = null })
   await page.goto(studioURL)
   const subtitlesTabXPath = '//*[normalize-space(text())=\'Subtitles\']'
   await page.waitForXPath(subtitlesTabXPath)
@@ -453,14 +461,14 @@ async function uploadSub (chapter, videoLang) {
   await page.evaluate(el => el.click(), subtitlesTab[0])
 
   await page.waitForNavigation()
-  const videoTitleId = '[id="video-title"]'
-  await page.waitForSelector(videoTitleId)
+  await page.waitForSelector('[id="video-title"]')
   await page.waitForFunction('document.querySelectorAll(\'[id="video-title"]\').length > 5')
   await sleep(2000)
 
-  const subLink = await page.evaluate(() => Array.from(document.querySelectorAll(videoTitleId)).map(e => e.href).filter(e => /.*?translations$/.test(e))[0])
+  const subLink = await page.evaluate(() => Array.from(document.querySelectorAll('[id="video-title"]')).map(e => e.href).filter(e => /.*?translations$/.test(e))[0])
 
   // Go to upload subtitles link
+  await page.evaluate(() => { window.onbeforeunload = null })
   await page.goto(subLink)
   // upload the subtitle for english language, as it is the default title & description language
   await subPart(path.join(subtitlesPath, holdersubmap.English, chapter + '.srt'))

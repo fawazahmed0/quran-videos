@@ -98,8 +98,6 @@ const gTransToEditionLang = {
 }
 // Holds Edition name to Edition Language mapping
 let edHolder
-// stores the current chapter
-let chap;
 
 // youtube dropdown to edition name mappings
 const submapped = {
@@ -223,6 +221,7 @@ async function generateVideos () {
   for (const value of Object.values(editionsJSON)) { edHolder[value.name] = value.language }
 
   const pixabayFiles = fs.readdirSync(pixabayPath).sort()
+  let chap;
   [editionName, chap, playlistToSelect] = getState()
 
   const editionLang = edHolder[editionName].toLowerCase()
@@ -265,18 +264,8 @@ async function generateVideos () {
 
 async function begin () {
   await launchBrowser()
-  try {
-    await generateVideos()
-  } catch (error) {
-    console.error(error)
-    saveState(editionName, chap)
-  }
-  try {
-    await generateVideos()
-  } catch (error) {
-    console.error(error)
-    saveState(editionName, chap)
-  }
+  await generateVideos()
+  await generateVideos()
   await browser.close()
 }
 

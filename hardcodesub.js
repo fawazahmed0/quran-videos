@@ -475,7 +475,7 @@ async function uploadSub (chapter, videoLang) {
   await page.goto(subLink)
   // upload the subtitle for english language, as it is the default title & description language
   await subPart(path.join(subtitlesPath, holdersubmap.English, chapter + '.srt'))
-  delete holdersubmap[videoLang]
+  delete holdersubmap["English"]
   for (const [key, value] of Object.entries(holdersubmap)) {
     await addNewLang(key)
     try {

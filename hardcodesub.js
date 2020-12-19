@@ -430,12 +430,15 @@ async function uploadWithSub (pathToFile, lang, chapter) {
   await next[0].click()
 
   await sleep(3000)
+  await page.waitForSelector('[href^="https://youtu.be"]')
   const uploadedLinkHandle = await page.$('[href^="https://youtu.be"]')
   const uploadedLink = await page.evaluate(e => e.getAttribute('href'), uploadedLinkHandle)
   fs.appendFileSync(path.join(__dirname, 'uploaded', editionName + '.txt'), 'chapter ' + chapter + ' ' + uploadedLink + '\n')
 
   // click publish
-  const publish = await page.$x('//*[normalize-space(text())=\'Publish\']')
+  const publishXPath = `//*[normalize-space(text())='Publish']/parent::*[not(@disabled)]`
+  await page.waitForXPath(publishXPath)
+  const publish = await page.$x(publishXPath)
   // translate(text(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')
   await publish[0].click()
   await sleep(10000)
@@ -474,7 +477,6 @@ async function uploadSub (chapter, videoLang) {
   await subPart(path.join(subtitlesPath, holdersubmap.English, chapter + '.srt'))
   delete holdersubmap[videoLang]
   for (const [key, value] of Object.entries(holdersubmap)) {
-    await sleep(2000)
     await addNewLang(key)
     try {
       await addNewLang(key)
@@ -491,7 +493,6 @@ async function uploadSub (chapter, videoLang) {
     const title = titleJSON[gtransLang] ? titleJSON[gtransLang] : titleJSON.english + ' | ' + lang
     const description = descriptionJSON[gtransLang] ? descriptionJSON[gtransLang] : descriptionJSON.english
     console.log('\nlang\n',key,'\ntitle\n', title, '\ndesc\n', description)
-  //  await sleep(1000)
     try {
       await titleDescPart(title, description)
     } catch (error) {
@@ -501,7 +502,7 @@ async function uploadSub (chapter, videoLang) {
       await page.goto(subLink)
       await titleDescPart(title, description)
     }
-    await sleep(1000)
+
     try {
       await subPart(path.join(subtitlesPath, value, chapter + '.srt'))
     } catch (error) {
@@ -531,8 +532,11 @@ async function subPart (pathToFile) {
   ])
 
   await fileChooser.accept([pathToFile])
-  await sleep(2000)
-  const publish = await page.$x('//*[normalize-space(text())=\'Publish\']')
+  await page.waitForSelector('[label="Caption"]')
+
+ const publishXPath = `//*[normalize-space(text())='Publish']/parent::*[not(@disabled)]`
+  await page.waitForXPath(publishXPath)
+  const publish = await page.$x(publishXPath)
 
   await publish[publish.length - 1].click()
 
@@ -541,6 +545,8 @@ async function subPart (pathToFile) {
     if(document.querySelector('[id="add-translation"]'))
     document.querySelector('[id="add-translation"]').setAttribute('id', 'oldbtn');
   })
+
+  await page.waitForFunction(`document.querySelector('[label="Caption"]') === null`)
 }
 
 // Add title & description in subtitles pages
@@ -552,16 +558,14 @@ async function titleDescPart (title, desc) {
   await page.waitForSelector(titleXPath)
   // Add the title value
   await page.focus(titleXPath)
-  await sleep(1000)
   await page.type(titleXPath, title)
-  await sleep(500)
+
   // Add the title value
   // await page.focus(`[placeholder="Description"]`)
-  // await sleep(1000)
+
   await page.type('[placeholder="Description"][spellcheck="true"]:enabled', desc)
 
-  await sleep(3000)
-  const publishBtnXPath = '//*[normalize-space(text())=\'Publish\']'
+  const publishBtnXPath = `//*[normalize-space(text())='Publish']/parent::*[not(@disabled)]`
   await page.waitForXPath(publishBtnXPath)
   const publish = await page.$x(publishBtnXPath)
   await publish[publish.length - 1].click()

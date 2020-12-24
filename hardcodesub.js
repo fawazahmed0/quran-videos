@@ -45,14 +45,14 @@ const maxuploads = 15
 const maxSubUpload = 10
 let uploaded = 0
 
+let email, pass;
 if(process.env.CI)
 {
-  const email = process.env.user
-  const pass = process.env.key
-  console.log("email lenght is ",email.length)
+   email = process.env.user
+   pass = process.env.key
 }
 else{
-const [email, pass] = fs.readFileSync(path.join(__dirname, 'config.ini')).toString().split(/\r?\n/).map(e => e.trim());
+ [email, pass] = fs.readFileSync(path.join(__dirname, 'config.ini')).toString().split(/\r?\n/).map(e => e.trim());
 }
 
 const apiLink = 'https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1'

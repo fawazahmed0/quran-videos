@@ -41,6 +41,8 @@ const stateFile = path.join(__dirname, 'state.txt')
 
 // Keep track of number of files uploaded
 const maxuploads = 95
+// No of subtitles to upload concurrently
+const maxSubUpload = 10
 let uploaded = 0
 
 const [email, pass] = fs.readFileSync(path.join(__dirname, 'config.ini')).toString().split(/\r?\n/).map(e => e.trim())
@@ -212,10 +214,11 @@ const submapped = {
 
 // capitalizes all the first letters in a sentense
 const capitalize = words => words.split(' ').map(w => w[0].toUpperCase() + w.substring(1)).join(' ')
-
 // generate random video larger than chapter
 async function generateVideos () {
   const [editionsJSON] = await getLinksJSON([editionsLink + '.min.json'])
+  // Holds subtitle uploading promises
+  let subPromiseHolder = []
   // Edition name to Edition Language mapping
   edHolder = {}
   for (const value of Object.values(editionsJSON)) { edHolder[value.name] = value.language }
@@ -226,12 +229,11 @@ async function generateVideos () {
 
   const editionLang = edHolder[editionName].toLowerCase()
   try {
-    await login()
+    await login(page)
   } catch (error) {
     console.error(error)
-    await login()
+    await login(page)
   }
-  
 
   for (;chap <= 114; chap++) {
     const randomNo = getRandomNo(pixabayFiles.length)
@@ -249,15 +251,24 @@ async function generateVideos () {
 
     // write code to upload the video using actions script
     await uploadWithSub(fileSavePath, editionLang, chap)
-
+    const subLink = await getSubLink()
+    // upload the subtitles
+    subPromiseHolder.push(uploadSub(chap, subLink))
     uploaded++
 
     // Delete the uploaded video to save space in actions
     fs.unlinkSync(fileSavePath)
-
+    // if subtitles promise holder has reached max subtitles uploads, then wait for all of them to complete
+    if (subPromiseHolder.length === maxSubUpload) {
+      await Promise.all(subPromiseHolder)
+      subPromiseHolder = []
+    }
     // stop if uploaded files had reached the youtube upload limit
     if (uploaded >= maxuploads) { break }
   }
+
+  // wait for all remaining subtitles upload  to complete
+  await Promise.all(subPromiseHolder)
 
   const editionIndex = editionsList.indexOf(editionName)
   // if all the chapters are uploaded, then save new edition & chapter 1
@@ -306,23 +317,22 @@ async function launchBrowser () {
   await page.setViewport({ width: width, height: height })
 }
 
-async function login () {
-  await page.goto(uploadURL)
-  await page.waitForSelector('input[type="email"]')
-  await page.type('input[type="email"]', email)
-  await page.keyboard.press('Enter')
-  await page.waitForNavigation({
+async function login (localPage) {
+  await localPage.goto(uploadURL)
+  await localPage.waitForSelector('input[type="email"]')
+  await localPage.type('input[type="email"]', email)
+  await localPage.keyboard.press('Enter')
+  await localPage.waitForNavigation({
     waitUntil: 'networkidle0'
   })
-  await sleep(1000)
 
-  await page.waitForXPath('//*[normalize-space(text())=\'Show password\']')
+  await localPage.waitForXPath('//*[normalize-space(text())=\'Show password\']')
   // await page.waitForSelector('input[type="password"]')
-  await page.type('input[type="password"]', pass)
+  await localPage.type('input[type="password"]', pass)
 
-  await page.keyboard.press('Enter')
+  await localPage.keyboard.press('Enter')
 
-  await page.waitForNavigation()
+  await localPage.waitForNavigation()
 }
 
 function readJSON (pathToJSON) {
@@ -421,41 +431,40 @@ async function uploadWithSub (pathToFile, lang, chapter) {
   await page.evaluate(el => el.click(), langName[langName.length - 1])
 
   // click next button
-  const nextBtnXPath = '//*[normalize-space(text())=\'Next\']'
+  const nextBtnXPath = '//*[normalize-space(text())=\'Next\']/parent::*[not(@disabled)]'
+  await page.waitForXPath(nextBtnXPath)
   let next = await page.$x(nextBtnXPath)
   await next[0].click()
-  await sleep(3000)
+  await sleep(2000)
+  await page.waitForXPath(nextBtnXPath)
   // click next button
   next = await page.$x(nextBtnXPath)
   await next[0].click()
 
-  await sleep(3000)
+  await sleep(2000)
+
+  // Get publish button
+  const publishXPath = '//*[normalize-space(text())=\'Publish\']/parent::*[not(@disabled)]'
+  await page.waitForXPath(publishXPath)
+  const publish = await page.$x(publishXPath)
+  // save youtube upload link
   await page.waitForSelector('[href^="https://youtu.be"]')
   const uploadedLinkHandle = await page.$('[href^="https://youtu.be"]')
   const uploadedLink = await page.evaluate(e => e.getAttribute('href'), uploadedLinkHandle)
   fs.appendFileSync(path.join(__dirname, 'uploaded', editionName + '.txt'), 'chapter ' + chapter + ' ' + uploadedLink + '\n')
 
-  // click publish
-  const publishXPath = `//*[normalize-space(text())='Publish']/parent::*[not(@disabled)]`
-  await page.waitForXPath(publishXPath)
-  const publish = await page.$x(publishXPath)
   // translate(text(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')
   await publish[0].click()
   await sleep(10000)
   // wait until uploading is done
   await page.waitForXPath('//*[contains(text(),"Finished processing")]', { timeout: 0 })
-  // upload the subtitles
-  await uploadSub(chapter)
 }
 
 async function sleep (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-// upload the subtitles
-async function uploadSub (chapter) {
-  const holdersubmap = { ...submapped }
-
+async function getSubLink () {
   await page.evaluate(() => { window.onbeforeunload = null })
   await page.goto(studioURL)
   const subtitlesTabXPath = '//*[normalize-space(text())=\'Subtitles\']'
@@ -470,122 +479,144 @@ async function uploadSub (chapter) {
 
   const subLink = await page.evaluate(() => Array.from(document.querySelectorAll('[id="video-title"]')).map(e => e.href).filter(e => /.*?translations$/.test(e))[0])
 
+  return subLink
+}
+
+// upload the subtitles
+async function uploadSub (chapter, subLink) {
+  // Create a new incognito browser context
+  const context = await browser.createIncognitoBrowserContext()
+  // Create a new page inside a new context
+  const localPage = await context.newPage()
+  await localPage.setDefaultTimeout(timeout)
+  await localPage.setViewport({ width: width, height: height })
+  const holdersubmap = { ...submapped }
+  // let localPage = await browser.newPage()
+  try {
+    await login(localPage)
+  } catch (error) {
+    console.error(error)
+    await login(localPage)
+  }
+
+  // remove the reload site? dialog
+  await localPage.evaluate(() => { window.onbeforeunload = null })
   // Go to upload subtitles link
-  await page.evaluate(() => { window.onbeforeunload = null })
-  await page.goto(subLink)
+  await localPage.goto(subLink)
+
   // upload the subtitle for english language, as it is the default title & description language
-  await subPart(path.join(subtitlesPath, holdersubmap.English, chapter + '.srt'))
-  delete holdersubmap["English"]
+  await subPart(path.join(subtitlesPath, holdersubmap.English, chapter + '.srt'), localPage)
+  delete holdersubmap.English
   for (const [key, value] of Object.entries(holdersubmap)) {
-    await addNewLang(key)
+    await addNewLang(key, localPage)
     try {
-      await addNewLang(key)
+      await addNewLang(key, localPage)
     } catch (error) {
       console.error(error)
       // remove the reload site? dialog
-      await page.evaluate(() => { window.onbeforeunload = null })
-      await page.goto(subLink)
-      await addNewLang(key)
+      await localPage.evaluate(() => { window.onbeforeunload = null })
+      await localPage.goto(subLink)
+      await addNewLang(key, localPage)
     }
 
     const lang = edHolder[value].toLowerCase()
     const gtransLang = titleJSON[lang] ? lang : getKeyByValue(gTransToEditionLang, lang)
     const title = titleJSON[gtransLang] ? titleJSON[gtransLang] : titleJSON.english + ' | ' + lang
     const description = descriptionJSON[gtransLang] ? descriptionJSON[gtransLang] : descriptionJSON.english
-    console.log('\nlang\n',key,'\ntitle\n', title, '\ndesc\n', description)
+    console.log('\nlang\n', key, '\ntitle\n', title, '\ndesc\n', description)
     try {
-      await titleDescPart(title, description)
+      await titleDescPart(title, description, localPage)
     } catch (error) {
       console.error(error)
       // remove the reload site? dialog
-      await page.evaluate(() => { window.onbeforeunload = null })
-      await page.goto(subLink)
-      await titleDescPart(title, description)
+      await localPage.evaluate(() => { window.onbeforeunload = null })
+      await localPage.goto(subLink)
+      await titleDescPart(title, description, localPage)
     }
 
     try {
-      await subPart(path.join(subtitlesPath, value, chapter + '.srt'))
+      await subPart(path.join(subtitlesPath, value, chapter + '.srt'), localPage)
     } catch (error) {
       console.error(error)
       // remove the reload site? dialog
-      await page.evaluate(() => { window.onbeforeunload = null })
-      await page.goto(subLink)
-      await subPart(path.join(subtitlesPath, value, chapter + '.srt'))
+      await localPage.evaluate(() => { window.onbeforeunload = null })
+      await localPage.goto(subLink)
+      await subPart(path.join(subtitlesPath, value, chapter + '.srt'), localPage)
     }
   }
+  await context.close()
 }
 // subtitles upload
-async function subPart (pathToFile) {
+async function subPart (pathToFile, localPage) {
   console.log('inside subpart')
-  await page.waitForSelector('[id="add-translation"]')
-  await page.evaluate(() => document.querySelectorAll('[id="add-translation"]')[0].click())
-  await page.waitForSelector('[id="choose-upload-file"]')
-  await page.click('#choose-upload-file')
+  await localPage.waitForSelector('[id="add-translation"]')
+  await localPage.evaluate(() => document.querySelectorAll('[id="add-translation"]')[0].click())
+  await localPage.waitForSelector('[id="choose-upload-file"]')
+  await localPage.click('#choose-upload-file')
   const continueBtnXPath = '//*[normalize-space(text())=\'Continue\']'
-  await page.waitForXPath(continueBtnXPath)
-  const continueBtn = await page.$x(continueBtnXPath)
+  await localPage.waitForXPath(continueBtnXPath)
+  const continueBtn = await localPage.$x(continueBtnXPath)
 
   // click ion Select Files & upload the file
   const [fileChooser] = await Promise.all([
-    page.waitForFileChooser(),
+    localPage.waitForFileChooser(),
     continueBtn[0].click() // button that triggers upload
   ])
 
   await fileChooser.accept([pathToFile])
-  await page.waitForSelector('[label="Caption"]')
+  await localPage.waitForSelector('[label="Caption"]')
 
- const publishXPath = `//*[normalize-space(text())='Publish']/parent::*[not(@disabled)]`
-  await page.waitForXPath(publishXPath)
-  const publish = await page.$x(publishXPath)
+  const publishXPath = '//*[normalize-space(text())=\'Publish\']/parent::*[not(@disabled)]'
+  await localPage.waitForXPath(publishXPath)
+  const publish = await localPage.$x(publishXPath)
 
   await publish[publish.length - 1].click()
 
-  for (const val of publish) { await page.evaluate(el => { el.textContent = 'old publish' }, val) }
-  await page.evaluate(() =>{ 
-    if(document.querySelector('[id="add-translation"]'))
-    document.querySelector('[id="add-translation"]').setAttribute('id', 'oldbtn');
+  for (const val of publish) { await localPage.evaluate(el => { el.textContent = 'old publish' }, val) }
+  await localPage.evaluate(() => {
+    if (document.querySelector('[id="add-translation"]')) { document.querySelector('[id="add-translation"]').setAttribute('id', 'oldbtn') }
   })
 
-  await page.waitForFunction(`document.querySelector('[label="Caption"]') === null`)
+  await localPage.waitForFunction('document.querySelector(\'[label="Caption"]\') === null')
 }
 
 // Add title & description in subtitles pages
-async function titleDescPart (title, desc) {
+async function titleDescPart (title, desc, localPage) {
   console.log('inside titleDesc')
-  await page.waitForSelector('[id="add-translation"]')
-  await page.evaluate(() => document.querySelectorAll('[id="add-translation"]')[0].click())
+  await localPage.waitForSelector('[id="add-translation"]')
+  await localPage.evaluate(() => document.querySelectorAll('[id="add-translation"]')[0].click())
   const titleXPath = '[aria-label="Title *"]'
-  await page.waitForSelector(titleXPath)
+  await localPage.waitForSelector(titleXPath)
   // Add the title value
-  await page.focus(titleXPath)
-  await page.type(titleXPath, title)
+  await localPage.focus(titleXPath)
+  await localPage.type(titleXPath, title)
 
   // Add the title value
   // await page.focus(`[placeholder="Description"]`)
 
-  await page.type('[placeholder="Description"][spellcheck="true"]:enabled', desc)
+  await localPage.type('[placeholder="Description"][spellcheck="true"]:enabled', desc)
 
-  const publishBtnXPath = `//*[normalize-space(text())='Publish']/parent::*[not(@disabled)]`
-  await page.waitForXPath(publishBtnXPath)
-  const publish = await page.$x(publishBtnXPath)
+  const publishBtnXPath = '//*[normalize-space(text())=\'Publish\']/parent::*[not(@disabled)]'
+  await localPage.waitForXPath(publishBtnXPath)
+  const publish = await localPage.$x(publishBtnXPath)
   await publish[publish.length - 1].click()
 
-  for (const val of publish) { await page.evaluate(el => { el.textContent = 'old publish' }, val) }
+  for (const val of publish) { await localPage.evaluate(el => { el.textContent = 'old publish' }, val) }
 
   // change attribute values to avoid problems
-  await page.evaluate(() => document.querySelector('[aria-label="Title *"]').setAttribute('aria-label', 'old title'))
-  await page.evaluate(() => document.querySelector('[placeholder="Description"][spellcheck="true"]:enabled').setAttribute('placeholder', 'desc'))
-  await page.evaluate(() => document.querySelector('[id="add-translation"]').setAttribute('id', 'oldbtn'))
+  await localPage.evaluate(() => document.querySelector('[aria-label="Title *"]').setAttribute('aria-label', 'old title'))
+  await localPage.evaluate(() => document.querySelector('[placeholder="Description"][spellcheck="true"]:enabled').setAttribute('placeholder', 'desc'))
+  await localPage.evaluate(() => document.querySelector('[id="add-translation"]').setAttribute('id', 'oldbtn'))
 }
 // Select new language
-async function addNewLang (langVal) {
+async function addNewLang (langVal, localPage) {
   // Adding new language
   const addLangBtnXPath = '//*[normalize-space(text())=\'Add language\']'
-  await page.waitForXPath(addLangBtnXPath)
-  const Addlang = await page.$x(addLangBtnXPath)
-  await page.evaluate(el => el.click(), Addlang[0])
+  await localPage.waitForXPath(addLangBtnXPath)
+  const Addlang = await localPage.$x(addLangBtnXPath)
+  await localPage.evaluate(el => el.click(), Addlang[0])
   const langValXPath = '//*[normalize-space(text())=\'' + langVal + '\']'
-  await page.waitForXPath(langValXPath)
-  const langName = await page.$x(langValXPath)
-  await page.evaluate(el => el.click(), langName[langName.length - 1])
+  await localPage.waitForXPath(langValXPath)
+  const langName = await localPage.$x(langValXPath)
+  await localPage.evaluate(el => el.click(), langName[langName.length - 1])
 }

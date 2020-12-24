@@ -250,7 +250,7 @@ async function generateVideos () {
     spawnSync('ffmpeg', ['-stream_loop', repeat, '-i', pixaFileWithPath, '-i', path.join(audioPath, paddedI + '.mp3'), '-vf', 'subtitles=subtitles/' + editionName + '/' + chap + ".srt:force_style='Alignment=2,OutlineColour=&H100000000,BorderStyle=3,Outline=1,Shadow=0,Fontsize=18,MarginL=0,MarginV=60'", '-crf', '24', '-vcodec', 'libx264', '-map', '0:v', '-map', '1:a', '-c:a', 'copy', '-shortest', fileSavePath])
 
     // write code to upload the video using actions script
-    await uploadWithSub(fileSavePath, editionLang, chap)
+    await uploadVideo(fileSavePath, editionLang, chap)
     const subLink = await getSubLink()
     // upload the subtitles
     subPromiseHolder.push(uploadSub(chap, subLink))
@@ -348,7 +348,7 @@ async function getLinksJSON (urls) {
   ).catch(console.error)
 }
 // keep playlistBool true, only if its 1 chap
-async function uploadWithSub (pathToFile, lang, chapter) {
+async function uploadVideo (pathToFile, lang, chapter) {
   const chapTitlePath = path.join(titlePath, chapter + '.json')
   titleJSON = readJSON(chapTitlePath)
   // if language exists, then use the language name, otherwise get it from mappings objects
@@ -508,7 +508,6 @@ async function uploadSub (chapter, subLink) {
   await subPart(path.join(subtitlesPath, holdersubmap.English, chapter + '.srt'), localPage)
   delete holdersubmap.English
   for (const [key, value] of Object.entries(holdersubmap)) {
-    await addNewLang(key, localPage)
     try {
       await addNewLang(key, localPage)
     } catch (error) {

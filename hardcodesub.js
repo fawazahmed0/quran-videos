@@ -331,10 +331,10 @@ async function security (localPage){
 
 try {
   
-  const confirmBtnXPath = `//*[normalize-space(text())='Confirm your recovery email']`
-  await localPage.waitForXPath(confirmBtnXPath)
-  const confirmBtn = await localPage.$x(confirmBtnXPath)
-  confirmBtn[0].click();
+ // const confirmBtnXPath = `//*[normalize-space(text())='Confirm your recovery email']`
+ // await localPage.waitForXPath(confirmBtnXPath)
+ // const confirmBtn = await localPage.$x(confirmBtnXPath)
+ // confirmBtn[0].click();
 
   const enterRecoveryXPath = `//*[normalize-space(text())='Enter recovery email address']`
   await localPage.waitForXPath(enterRecoveryXPath)
@@ -376,7 +376,7 @@ async function login (localPage) {
 
 try {
   const selectBtnXPath = '//*[normalize-space(text())=\'Select files\']'
-  await localPage.waitForXPath(selectBtnXPath)
+  await localPage.waitForXPath(selectBtnXPath,{ timeout: 0 })
 } catch (error) {
   console.error(error)
   await security (localPage)

@@ -35,16 +35,17 @@ jobs:
       - name: download part
         shell: cmd
         run: |
-          choco install ffmpeg wget
-          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.1/subtitles.zip
-          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.1/pixabay.videos.zip
-          wget https://github.com/fawazahmed0/audio-ayah-arabic-1/releases/download/v1.4/my-artifact.zip
+      #    choco install ffmpeg wget
+      #    wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.1/subtitles.zip
+      #    wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.1/pixabay.videos.zip
+      #    wget https://github.com/fawazahmed0/audio-ayah-arabic-1/releases/download/v1.4/my-artifact.zip
       - name: zip extract
         shell: cmd
         run: |
-          7z x subtitles.zip
-          7z x pixabay.videos.zip
-          7z x my-artifact.zip
+          dir
+      #    7z x subtitles.zip
+      #    7z x pixabay.videos.zip
+      #    7z x my-artifact.zip
       - name: node part  
         run: |
           npm install

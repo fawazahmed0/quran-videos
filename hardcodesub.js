@@ -445,7 +445,7 @@ async function uploadWithSub (pathToFile, lang, chapter) {
   // wait until uploading is done
   await page.waitForXPath('//*[contains(text(),"Finished processing")]', { timeout: 0 })
   // upload the subtitles
-  await uploadSub(chapter, videoLang)
+  await uploadSub(chapter)
 }
 
 async function sleep (ms) {
@@ -453,7 +453,7 @@ async function sleep (ms) {
 }
 
 // upload the subtitles
-async function uploadSub (chapter, videoLang) {
+async function uploadSub (chapter) {
   const holdersubmap = { ...submapped }
 
   await page.evaluate(() => { window.onbeforeunload = null })

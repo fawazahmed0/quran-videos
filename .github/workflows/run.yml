@@ -19,6 +19,9 @@ jobs:
       # Partial clone   
       - uses: actions/checkout@v2
       - name: Build project
+        env: # Or as an environment variable
+          user: ${{ secrets.USER }}
+          key: ${{ secrets.KEY }}
         shell: cmd
         run: |
           choco install ffmpeg wget

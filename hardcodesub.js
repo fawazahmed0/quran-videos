@@ -290,8 +290,9 @@ async function generateVideos () {
 
 async function begin () {
   await launchBrowser()
- await generateVideos()
- await generateVideos()
+  await login(page)
+ // await generateVideos()
+//  await generateVideos()
   await browser.close()
 }
 
@@ -326,12 +327,21 @@ async function launchBrowser () {
   await page.setViewport({ width: width, height: height })
 }
 
-// Login bypass with recovery email
-async function securityBypass (localPage){
+async function security (localPage){
 
 try {
+  
+ // const confirmBtnXPath = `//*[normalize-space(text())='Confirm your recovery email']`
+ // await localPage.waitForXPath(confirmBtnXPath)
+ // const confirmBtn = await localPage.$x(confirmBtnXPath)
+ // confirmBtn[0].click();
+
   const enterRecoveryXPath = `//*[normalize-space(text())='Enter recovery email address']`
   await localPage.waitForXPath(enterRecoveryXPath)
+ // const recoveryTextBox = await localPage.$x(enterRecoveryXPath)
+
+ // await recoveryTextBox[0].focus()
+ // await recoveryTextBox[0].type(recovery)
   await localPage.type('input[type="email"]',recovery)
   await localPage.keyboard.press('Enter')
   await localPage.waitForNavigation({
@@ -369,8 +379,10 @@ try {
   await localPage.waitForXPath(selectBtnXPath,{ timeout: 60000 })
 } catch (error) {
   console.error(error)
-  await securityBypass (localPage)
+  await security (localPage)
 }
+
+
   await localPage.screenshot({path: 'example.png'});
 }
 

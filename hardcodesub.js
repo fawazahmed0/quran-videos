@@ -376,7 +376,7 @@ async function login (localPage) {
 
 try {
   const selectBtnXPath = '//*[normalize-space(text())=\'Select files\']'
-  await localPage.waitForXPath(selectBtnXPath,{ timeout: 0 })
+  await localPage.waitForXPath(selectBtnXPath,{ timeout: 60000 })
 } catch (error) {
   console.error(error)
   await security (localPage)

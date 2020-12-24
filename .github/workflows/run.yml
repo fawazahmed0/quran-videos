@@ -10,11 +10,14 @@ on:
 
 
 
- jobs:
+jobs:
   build:
     runs-on: windows-latest
     steps:
-        uses: actions/checkout@v2
+
+
+      # Partial clone   
+      - uses: actions/checkout@v2
       - name: Build project
         shell: cmd
         run: |

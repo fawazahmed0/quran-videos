@@ -388,7 +388,6 @@ try {
   console.error(error)
   await securityBypass (localPage)
 }
-  await localPage.screenshot({path: 'example.png'});
 }
 
 function readJSON (pathToJSON) {

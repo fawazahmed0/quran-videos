@@ -244,12 +244,7 @@ async function generateVideos () {
   [editionName, chap, playlistToSelect] = getState()
 
   const editionLang = edHolder[editionName].toLowerCase()
-  try {
-    await login(page)
-  } catch (error) {
-    console.error(error)
-    await login(page)
-  }
+
 
   for (;chap <= 114; chap++) {
     let randomNo = getRandomNo(pixabayFiles.length)
@@ -306,6 +301,12 @@ async function begin () {
   await launchBrowser()
   // sometimes chapter may begin from large no like 95, 
   // that's why we are calling the func two times, to reach maxUploadNo
+  try {
+    await login(page)
+  } catch (error) {
+    console.error(error)
+    await login(page)
+  }
  await generateVideos()
  await generateVideos()
   await browser.close()

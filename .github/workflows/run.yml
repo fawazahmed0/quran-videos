@@ -15,8 +15,22 @@ jobs:
     runs-on: windows-latest
     steps:
 
+      - name: Get cache directory for npm
+        id: cache-dir
+        shell: bash
+        run: echo "::set-output name=npmcache::$(npm config get cache)"
 
-      # Partial clone   
+      - name: Trying to use the old cache if available
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.cache-dir.outputs.npmcache }}
+          key: ${{ runner.os }}-cache-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-cache-
+            ${{ runner.os }}-
+      - name: Install Dependencies
+        run: npm install
+
       - uses: actions/checkout@v2
       - name: main part
         env: # Or as an environment variable
@@ -42,3 +56,4 @@ jobs:
           git add -A
           git commit -m 'Add uploaded links'
           git push
+

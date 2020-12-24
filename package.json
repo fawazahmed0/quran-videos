@@ -1,0 +1,22 @@
+{
+  "name": "quran-videos",
+  "version": "1.0.0",
+  "description": "Quran Recitation Videos",
+  "main": "hardcodesub.js",
+  "dependencies": {
+    "node-fetch": "latest",
+    "puppeteer":"latest",
+    "puppeteer-extra":"latest",
+    "puppeteer-extra-plugin-stealth":"latest",
+    "puppeteer-extra-plugin-adblocker":"latest"
+
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fawazahmed0/quran-videos.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fawazahmed0/quran-videos/issues"
+  },
+  "homepage": "https://github.com/fawazahmed0/quran-videos#readme"
+}

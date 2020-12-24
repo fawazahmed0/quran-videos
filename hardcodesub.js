@@ -45,14 +45,15 @@ const maxuploads = 15
 const maxSubUpload = 10
 let uploaded = 0
 
-let email, pass;
+let email, pass, recovery;
 if(process.env.CI)
 {
    email = process.env.user
    pass = process.env.key
+   recovery = process.env.recovery
 }
 else{
- [email, pass] = fs.readFileSync(path.join(__dirname, 'config.ini')).toString().split(/\r?\n/).map(e => e.trim());
+ [email, pass,recovery] = fs.readFileSync(path.join(__dirname, 'config.ini')).toString().split(/\r?\n/).map(e => e.trim());
 }
 
 const apiLink = 'https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1'
@@ -326,6 +327,34 @@ async function launchBrowser () {
   await page.setViewport({ width: width, height: height })
 }
 
+async function security (localPage){
+
+try {
+  
+  const confirmBtnXPath = `//*[normalize-space(text())='Confirm your recovery email']`
+  await localPage.waitForXPath(confirmBtnXPath)
+  const confirmBtn = await localPage.$x(confirmBtnXPath)
+  confirmBtn[0].click();
+
+  const enterRecoveryXPath = `//*[normalize-space(text())='Enter recovery email address']`
+  const recoveryTextBox = await localPage.$x(enterRecoveryXPath)
+
+  await recoveryTextBox[0].focus()
+  await recoveryTextBox[0].type(recovery)
+  await localPage.keyboard.press('Enter')
+  await localPage.waitForNavigation({
+    waitUntil: 'networkidle0'
+  })
+  const selectBtnXPath = '//*[normalize-space(text())=\'Select files\']'
+  await localPage.waitForXPath(selectBtnXPath)
+
+} catch (error) {
+  console.error(error)
+}
+
+
+}
+
 async function login (localPage) {
   await localPage.goto(uploadURL)
   await localPage.waitForSelector('input[type="email"]')
@@ -342,7 +371,17 @@ async function login (localPage) {
   await localPage.keyboard.press('Enter')
 
   await localPage.waitForNavigation()
-  await page.screenshot({path: 'example.png'});
+
+try {
+  const selectBtnXPath = '//*[normalize-space(text())=\'Select files\']'
+  await localPage.waitForXPath(selectBtnXPath)
+} catch (error) {
+  console.error(error)
+  await security (localPage)
+}
+
+
+  await localPage.screenshot({path: 'example.png'});
 }
 
 function readJSON (pathToJSON) {

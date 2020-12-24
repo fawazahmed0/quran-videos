@@ -11,6 +11,7 @@ on:
 env: # Or as an environment variable
   user: ${{ secrets.USER }}
   key: ${{ secrets.KEY }}   
+  recovery: ${{ secrets.RECOVERY }}   
 
 jobs:
   build:

@@ -1,0 +1,39 @@
+name: CI
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for branch 1 and on start directory, command.txt file changes or by manually running the workflow from actions tab
+on:
+  schedule:
+    - cron: '0 0 * * *'  # every day at midnight
+
+  workflow_dispatch:
+
+
+
+ jobs:
+  build:
+
+    runs-on: windows-latest
+    steps:
+        uses: actions/checkout@v2
+      - name: Build project
+        shell: cmd
+        run: |
+          choco install ffmpeg wget
+          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.1/subtitles.zip
+          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.1/pixabay.videos.zip
+          wget https://github.com/fawazahmed0/audio-ayah-arabic-1/releases/download/v1.4/my-artifact.zip
+          7z x subtitles.zip
+          7z x pixabay.videos.zip
+          7z x my-artifact.zip
+          node hardcodesub.js
+      # commiting and pushing changes
+      - name: commit and push
+        shell: cmd
+        run: |
+          git config --global user.email github-actions@github.com
+          git config --global user.name github-actions
+          git pull
+          git add -A
+          git commit -m 'Add uploaded links'
+          git push

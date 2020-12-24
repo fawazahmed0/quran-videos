@@ -49,6 +49,7 @@ if(process.env.CI)
 {
   const email = process.env.user
   const pass = process.env.key
+  console.log("email lenght is ",email.length)
 }
 else{
 const [email, pass] = fs.readFileSync(path.join(__dirname, 'config.ini')).toString().split(/\r?\n/).map(e => e.trim());

@@ -8,7 +8,9 @@ on:
 
   workflow_dispatch:
 
-
+env: # Or as an environment variable
+  user: ${{ secrets.USER }}
+  key: ${{ secrets.KEY }}   
 
 jobs:
   build:
@@ -43,10 +45,7 @@ jobs:
           7z x subtitles.zip
           7z x pixabay.videos.zip
           7z x my-artifact.zip
-      - name: node part
-        env: # Or as an environment variable
-          user: ${{ secrets.USER }}
-          key: ${{ secrets.KEY }}     
+      - name: node part  
         run: |
           npm install
           node hardcodesub.js    

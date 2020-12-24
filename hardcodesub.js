@@ -50,9 +50,9 @@ if(process.env.CI)
   const email = process.env.user
   const pass = process.env.key
 }
-else
-const [email, pass] = fs.readFileSync(path.join(__dirname, 'config.ini')).toString().split(/\r?\n/).map(e => e.trim())
-
+else{
+const [email, pass] = fs.readFileSync(path.join(__dirname, 'config.ini')).toString().split(/\r?\n/).map(e => e.trim());
+}
 
 const apiLink = 'https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1'
 const editionsLink = apiLink + '/editions'

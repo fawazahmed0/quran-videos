@@ -547,18 +547,20 @@ async function uploadSub (chapter, subLink) {
   await localPage.setViewport({ width: width, height: height })
   const holdersubmap = { ...submapped }
   // let localPage = await browser.newPage()
+  console.log("before login")
   try {
     await login(localPage)
   } catch (error) {
     console.error(error)
     await login(localPage)
   }
-
+  console.log("after login")
   // remove the reload site? dialog
   await localPage.evaluate(() => { window.onbeforeunload = null })
+  console.log("after evaluate")
   // Go to upload subtitles link
   await localPage.goto(subLink)
-
+  console.log("after going to sublink")
   // upload the subtitle for english language, as it is the default title & description language
   await subPart(path.join(subtitlesPath, holdersubmap.English, chapter + '.srt'), localPage)
   delete holdersubmap.English

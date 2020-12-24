@@ -28,11 +28,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cache-
             ${{ runner.os }}-
-      - name: Install Dependencies
-        run: npm install
 
       - uses: actions/checkout@v2
-      - name: main part
+      - name: download part
         env: # Or as an environment variable
           user: ${{ secrets.USER }}
           key: ${{ secrets.KEY }}
@@ -45,7 +43,10 @@ jobs:
           7z x subtitles.zip
           7z x pixabay.videos.zip
           7z x my-artifact.zip
-          node hardcodesub.js
+      - name: node part
+        run: |
+          npm install
+          node hardcodesub.js    
       # commiting and pushing changes
       - name: commit and push
         shell: cmd

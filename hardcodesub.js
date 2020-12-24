@@ -289,8 +289,9 @@ async function generateVideos () {
 
 async function begin () {
   await launchBrowser()
-  await generateVideos()
-  await generateVideos()
+  await login(page)
+ // await generateVideos()
+//  await generateVideos()
   await browser.close()
 }
 

@@ -327,7 +327,7 @@ async function launchBrowser () {
 }
 
 async function login (localPage) {
-  await localPage.goto(uploadURL)
+  await localPage.goto('https://accounts.google.com/signin/v2/identifier')
   await localPage.waitForSelector('input[type="email"]')
   await localPage.type('input[type="email"]', email)
   await localPage.keyboard.press('Enter')

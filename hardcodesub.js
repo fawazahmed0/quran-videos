@@ -540,13 +540,14 @@ async function getSubLink () {
 async function uploadSub (chapter, subLink) {
   console.log("inside uplaodsub")
   // Create a new incognito browser context
-  const context = await browser.createIncognitoBrowserContext()
+ // const context = await browser.createIncognitoBrowserContext()
   // Create a new page inside a new context
-  const localPage = await context.newPage()
+  const localPage = await browser.newPage()
   await localPage.setDefaultTimeout(timeout)
   await localPage.setViewport({ width: width, height: height })
   const holdersubmap = { ...submapped }
   // let localPage = await browser.newPage()
+  /*
   console.log("before login")
   try {
     await login(localPage)
@@ -558,6 +559,7 @@ async function uploadSub (chapter, subLink) {
   // remove the reload site? dialog
   await localPage.evaluate(() => { window.onbeforeunload = null })
   console.log("after evaluate")
+  */
   // Go to upload subtitles link
   await localPage.goto(subLink)
   console.log("after going to sublink")
@@ -600,7 +602,7 @@ async function uploadSub (chapter, subLink) {
       await subPart(path.join(subtitlesPath, value, chapter + '.srt'), localPage)
     }
   }
-  await context.close()
+  await localPage.close()
 }
 // subtitles upload
 async function subPart (pathToFile, localPage) {

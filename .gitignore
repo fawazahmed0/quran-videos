@@ -6,3 +6,4 @@
 subtitles/
 todelete
 *.ini
+node_modules/

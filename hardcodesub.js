@@ -226,6 +226,8 @@ fs.mkdirSync(hardcodedSubPath, {
   recursive: true
 });
 
+let ignorePixaVidIndex = [11]
+
 // capitalizes all the first letters in a sentense
 const capitalize = words => words.split(' ').map(w => w[0].toUpperCase() + w.substring(1)).join(' ')
 // generate random video larger than chapter
@@ -250,7 +252,11 @@ async function generateVideos () {
   }
 
   for (;chap <= 114; chap++) {
-    const randomNo = getRandomNo(pixabayFiles.length)
+    let randomNo = getRandomNo(pixabayFiles.length)
+    // ignore few pixabay videos, due to distracting video etc
+    if(ignorePixaVidIndex.includes(randomNo))
+       randomNo = 1
+
     // Pixabay Videos to use for recitation
     const pixaFileWithPath = path.join(pixabayPath, pixabayFiles[randomNo])
 

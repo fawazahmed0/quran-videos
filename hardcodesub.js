@@ -341,6 +341,7 @@ async function login (localPage) {
   await localPage.keyboard.press('Enter')
 
   await localPage.waitForNavigation()
+  await page.screenshot({path: 'example.png'});
 }
 
 function readJSON (pathToJSON) {

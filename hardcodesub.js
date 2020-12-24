@@ -504,11 +504,13 @@ async function uploadVideo (pathToFile, lang, chapter) {
   fs.appendFileSync(path.join(__dirname, 'uploaded', editionName + '.txt'), 'chapter ' + chapter + ' ' + uploadedLink + '\n')
 
   // translate(text(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')
+  console.log("wait 300sec for elem")
+  await page.waitForXPath('//*[contains(text(),"Finished processing")]', { timeout: 300000})
+  console.log("done")
   await publish[0].click()
   await sleep(10000)
   // wait until uploading is done
-  console.log("wait 300sec")
-  await page.waitForXPath('//*[contains(text(),"Finished processing")]', { timeout: 300000})
+
 }
 
 async function sleep (ms) {

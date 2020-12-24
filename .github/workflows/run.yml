@@ -48,7 +48,14 @@ jobs:
       - name: node part  
         run: |
           npm install
-          node hardcodesub.js    
+          node hardcodesub.js
+
+      - name: Saving the log.txt as artifcat
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: log
+          path: example.png    
       # commiting and pushing changes
       - name: commit and push
         shell: cmd

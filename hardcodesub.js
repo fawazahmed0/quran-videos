@@ -40,7 +40,7 @@ const editionsList = ['eng-muhammadasad', 'zho-majian1', 'zho-muhammadmakin', 's
 const stateFile = path.join(__dirname, 'state.txt')
 
 // Keep track of number of files uploaded
-const maxuploads = 2
+const maxuploads = 5
 // No of subtitles to upload concurrently
 const maxSubUpload = 10
 let uploaded = 0
@@ -275,7 +275,7 @@ async function generateVideos () {
     const subLink = await getSubLink()
     console.log('sublink is ',subLink.length)
     // upload the subtitles
-    subPromiseHolder.push(uploadSub(chap, subLink))
+    subPromiseHolder.push(uploadSub(chap, subLink).then())
     console.log('after subpromiseholder')
     uploaded++
 
@@ -507,9 +507,10 @@ async function uploadVideo (pathToFile, lang, chapter) {
   fs.appendFileSync(path.join(__dirname, 'uploaded', editionName + '.txt'), 'chapter ' + chapter + ' ' + uploadedLink + '\n')
 
   // translate(text(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')
-  await page.waitForXPath('//*[contains(text(),"Finished processing")]', { timeout: 0})
+
   await publish[0].click()
-  await sleep(5000)
+  await page.waitForXPath('//*[contains(text(),"Finished processing")]', { timeout: 0})
+  await sleep(10000)
   // wait until uploading is done
 
 }

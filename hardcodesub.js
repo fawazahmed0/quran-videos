@@ -271,9 +271,12 @@ async function generateVideos () {
 
     // write code to upload the video using actions script
     await uploadVideo(fileSavePath, editionLang, chap)
+    console.log('before sublink')
     const subLink = await getSubLink()
+    console.log('sublink is ',subLink.length)
     // upload the subtitles
     subPromiseHolder.push(uploadSub(chap, subLink))
+    console.log('after subpromiseholder')
     uploaded++
 
     // Delete the uploaded video to save space in actions
@@ -535,6 +538,7 @@ async function getSubLink () {
 
 // upload the subtitles
 async function uploadSub (chapter, subLink) {
+  console.log("inside uplaodsub")
   // Create a new incognito browser context
   const context = await browser.createIncognitoBrowserContext()
   // Create a new page inside a new context

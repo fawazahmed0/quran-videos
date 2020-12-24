@@ -221,6 +221,11 @@ const submapped = {
   Filipino: 'fil-wwwislamhouseco'
 }
 
+// make hardcodedsubtitle output directory if it doesn't exist
+fs.mkdirSync(hardcodedSubPath, {
+  recursive: true
+});
+
 // capitalizes all the first letters in a sentense
 const capitalize = words => words.split(' ').map(w => w[0].toUpperCase() + w.substring(1)).join(' ')
 // generate random video larger than chapter

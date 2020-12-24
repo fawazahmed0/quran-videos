@@ -304,6 +304,8 @@ async function generateVideos () {
 
 async function begin () {
   await launchBrowser()
+  // sometimes chapter may begin from large no like 95, 
+  // that's why we are calling the func two times, to reach maxUploadNo
  await generateVideos()
  await generateVideos()
   await browser.close()

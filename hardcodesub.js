@@ -433,7 +433,7 @@ async function uploadVideo (pathToFile, lang, chapter) {
   // Add the title value
   await textBoxes[0].focus()
   await sleep(1000)
-  await textBoxes[0].type(title)
+  await textBoxes[0].type(capitalize(title))
   // Add the Description content
   await textBoxes[1].type(description)
 
@@ -648,7 +648,7 @@ async function titleDescPart (title, desc, localPage) {
   await localPage.waitForSelector(titleXPath)
   // Add the title value
   await localPage.focus(titleXPath)
-  await localPage.type(titleXPath, title)
+  await localPage.type(titleXPath, capitalize(title))
 
   // Add the title value
   // await page.focus(`[placeholder="Description"]`)

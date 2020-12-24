@@ -338,10 +338,11 @@ try {
 
   const enterRecoveryXPath = `//*[normalize-space(text())='Enter recovery email address']`
   await localPage.waitForXPath(enterRecoveryXPath)
-  const recoveryTextBox = await localPage.$x(enterRecoveryXPath)
+ // const recoveryTextBox = await localPage.$x(enterRecoveryXPath)
 
-//  await recoveryTextBox[0].focus()
-  await recoveryTextBox[0].type(recovery)
+ // await recoveryTextBox[0].focus()
+ // await recoveryTextBox[0].type(recovery)
+  await localPage.type('input[type="email"]',recovery)
   await localPage.keyboard.press('Enter')
   await localPage.waitForNavigation({
     waitUntil: 'networkidle0'

@@ -592,6 +592,7 @@ async function uploadSub (chapter, subLink) {
       // remove the reload site? dialog
       await localPage.evaluate(() => { window.onbeforeunload = null })
       await localPage.goto(subLink)
+      await addNewLang(key, localPage)
       await titleDescPart(title, description, localPage)
     }
 

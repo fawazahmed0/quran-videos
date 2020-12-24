@@ -507,7 +507,8 @@ async function uploadVideo (pathToFile, lang, chapter) {
   await publish[0].click()
   await sleep(10000)
   // wait until uploading is done
-  await page.waitForXPath('//*[contains(text(),"Finished processing")]', { timeout: 0 })
+  console.log("wait 300sec")
+  await page.waitForXPath('//*[contains(text(),"Finished processing")]', { timeout: 300000})
 }
 
 async function sleep (ms) {

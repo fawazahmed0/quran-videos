@@ -32,7 +32,12 @@ jobs:
             ${{ runner.os }}-cache-
             ${{ runner.os }}-
 
-      - uses: actions/checkout@v2
+      - name: clone
+        shell: bash
+        run: |
+          REPO="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
+          git clone --depth 1 $REPO .              
+
       - name: download part
         shell: cmd
         run: |

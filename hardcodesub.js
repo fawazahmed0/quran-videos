@@ -427,14 +427,23 @@ async function uploadVideo (pathToFile, lang, chapter) {
 
   await page.evaluate(() => { window.onbeforeunload = null })
   await page.goto(uploadURL)
+
+  const closeBtnXPath = `//*[normalize-space(text())='Close']`
   const selectBtnXPath = '//*[normalize-space(text())=\'Select files\']'
   await page.waitForXPath(selectBtnXPath)
+  await page.waitForXPath(closeBtnXPath)
+  // Remove hidden closebtn text
+  const closeBtn = await page.$x(closeBtnXPath)
+  await page.evaluate(el => { el.textContent = 'oldclosse' }, closeBtn[0]) 
+
   const selectBtn = await page.$x(selectBtnXPath)
   const [fileChooser] = await Promise.all([
     page.waitForFileChooser(),
     selectBtn[0].click()// button that triggers file selection
   ])
   await fileChooser.accept([pathToFile])
+ // Wait for upload to complete
+  await page.waitForXPath(`//*[contains(text(),"Upload complete")]`)
   // Wait until title & description box pops up
   await page.waitForFunction('document.querySelectorAll(\'[id="textbox"]\').length > 1')
   const textBoxes = await page.$x('//*[@id="textbox"]')
@@ -517,8 +526,9 @@ async function uploadVideo (pathToFile, lang, chapter) {
   // translate(text(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')
 
   await publish[0].click()
-  await page.waitForXPath('//*[contains(text(),"Finished processing")]', { timeout: 0})
-  await sleep(10000)
+//await page.waitForXPath('//*[contains(text(),"Finished processing")]', { timeout: 0})
+// Wait for closebtn to show up
+  await page.waitForXPath(closeBtnXPath)
 
 }
 

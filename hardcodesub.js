@@ -516,7 +516,6 @@ async function uploadVideo (pathToFile, lang, chapter) {
   await publish[0].click()
   await page.waitForXPath('//*[contains(text(),"Finished processing")]', { timeout: 0})
   await sleep(10000)
-  // wait until uploading is done
 
 }
 
@@ -555,20 +554,7 @@ async function uploadSub (chapter, subLink) {
   await localPage.setDefaultTimeout(timeout)
   await localPage.setViewport({ width: width, height: height })
   const holdersubmap = { ...submapped }
-  // let localPage = await browser.newPage()
-  /*
-  console.log("before login")
-  try {
-    await login(localPage)
-  } catch (error) {
-    console.error(error)
-    await login(localPage)
-  }
-  console.log("after login")
-  // remove the reload site? dialog
-  await localPage.evaluate(() => { window.onbeforeunload = null })
-  console.log("after evaluate")
-  */
+
   // Go to upload subtitles link
   await localPage.goto(subLink)
   console.log("after going to sublink")

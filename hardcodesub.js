@@ -40,7 +40,7 @@ const editionsList = ['eng-ummmuhammad', 'zho-majian1', 'zho-muhammadmakin', 'sp
 const stateFile = path.join(__dirname, 'state.txt')
 
 // Keep track of number of files uploaded
-const maxuploads = 5
+const maxuploads = 1
 // No of subtitles to upload concurrently
 const maxSubUpload = 10
 let uploaded = 0
@@ -231,7 +231,7 @@ let ignorePixaVidIndex = [11]
 const capitalize = words => words.split(' ').map(w => w[0].toUpperCase() + w.substring(1)).join(' ')
 // generate random video larger than chapter
 async function generateVideos () {
-  const [editionsJSON] = await getLinksJSON([editionsLink + '.min.json'])
+  const [editionsJSON] = await getLinksJSON([editionsLink + '.json'])
   // Holds subtitle uploading promises
   let subPromiseHolder = []
   // Edition name to Edition Language mapping
@@ -571,7 +571,12 @@ async function uploadSub (chapter, subLink) {
   // upload the subtitle for english language, as it is the default title & description language
   await subPart(path.join(subtitlesPath, holdersubmap.English, chapter + '.srt'), localPage)
   delete holdersubmap.English
-  for (const [key, value] of Object.entries(holdersubmap)) {
+  let keys = Object.keys(holdersubmap)
+  let values = Object.values(holdersubmap)
+ // for (const [key, value] of Object.entries(holdersubmap)) {
+   for(let i=0;i<values.length;i++){
+     let key = keys[i]
+     let value = values[i]
     try {
       await addNewLang(key, localPage)
     } catch (error) {
@@ -580,7 +585,9 @@ async function uploadSub (chapter, subLink) {
       // remove the reload site? dialog
       await localPage.evaluate(() => { window.onbeforeunload = null })
       await localPage.goto(subLink)
-      await addNewLang(key, localPage)
+      i = i-1;
+      continue
+    //  await addNewLang(key, localPage)
     }
 
     const lang = edHolder[value].toLowerCase()
@@ -596,8 +603,10 @@ async function uploadSub (chapter, subLink) {
       // remove the reload site? dialog
       await localPage.evaluate(() => { window.onbeforeunload = null })
       await localPage.goto(subLink)
-      await addNewLang(key, localPage)
-      await titleDescPart(title, description, localPage)
+     // await addNewLang(key, localPage)
+     // await titleDescPart(title, description, localPage)
+     i = i-1;
+     continue
     }
 
     try {
@@ -608,7 +617,15 @@ async function uploadSub (chapter, subLink) {
       // remove the reload site? dialog
       await localPage.evaluate(() => { window.onbeforeunload = null })
       await localPage.goto(subLink)
-      await subPart(path.join(subtitlesPath, value, chapter + '.srt'), localPage)
+      try {
+        await subPart(path.join(subtitlesPath, value, chapter + '.srt'), localPage)
+      } catch (error) {
+        console.error(error)
+        await localPage.goto(subLink)
+        i = i-1;
+        continue
+      }
+      
     }
   }
   await localPage.close()

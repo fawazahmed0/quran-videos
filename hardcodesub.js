@@ -40,7 +40,7 @@ const editionsList = ['eng-ummmuhammad', 'zho-majian1', 'zho-muhammadmakin', 'sp
 const stateFile = path.join(__dirname, 'state.txt')
 
 // Keep track of number of files uploaded
-const maxuploads = 2
+const maxuploads = 1
 // No of subtitles to upload concurrently
 const maxSubUpload = 16
 let uploaded = 0

@@ -262,7 +262,7 @@ async function generateVideos () {
     const paddedI = (chap + '').padStart(3, '0')
     const fileSavePath = path.join(hardcodedSubPath, paddedI + '.mp4')
     spawnSync('ffmpeg', ['-stream_loop', repeat, '-i', pixaFileWithPath, '-i', path.join(audioPath, paddedI + '.mp3'), '-vf', 'subtitles=subtitles/' + editionName + '/' + chap + ".srt:force_style='Alignment=2,OutlineColour=&H100000000,BorderStyle=3,Outline=1,Shadow=0,Fontsize=18,MarginL=0,MarginV=60'", '-crf', '24', '-vcodec', 'libx264', '-map', '0:v', '-map', '1:a', '-c:a', 'copy', '-shortest', fileSavePath])
-
+    console.log('before upload')
     // write code to upload the video using actions script
     await uploadVideo(fileSavePath, editionLang, chap)
     console.log('before sublink')
@@ -576,6 +576,7 @@ async function uploadSub (chapter, subLink) {
       await addNewLang(key, localPage)
     } catch (error) {
       console.error(error)
+      console.log("lang ",key)
       // remove the reload site? dialog
       await localPage.evaluate(() => { window.onbeforeunload = null })
       await localPage.goto(subLink)
@@ -586,11 +587,12 @@ async function uploadSub (chapter, subLink) {
     const gtransLang = titleJSON[lang] ? lang : getKeyByValue(gTransToEditionLang, lang)
     const title = titleJSON[gtransLang] ? titleJSON[gtransLang] : titleJSON.english + ' | ' + lang
     const description = descriptionJSON[gtransLang] ? descriptionJSON[gtransLang] : descriptionJSON.english
-    console.log('\nlang\n', key, '\ntitle\n', title, '\ndesc\n', description)
+    // console.log('\nlang\n', key, '\ntitle\n', title, '\ndesc\n', description)
     try {
       await titleDescPart(title, description, localPage)
     } catch (error) {
       console.error(error)
+      console.log('\nlang\n', key, '\ntitle\n', title, '\ndesc\n', description)
       // remove the reload site? dialog
       await localPage.evaluate(() => { window.onbeforeunload = null })
       await localPage.goto(subLink)
@@ -602,6 +604,7 @@ async function uploadSub (chapter, subLink) {
       await subPart(path.join(subtitlesPath, value, chapter + '.srt'), localPage)
     } catch (error) {
       console.error(error)
+      console.log('failed subtitle path',path.join(subtitlesPath, value, chapter + '.srt'))
       // remove the reload site? dialog
       await localPage.evaluate(() => { window.onbeforeunload = null })
       await localPage.goto(subLink)

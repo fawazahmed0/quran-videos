@@ -36,7 +36,7 @@ jobs:
         shell: bash
         run: |
           REPO="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
-          git clone --depth 1 $REPO .              
+          git clone $REPO .              
 
       - name: download part
         shell: cmd

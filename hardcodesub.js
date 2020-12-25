@@ -63,7 +63,7 @@ const editionsLink = apiLink + '/editions'
 let browser, page
 const height = 1024
 const width = 1280
-const timeout = 120000
+const timeout = 60000
 
 const uploadURL = 'https://www.youtube.com/upload'
 const studioURL = 'https://studio.youtube.com'
@@ -637,11 +637,13 @@ async function subPart (pathToFile, localPage) {
   await publish[publish.length - 1].click()
 
   for (const val of publish) { await localPage.evaluate(el => { el.textContent = 'old publish' }, val) }
+/*
   await localPage.evaluate(() => {
     if (document.querySelector('[id="add-translation"]')) { document.querySelector('[id="add-translation"]').setAttribute('id', 'oldbtn') }
   })
-
+*/
   await localPage.waitForFunction('document.querySelector(\'[label="Caption"]\') === null')
+  await localPage.waitForFunction('document.querySelector(\'[id="add-translation"]\') === null')
 }
 
 // Add title & description in subtitles pages
@@ -663,6 +665,8 @@ async function titleDescPart (title, desc, localPage) {
   const publishBtnXPath = '//*[normalize-space(text())=\'Publish\']/parent::*[not(@disabled)]'
   await localPage.waitForXPath(publishBtnXPath)
   const publish = await localPage.$x(publishBtnXPath)
+  // remove the first add button before clicking publish
+  await localPage.evaluate(() => document.querySelector('[id="add-translation"]').setAttribute('id', 'oldbtn'))
   await publish[publish.length - 1].click()
 
   for (const val of publish) { await localPage.evaluate(el => { el.textContent = 'old publish' }, val) }
@@ -670,7 +674,8 @@ async function titleDescPart (title, desc, localPage) {
   // change attribute values to avoid problems
   await localPage.evaluate(() => document.querySelector('[aria-label="Title *"]').setAttribute('aria-label', 'old title'))
   await localPage.evaluate(() => document.querySelector('[placeholder="Description"][spellcheck="true"]:enabled').setAttribute('placeholder', 'desc'))
-  await localPage.evaluate(() => document.querySelector('[id="add-translation"]').setAttribute('id', 'oldbtn'))
+ // await localPage.evaluate(() => document.querySelector('[id="add-translation"]').setAttribute('id', 'oldbtn'))
+ // await localPage.waitForFunction('document.querySelector(\'[id="add-translation"]\') === null')
 }
 // Select new language
 async function addNewLang (langVal, localPage) {

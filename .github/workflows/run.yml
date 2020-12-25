@@ -53,6 +53,7 @@ jobs:
 
       # commiting and pushing changes
       - name: commit and push
+        if: ${{ always() }}
         shell: cmd
         run: |
           git config --global user.email github-actions@github.com

@@ -84,6 +84,9 @@ let playlistToSelect
 // stores the editionName, which is being uploaded
 let editionName
 
+// stores the pixavideos index thats needs to be ignored, as they are distracting
+let ignorePixaVidIndex = [11]
+
 // Youtube dropdown Language names to Edition Language names mappings for not similar names
 const ytToEditionLang = {
   pashto: 'pushto',
@@ -225,7 +228,6 @@ fs.mkdirSync(hardcodedSubPath, {
   recursive: true
 });
 
-let ignorePixaVidIndex = [11]
 
 // capitalizes all the first letters in a sentense
 const capitalize = words => words.split(' ').map(w => w[0].toUpperCase() + w.substring(1)).join(' ')
@@ -246,6 +248,9 @@ async function generateVideos () {
 
 
   for (;chap <= 114; chap++) {
+        // stop if uploaded files had reached the youtube upload limit
+        if (uploaded >= maxuploads) { break }
+
     let randomNo = getRandomNo(pixabayFiles.length)
     // ignore few pixabay videos, due to distracting video etc
     if(ignorePixaVidIndex.includes(randomNo))
@@ -280,8 +285,7 @@ async function generateVideos () {
       await Promise.all(subPromiseHolder)
       subPromiseHolder = []
     }
-    // stop if uploaded files had reached the youtube upload limit
-    if (uploaded >= maxuploads) { break }
+
   }
 
   // wait for all remaining subtitles upload  to complete
@@ -292,7 +296,7 @@ async function generateVideos () {
   if (chap > 114) { saveState(editionsList[editionIndex + 1], 1) }
   // if the break is due to reaching max upload rates, then save the editionName & next chapter to be uploaded next time
   else {
-    saveState(editionName, chap + 1)
+    saveState(editionName, chap)
   }
 }
 

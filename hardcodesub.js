@@ -223,7 +223,7 @@ const submapped = {
   Filipino: 'fil-wwwislamhouseco'
 }
 
-// make hardcodedsubtitle output directory if it doesn't exist
+// make hardcodedsubtitle vidoe output directory if it doesn't exist
 fs.mkdirSync(hardcodedSubPath, {
   recursive: true
 });

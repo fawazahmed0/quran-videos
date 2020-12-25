@@ -87,6 +87,9 @@ let editionName
 // stores the pixavideos index thats needs to be ignored, as they are distracting
 let ignorePixaVidIndex = [11]
 
+const maxTitleLen = 100
+const maxDescLen = 5000
+
 // Youtube dropdown Language names to Edition Language names mappings for not similar names
 const ytToEditionLang = {
   pashto: 'pushto',
@@ -233,7 +236,7 @@ fs.mkdirSync(hardcodedSubPath, {
 const capitalize = words => words.split(' ').map(w => w[0].toUpperCase() + w.substring(1)).join(' ')
 // generate random video larger than chapter
 async function generateVideos () {
-  const [editionsJSON] = await getLinksJSON([editionsLink + '.min.json'])
+  const [editionsJSON] = await getLinksJSON([editionsLink + '.json'])
   // Holds subtitle uploading promises
   let subPromiseHolder = []
   // Edition name to Edition Language mapping
@@ -438,9 +441,9 @@ async function uploadVideo (pathToFile, lang, chapter) {
   // Add the title value
   await textBoxes[0].focus()
   await sleep(1000)
-  await textBoxes[0].type(capitalize(title))
+  await textBoxes[0].type(capitalize(title).substring(0,maxTitleLen))
   // Add the Description content
-  await textBoxes[1].type(description)
+  await textBoxes[1].type(description.substring(0,maxDescLen))
 
   const childOption = await page.$x('//*[contains(text(),"No, it\'s")]')
   await childOption[0].click()
@@ -570,7 +573,13 @@ async function uploadSub (chapter, subLink) {
       // remove the reload site? dialog
       await localPage.evaluate(() => { window.onbeforeunload = null })
       await localPage.goto(subLink)
-      await addNewLang(key, localPage)
+      try {
+        await addNewLang(key, localPage)
+      } catch (error) {
+        console.error(error)
+        continue;
+      }
+
     }
 
     const lang = edHolder[value].toLowerCase()
@@ -586,8 +595,14 @@ async function uploadSub (chapter, subLink) {
       // remove the reload site? dialog
       await localPage.evaluate(() => { window.onbeforeunload = null })
       await localPage.goto(subLink)
-      await addNewLang(key, localPage)
-      await titleDescPart(title, description, localPage)
+      try {
+        await addNewLang(key, localPage)
+        await titleDescPart(title, description, localPage)
+      } catch (error) {
+        console.error(error)
+           continue;
+      }
+
     }
 
     try {
@@ -598,7 +613,13 @@ async function uploadSub (chapter, subLink) {
       // remove the reload site? dialog
       await localPage.evaluate(() => { window.onbeforeunload = null })
       await localPage.goto(subLink)
-      await subPart(path.join(subtitlesPath, value, chapter + '.srt'), localPage)
+      try {
+        await subPart(path.join(subtitlesPath, value, chapter + '.srt'), localPage)
+      } catch (error) {
+        console.error(error)
+        continue;
+      }
+
     }
   }
   await localPage.close()
@@ -648,12 +669,12 @@ async function titleDescPart (title, desc, localPage) {
   await localPage.waitForSelector(titleXPath)
   // Add the title value
   await localPage.focus(titleXPath)
-  await localPage.type(titleXPath, capitalize(title))
+  await localPage.type(titleXPath, capitalize(title).substring(0,maxTitleLen))
 
   // Add the title value
   // await page.focus(`[placeholder="Description"]`)
 
-  await localPage.type('[placeholder="Description"][spellcheck="true"]:enabled', desc)
+  await localPage.type('[placeholder="Description"][spellcheck="true"]:enabled', desc.substring(0,maxDescLen))
 
   const publishBtnXPath = '//*[normalize-space(text())=\'Publish\']/parent::*[not(@disabled)]'
   await localPage.waitForXPath(publishBtnXPath)

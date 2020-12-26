@@ -478,7 +478,7 @@ async function uploadVideo (pathToFile, lang, chapter) {
     const createplaylist = await page.$x(newPlaylistXPath)
     await page.evaluate(el => el.click(), createplaylist[0])
     // Enter new playlist name
-    await page.keyboard.type(' ' + newPlaylist)
+    await page.keyboard.type(' ' + newPlaylist.substring(0,148))
     // click create & then done button
     const createplaylistbtn = await page.$x('//*[normalize-space(text())=\'Create\']')
     await page.evaluate(el => el.click(), createplaylistbtn[1])
@@ -497,7 +497,7 @@ async function uploadVideo (pathToFile, lang, chapter) {
     await page.evaluate(el => el.click(), createplaylistdone[0])
   }
   // Add tags
-  await page.type('[placeholder="Add tag"]', tags.map(e => e + ', ').join(''))
+  await page.type('[placeholder="Add tag"]', tags.join(', ').substring(0,495)+', ')
 
   // Selecting video language
   const langHandler = await page.$x('//*[normalize-space(text())=\'Video language\']')

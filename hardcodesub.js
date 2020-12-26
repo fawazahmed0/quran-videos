@@ -47,15 +47,13 @@ const maxuploads = 24
 const maxSubUpload = 12
 let uploaded = 0
 
-let email, pass, recovery;
-if(process.env.CI)
-{
-   email = process.env.user
-   pass = process.env.key
-   recovery = process.env.recovery
-}
-else{
- [email, pass,recovery] = fs.readFileSync(path.join(__dirname, 'config.ini')).toString().split(/\r?\n/).map(e => e.trim());
+let email, pass, recovery
+if (process.env.CI) {
+  email = process.env.user
+  pass = process.env.key
+  recovery = process.env.recovery
+} else {
+  [email, pass, recovery] = fs.readFileSync(path.join(__dirname, 'config.ini')).toString().split(/\r?\n/).map(e => e.trim())
 }
 
 const apiLink = 'https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1'
@@ -87,7 +85,7 @@ let playlistToSelect
 let editionName
 
 // stores the pixavideos index thats needs to be ignored, as they are distracting
-let ignorePixaVidIndex = [11]
+const ignorePixaVidIndex = [11]
 
 const maxTitleLen = 100
 const maxDescLen = 5000
@@ -231,12 +229,11 @@ const submapped = {
 // make hardcodedsubtitle vidoe output directory if it doesn't exist
 fs.mkdirSync(hardcodedSubPath, {
   recursive: true
-});
+})
 // make uploadedlink path, which will save the editions uploaded youtube links
 fs.mkdirSync(uploadLinkPath, {
   recursive: true
-});
-
+})
 
 // capitalizes all the first letters in a sentense
 const capitalize = words => words.split(' ').map(w => w[0].toUpperCase() + w.substring(1)).join(' ')
@@ -255,15 +252,13 @@ async function generateVideos () {
 
   const editionLang = edHolder[editionName].toLowerCase()
 
-
   for (;chap <= 114; chap++) {
-        // stop if uploaded files had reached the youtube upload limit
-        if (uploaded >= maxuploads) { break }
+    // stop if uploaded files had reached the youtube upload limit
+    if (uploaded >= maxuploads) { break }
 
     let randomNo = getRandomNo(pixabayFiles.length)
     // ignore few pixabay videos, due to distracting video etc
-    if(ignorePixaVidIndex.includes(randomNo))
-       randomNo = 1
+    if (ignorePixaVidIndex.includes(randomNo)) { randomNo = 1 }
 
     // Pixabay Videos to use for recitation
     const pixaFileWithPath = path.join(pixabayPath, pixabayFiles[randomNo])
@@ -281,7 +276,7 @@ async function generateVideos () {
     await uploadVideo(fileSavePath, editionLang, chap)
     console.log('before sublink')
     const subLink = await getSubLink()
-    console.log('sublink is ',subLink.length)
+    console.log('sublink is ', subLink.length)
     // upload the subtitles
     subPromiseHolder.push(uploadSub(chap, subLink).then())
     console.log('after subpromiseholder')
@@ -294,7 +289,6 @@ async function generateVideos () {
       await Promise.all(subPromiseHolder)
       subPromiseHolder = []
     }
-
   }
 
   // wait for all remaining subtitles upload  to complete
@@ -311,7 +305,7 @@ async function generateVideos () {
 
 async function begin () {
   await launchBrowser()
-  // sometimes chapter may begin from large no like 95, 
+  // sometimes chapter may begin from large no like 95,
   // that's why we are calling the func two times, to reach maxUploadNo
   try {
     await login(page)
@@ -319,8 +313,8 @@ async function begin () {
     console.error(error)
     await login(page)
   }
- await generateVideos()
- await generateVideos()
+  await generateVideos()
+  await generateVideos()
   await browser.close()
 }
 
@@ -356,24 +350,20 @@ async function launchBrowser () {
 }
 
 // Login bypass with recovery email
-async function securityBypass (localPage){
-
-try {
-  const enterRecoveryXPath = `//*[normalize-space(text())='Enter recovery email address']`
-  await localPage.waitForXPath(enterRecoveryXPath)
-  await localPage.type('input[type="email"]',recovery)
-  await localPage.keyboard.press('Enter')
-  await localPage.waitForNavigation({
-    waitUntil: 'networkidle0'
-  })
-  const selectBtnXPath = '//*[normalize-space(text())=\'Select files\']'
-  await localPage.waitForXPath(selectBtnXPath)
-
-} catch (error) {
-  console.error(error)
-}
-
-
+async function securityBypass (localPage) {
+  try {
+    const enterRecoveryXPath = '//*[normalize-space(text())=\'Enter recovery email address\']'
+    await localPage.waitForXPath(enterRecoveryXPath)
+    await localPage.type('input[type="email"]', recovery)
+    await localPage.keyboard.press('Enter')
+    await localPage.waitForNavigation({
+      waitUntil: 'networkidle0'
+    })
+    const selectBtnXPath = '//*[normalize-space(text())=\'Select files\']'
+    await localPage.waitForXPath(selectBtnXPath)
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 async function login (localPage) {
@@ -393,13 +383,13 @@ async function login (localPage) {
 
   await localPage.waitForNavigation()
 
-try {
-  const selectBtnXPath = '//*[normalize-space(text())=\'Select files\']'
-  await localPage.waitForXPath(selectBtnXPath,{ timeout: 60000 })
-} catch (error) {
-  console.error(error)
-  await securityBypass (localPage)
-}
+  try {
+    const selectBtnXPath = '//*[normalize-space(text())=\'Select files\']'
+    await localPage.waitForXPath(selectBtnXPath, { timeout: 60000 })
+  } catch (error) {
+    console.error(error)
+    await securityBypass(localPage)
+  }
 }
 
 function readJSON (pathToJSON) {
@@ -417,7 +407,7 @@ async function getLinksJSON (urls) {
 // keep playlistBool true, only if its 1 chap
 async function uploadVideo (pathToFile, lang, chapter) {
   const chapTitlePath = path.join(titlePath, chapter + '.json')
-  let titleJSON = readJSON(chapTitlePath)
+  const titleJSON = readJSON(chapTitlePath)
   // if language exists, then use the language name, otherwise get it from mappings objects
   const gtransLang = titleJSON[lang] ? lang : getKeyByValue(gTransToEditionLang, lang)
   const ytLang = ytLangs.includes(lang) ? capitalize(lang) : getKeyByValue(ytToEditionLang, lang)
@@ -434,13 +424,13 @@ async function uploadVideo (pathToFile, lang, chapter) {
   await page.evaluate(() => { window.onbeforeunload = null })
   await page.goto(uploadURL)
 
-  const closeBtnXPath = `//*[normalize-space(text())='Close']`
+  const closeBtnXPath = '//*[normalize-space(text())=\'Close\']'
   const selectBtnXPath = '//*[normalize-space(text())=\'Select files\']'
   await page.waitForXPath(selectBtnXPath)
   await page.waitForXPath(closeBtnXPath)
   // Remove hidden closebtn text
   const closeBtn = await page.$x(closeBtnXPath)
-  await page.evaluate(el => { el.textContent = 'oldclosse' }, closeBtn[0]) 
+  await page.evaluate(el => { el.textContent = 'oldclosse' }, closeBtn[0])
 
   const selectBtn = await page.$x(selectBtnXPath)
   const [fileChooser] = await Promise.all([
@@ -448,17 +438,17 @@ async function uploadVideo (pathToFile, lang, chapter) {
     selectBtn[0].click()// button that triggers file selection
   ])
   await fileChooser.accept([pathToFile])
- // Wait for upload to complete
-  await page.waitForXPath(`//*[contains(text(),"Upload complete")]`)
+  // Wait for upload to complete
+  await page.waitForXPath('//*[contains(text(),"Upload complete")]')
   // Wait until title & description box pops up
   await page.waitForFunction('document.querySelectorAll(\'[id="textbox"]\').length > 1')
   const textBoxes = await page.$x('//*[@id="textbox"]')
   // Add the title value
   await textBoxes[0].focus()
   await sleep(1000)
-  await textBoxes[0].type(capitalize(title).substring(0,maxTitleLen))
+  await textBoxes[0].type(capitalize(title).substring(0, maxTitleLen))
   // Add the Description content
-  await textBoxes[1].type(description.substring(0,maxDescLen))
+  await textBoxes[1].type(description.substring(0, maxDescLen))
 
   const childOption = await page.$x('//*[contains(text(),"No, it\'s")]')
   await childOption[0].click()
@@ -478,7 +468,7 @@ async function uploadVideo (pathToFile, lang, chapter) {
     const createplaylist = await page.$x(newPlaylistXPath)
     await page.evaluate(el => el.click(), createplaylist[0])
     // Enter new playlist name
-    await page.keyboard.type(' ' + newPlaylist.substring(0,148))
+    await page.keyboard.type(' ' + newPlaylist.substring(0, 148))
     // click create & then done button
     const createplaylistbtn = await page.$x('//*[normalize-space(text())=\'Create\']')
     await page.evaluate(el => el.click(), createplaylistbtn[1])
@@ -497,7 +487,7 @@ async function uploadVideo (pathToFile, lang, chapter) {
     await page.evaluate(el => el.click(), createplaylistdone[0])
   }
   // Add tags
-  await page.type('[placeholder="Add tag"]', tags.join(', ').substring(0,495)+', ')
+  await page.type('[placeholder="Add tag"]', tags.join(', ').substring(0, 495) + ', ')
 
   // Selecting video language
   const langHandler = await page.$x('//*[normalize-space(text())=\'Video language\']')
@@ -532,10 +522,9 @@ async function uploadVideo (pathToFile, lang, chapter) {
   // translate(text(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')
 
   await publish[0].click()
-//await page.waitForXPath('//*[contains(text(),"Finished processing")]', { timeout: 0})
-// Wait for closebtn to show up
+  // await page.waitForXPath('//*[contains(text(),"Finished processing")]', { timeout: 0})
+  // Wait for closebtn to show up
   await page.waitForXPath(closeBtnXPath)
-
 }
 
 async function sleep (ms) {
@@ -562,12 +551,12 @@ async function getSubLink () {
 
 // upload the subtitles
 async function uploadSub (chapter, subLink) {
-  console.log("inside uplaodsub")
+  console.log('inside uplaodsub')
   // read chapter translated titles json
   const chapTitlePath = path.join(titlePath, chapter + '.json')
-  let titleJSON = readJSON(chapTitlePath)
+  const titleJSON = readJSON(chapTitlePath)
   // Create a new incognito browser context
- // const context = await browser.createIncognitoBrowserContext()
+  // const context = await browser.createIncognitoBrowserContext()
   // Create a new page inside a new context
   const localPage = await browser.newPage()
   await localPage.setDefaultTimeout(timeout)
@@ -576,7 +565,7 @@ async function uploadSub (chapter, subLink) {
 
   // Go to upload subtitles link
   await localPage.goto(subLink)
-  console.log("after going to sublink")
+  console.log('after going to sublink')
   // upload the subtitle for english language, as it is the default title & description language
   await subPart(path.join(subtitlesPath, holdersubmap.English, chapter + '.srt'), localPage)
   delete holdersubmap.English
@@ -585,7 +574,7 @@ async function uploadSub (chapter, subLink) {
       await addNewLang(key, localPage)
     } catch (error) {
       console.error(error)
-      console.log("lang ",key)
+      console.log('lang ', key)
       // remove the reload site? dialog
       await localPage.evaluate(() => { window.onbeforeunload = null })
       await localPage.goto(subLink)
@@ -593,9 +582,8 @@ async function uploadSub (chapter, subLink) {
         await addNewLang(key, localPage)
       } catch (error) {
         console.error(error)
-        continue;
+        continue
       }
-
     }
 
     const lang = edHolder[value].toLowerCase()
@@ -616,16 +604,15 @@ async function uploadSub (chapter, subLink) {
         await titleDescPart(title, description, localPage)
       } catch (error) {
         console.error(error)
-           continue;
+        continue
       }
-
     }
 
     try {
       await subPart(path.join(subtitlesPath, value, chapter + '.srt'), localPage)
     } catch (error) {
       console.error(error)
-      console.log('failed subtitle path',path.join(subtitlesPath, value, chapter + '.srt'))
+      console.log('failed subtitle path', path.join(subtitlesPath, value, chapter + '.srt'))
       // remove the reload site? dialog
       await localPage.evaluate(() => { window.onbeforeunload = null })
       await localPage.goto(subLink)
@@ -633,9 +620,8 @@ async function uploadSub (chapter, subLink) {
         await subPart(path.join(subtitlesPath, value, chapter + '.srt'), localPage)
       } catch (error) {
         console.error(error)
-        continue;
+        continue
       }
-
     }
   }
   await localPage.close()
@@ -667,7 +653,7 @@ async function subPart (pathToFile, localPage) {
   await publish[publish.length - 1].click()
 
   for (const val of publish) { await localPage.evaluate(el => { el.textContent = 'old publish' }, val) }
-/*
+  /*
   await localPage.evaluate(() => {
     if (document.querySelector('[id="add-translation"]')) { document.querySelector('[id="add-translation"]').setAttribute('id', 'oldbtn') }
   })
@@ -685,12 +671,12 @@ async function titleDescPart (title, desc, localPage) {
   await localPage.waitForSelector(titleXPath)
   // Add the title value
   await localPage.focus(titleXPath)
-  await localPage.type(titleXPath, capitalize(title).substring(0,maxTitleLen))
+  await localPage.type(titleXPath, capitalize(title).substring(0, maxTitleLen))
 
   // Add the title value
   // await page.focus(`[placeholder="Description"]`)
 
-  await localPage.type('[placeholder="Description"][spellcheck="true"]:enabled', desc.substring(0,maxDescLen))
+  await localPage.type('[placeholder="Description"][spellcheck="true"]:enabled', desc.substring(0, maxDescLen))
 
   const publishBtnXPath = '//*[normalize-space(text())=\'Publish\']/parent::*[not(@disabled)]'
   await localPage.waitForXPath(publishBtnXPath)
@@ -704,8 +690,8 @@ async function titleDescPart (title, desc, localPage) {
   // change attribute values to avoid problems
   await localPage.evaluate(() => document.querySelector('[aria-label="Title *"]').setAttribute('aria-label', 'old title'))
   await localPage.evaluate(() => document.querySelector('[placeholder="Description"][spellcheck="true"]:enabled').setAttribute('placeholder', 'desc'))
- // await localPage.evaluate(() => document.querySelector('[id="add-translation"]').setAttribute('id', 'oldbtn'))
- // await localPage.waitForFunction('document.querySelector(\'[id="add-translation"]\') === null')
+  // await localPage.evaluate(() => document.querySelector('[id="add-translation"]').setAttribute('id', 'oldbtn'))
+  // await localPage.waitForFunction('document.querySelector(\'[id="add-translation"]\') === null')
 }
 // Select new language
 async function addNewLang (langVal, localPage) {

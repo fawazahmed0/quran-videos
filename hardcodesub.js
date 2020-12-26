@@ -441,6 +441,7 @@ async function uploadVideo (pathToFile, lang, chapter) {
   const textBoxes = await page.$x('//*[@id="textbox"]')
   // Add the title value
   await textBoxes[0].focus()
+  await sleep(1000)
   await textBoxes[0].type(capitalize(title).substring(0, maxTitleLen))
   // Add the Description content
   await textBoxes[1].type(description.substring(0, maxDescLen))
@@ -496,10 +497,13 @@ async function uploadVideo (pathToFile, lang, chapter) {
   await page.waitForXPath(nextBtnXPath)
   let next = await page.$x(nextBtnXPath)
   await next[0].click()
+  await sleep(2000)
   await page.waitForXPath(nextBtnXPath)
   // click next button
   next = await page.$x(nextBtnXPath)
   await next[0].click()
+
+  await sleep(2000)
 
   // Get publish button
   const publishXPath = '//*[normalize-space(text())=\'Publish\']/parent::*[not(@disabled)]'
@@ -519,6 +523,10 @@ async function uploadVideo (pathToFile, lang, chapter) {
   await page.waitForXPath(closeBtnXPath)
 }
 
+async function sleep (ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
 async function getSubLink () {
   await page.evaluate(() => { window.onbeforeunload = null })
   await page.goto(studioURL)
@@ -530,7 +538,7 @@ async function getSubLink () {
   await page.waitForNavigation()
   await page.waitForSelector('[id="video-title"]')
   await page.waitForFunction('document.querySelectorAll(\'[id="video-title"]\').length > 5')
-
+  await sleep(2000)
 
   const subLink = await page.evaluate(() => Array.from(document.querySelectorAll('[id="video-title"]')).map(e => e.href).filter(e => /.*?translations$/.test(e))[0])
 

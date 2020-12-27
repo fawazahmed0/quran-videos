@@ -435,7 +435,7 @@ async function uploadVideo (pathToFile, lang, chapter) {
   ])
   await fileChooser.accept([pathToFile])
   // Wait for upload to complete
-  await page.waitForXPath('//*[contains(text(),"Upload complete")]',{timeout:0})
+  await page.waitForXPath('//*[contains(text(),"Upload complete")]', { timeout: 0 })
   // Wait until title & description box pops up
   await page.waitForFunction('document.querySelectorAll(\'[id="textbox"]\').length > 1')
   const textBoxes = await page.$x('//*[@id="textbox"]')

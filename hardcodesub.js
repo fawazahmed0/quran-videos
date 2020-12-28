@@ -280,6 +280,15 @@ async function generateVideos () {
 
     // Delete the uploaded video to save space in actions
     fs.unlinkSync(fileSavePath)
+    // Delete temp directory in actions
+    if(process.env.CI){
+    fs.rmdirSync(process.env.tempdir, {
+      recursive: true
+    })
+    fs.mkdirSync(process.env.tempdir, {
+      recursive: true
+    })
+    }
     // if subtitles promise holder has reached max subtitles uploads, then wait for all of them to complete
     if (subPromiseHolder.length === maxSubUpload) {
       await Promise.all(subPromiseHolder)

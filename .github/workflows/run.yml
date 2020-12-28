@@ -9,6 +9,7 @@ env: # Or as an environment variable
   user: ${{ secrets.USER }}
   key: ${{ secrets.KEY }}   
   recovery: ${{ secrets.RECOVERY }}   
+  tempdir: ${{ runner.temp }}
 
 jobs:
   build:

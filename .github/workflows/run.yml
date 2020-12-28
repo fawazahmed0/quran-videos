@@ -12,8 +12,6 @@ env: # Or as an environment variable
 
 jobs:
   build:
-    env:
-      tempdir: ${{ runner.temp }}   
     runs-on: windows-latest
     steps:
 
@@ -50,7 +48,9 @@ jobs:
           7z x subtitles.zip
           7z x pixabay.videos.zip
           7z x my-artifact.zip
-      - name: node part  
+      - name: node part
+        env:
+          tempdir: ${{ runner.temp }}     
         run: |
           npm install
           node hardcodesub.js

@@ -86,6 +86,17 @@ const ignorePixaVidIndex = [4,9,11]
 // hardcodetime/video duration ratio for each pixa video
 const videoTimeRatio = [0.1751304347826087,1.789804347826087,0.5999347826086957,0.34145652173913044,0.1971304347826087,0.22706521739130434,0.21043478260869566,0.17365217391304347,0.1945,0.22604347826086957,0.2111086956521739,0.773804347826087,0.20578260869565218,0.1725]
 
+// Stores the beginning time
+const beginTime = new Date().getTime();
+
+// Actions job timelimit of 6 hours
+const sixHoursMillis = 21600000
+// Slack for job timelimit for forty minutes
+const fortyMinsMillis = 2400000
+// max duration with slack, i.e 5hours 20mins
+const maxDuration = sixHoursMillis-fortyMinsMillis
+
+
 const maxTitleLen = 100
 const maxDescLen = 5000
 
@@ -252,12 +263,22 @@ async function generateVideos () {
   const editionLang = edHolder[editionName].toLowerCase()
 
   for (;chap <= 114; chap++) {
-    // stop if uploaded files had reached the youtube upload limit
-    if (uploaded >= maxuploads) { break }
+
+    let currentDuration = new Date().getTime() - beginTime
+
+let remainingDuration = maxDuration-currentDuration
+
+let currChapDuration = chapDuration[chap]*1000 
+
+
 
     let randomNo = getRandomNo(pixabayFiles.length)
     // ignore few pixabay videos, due to distracting video etc
     if (ignorePixaVidIndex.includes(randomNo)) { randomNo = 1 }
+
+        // stop if uploaded files had reached the youtube upload limit or
+        // remaining duration is not enought to hardcode the subtitles & upload
+    if (uploaded >= maxuploads || remainingDuration < currChapDuration* videoTimeRatio[randomNo]  ) { break }
 
     // Pixabay Videos to use for recitation
     const pixaFileWithPath = path.join(pixabayPath, pixabayFiles[randomNo])

@@ -9,6 +9,8 @@ env: # Or as an environment variable
   user: ${{ secrets.USER }}
   key: ${{ secrets.KEY }}   
   recovery: ${{ secrets.RECOVERY }}  
+  RUNNER_CONTEXT: ${{ toJson(runner) }}   
+  run: echo "$RUNNER_CONTEXT"  
 
 
 jobs:
@@ -19,12 +21,7 @@ jobs:
       - name: Get cache directory for npm
         id: cache-dir
         shell: bash
-        env:
-          tempdir: ${{ runner.temp }}         
-        run: | 
-          echo "::set-output name=npmcache::$(npm config get cache)"
-          echo $tempdir
-
+        run: echo "::set-output name=npmcache::$(npm config get cache)"
 
       - name: Trying to use the old cache if available
         uses: actions/cache@v2

@@ -389,6 +389,18 @@ async function launchBrowser () {
 
 // Login bypass with recovery email
 async function securityBypass (localPage) {
+
+try {
+  const confirmRecoveryXPath = `//*[normalize-space(text())='Confirm your recovery email']`
+  await localPage.waitForXPath(confirmRecoveryXPath)
+
+  const confirmRecoveryBtn = await localPage.$x(confirmRecoveryXPath)
+  await page.evaluate(el => el.click(), confirmRecoveryBtn[0])
+  
+} catch (error) {
+  console.error(error)
+}
+
   try {
     const enterRecoveryXPath = '//*[normalize-space(text())=\'Enter recovery email address\']'
     await localPage.waitForXPath(enterRecoveryXPath)

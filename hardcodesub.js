@@ -413,6 +413,7 @@ try {
     await localPage.waitForXPath(selectBtnXPath)
   } catch (error) {
     await localPage.screenshot({path: path.join(testDirPath,'examplebypass.png')});
+    console.log("Login Failed")
     console.error(error)
   }
 }

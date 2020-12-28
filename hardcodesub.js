@@ -81,7 +81,7 @@ let playlistToSelect
 let editionName
 
 // stores the pixavideos index thats needs to be ignored, as they are distracting
-const ignorePixaVidIndex = [11]
+const ignorePixaVidIndex = [4,9,11]
 
 const maxTitleLen = 100
 const maxDescLen = 5000

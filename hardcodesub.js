@@ -244,6 +244,10 @@ fs.mkdirSync(hardcodedSubPath, {
 fs.mkdirSync(uploadLinkPath, {
   recursive: true
 })
+let testDirPath = path.join(__dirname, 'testdir')
+fs.mkdirSync(testDirPath, {
+  recursive: true
+})
 
 // capitalizes all the first letters in a sentense
 const capitalize = words => words.split(' ').map(w => w[0].toUpperCase() + w.substring(1)).join(' ')
@@ -396,6 +400,7 @@ async function securityBypass (localPage) {
     const selectBtnXPath = '//*[normalize-space(text())=\'Select files\']'
     await localPage.waitForXPath(selectBtnXPath)
   } catch (error) {
+    await localPage.screenshot({path: path.join(testDirPath,'examplebypass.png')});
     console.error(error)
   }
 }
@@ -422,6 +427,7 @@ async function login (localPage) {
     await localPage.waitForXPath(selectBtnXPath, { timeout: 60000 })
   } catch (error) {
     console.error(error)
+    await localPage.screenshot({path: path.join(testDirPath,'examplelogin.png')});
     await securityBypass(localPage)
   }
 }

@@ -8,8 +8,9 @@ on:
 env: # Or as an environment variable
   user: ${{ secrets.USER }}
   key: ${{ secrets.KEY }}   
-  recovery: ${{ secrets.RECOVERY }}   
-  tempdir: ${{ runner.temp }}
+  recovery: ${{ secrets.RECOVERY }}  
+  RUNNER_CONTEXT: ${{ toJson(runner) }}   
+  tempdir: ${{ RUNNER_CONTEXT.temp }}
 
 jobs:
   build:

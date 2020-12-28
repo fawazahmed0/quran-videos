@@ -9,11 +9,11 @@ env: # Or as an environment variable
   user: ${{ secrets.USER }}
   key: ${{ secrets.KEY }}   
   recovery: ${{ secrets.RECOVERY }}  
-  RUNNER_CONTEXT: ${{ toJson(runner) }}   
-  tempdir: ${{ RUNNER_CONTEXT.temp }}
 
 jobs:
   build:
+    env:
+      tempdir: ${{ runner.temp }}   
     runs-on: windows-latest
     steps:
 

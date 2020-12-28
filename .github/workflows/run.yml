@@ -67,9 +67,3 @@ jobs:
           git commit -m 'Add uploaded links'
           git push
 
-      - name: Saving the log.txt as artifcat
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v2
-        with:
-          name: log
-          path: testdir

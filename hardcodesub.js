@@ -268,6 +268,8 @@ async function generateVideos () {
   const editionLang = edHolder[editionName].toLowerCase()
 
   for (;chap <= 114; chap++) {
+    // Save the current chap & edition state, to recover from here in case of error
+    saveState(editionName, chap)
 
     let currentDuration = new Date().getTime() - beginTime
 
@@ -331,10 +333,7 @@ let currChapDuration = chapDuration[chap]*1000
   const editionIndex = editionsList.indexOf(editionName)
   // if all the chapters are uploaded, then save new edition & chapter 1
   if (chap > 114) { saveState(editionsList[editionIndex + 1], 1) }
-  // if the break is due to reaching max upload rates, then save the editionName & next chapter to be uploaded next time
-  else {
-    saveState(editionName, chap)
-  }
+
 }
 
 async function begin () {

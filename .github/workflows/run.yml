@@ -10,8 +10,7 @@ env: # Or as an environment variable
   key: ${{ secrets.KEY }}   
   recovery: ${{ secrets.RECOVERY }}  
   RUNNER_CONTEXT: ${{ toJson(runner) }}   
-  run: echo "$RUNNER_CONTEXT"  
-
+  tempdir: ${{ RUNNER_CONTEXT.temp }}
 
 jobs:
   build:

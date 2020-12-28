@@ -41,7 +41,7 @@ const stateFile = path.join(__dirname, 'state.txt')
 const maxuploads = 24
 // No of subtitles to upload concurrently
 const maxSubUpload = 12
-let uploaded = 0
+let uploaded
 
 let email, pass, recovery
 if (process.env.CI) {
@@ -257,8 +257,13 @@ async function generateVideos () {
   for (const value of Object.values(editionsJSON)) { edHolder[value.name] = value.language }
 
   const pixabayFiles = fs.readdirSync(pixabayPath).sort()
-  let chap;
-  [editionName, chap, playlistToSelect] = getState()
+  let chap,day;
+  [editionName, chap, playlistToSelect,uploaded, day] = getState()
+  chap = parseInt(chap)
+
+  // if today is different date, then the upload limits don't count
+  if(day!=new Date().toISOString().substring(8,10))
+    uploaded=0
 
   const editionLang = edHolder[editionName].toLowerCase()
 
@@ -351,13 +356,13 @@ begin()
 
 // get the yesterdays state, so to continue uploading
 function getState () {
-  const statevals = fs.readFileSync(stateFile).toString().split(/\r?\n/)
-  return [statevals[0], parseInt(statevals[1]), statevals[2]]
+  return fs.readFileSync(stateFile).toString().split(/\r?\n/)
+
 }
 
 // save the state
 function saveState (editionNameArg, chap) {
-  fs.writeFileSync(stateFile, editionNameArg + '\n' + chap + '\n' + playlistToSelect)
+  fs.writeFileSync(stateFile, editionNameArg + '\n' + chap + '\n' + playlistToSelect+'\n'+uploaded+'\n'+new Date().toISOString().substring(8,10))
 }
 
 // Generates random number

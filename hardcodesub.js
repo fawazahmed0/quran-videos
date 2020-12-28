@@ -81,21 +81,20 @@ let playlistToSelect
 let editionName
 
 // stores the pixavideos index thats needs to be ignored, as they are distracting
-const ignorePixaVidIndex = [4,9,11]
+const ignorePixaVidIndex = [4, 9, 11]
 
 // hardcodetime/video duration ratio for each pixa video
-const videoTimeRatio = [0.1751304347826087,1.789804347826087,0.5999347826086957,0.34145652173913044,0.1971304347826087,0.22706521739130434,0.21043478260869566,0.17365217391304347,0.1945,0.22604347826086957,0.2111086956521739,0.773804347826087,0.20578260869565218,0.1725]
+const videoTimeRatio = [0.1751304347826087, 1.789804347826087, 0.5999347826086957, 0.34145652173913044, 0.1971304347826087, 0.22706521739130434, 0.21043478260869566, 0.17365217391304347, 0.1945, 0.22604347826086957, 0.2111086956521739, 0.773804347826087, 0.20578260869565218, 0.1725]
 
 // Stores the beginning time
-const beginTime = new Date().getTime();
+const beginTime = new Date().getTime()
 
 // Actions job timelimit of 6 hours
 const sixHoursMillis = 21600000
 // Slack for job timelimit for forty minutes
 const fortyMinsMillis = 2400000
 // max duration with slack, i.e 5hours 20mins
-const maxDuration = sixHoursMillis-fortyMinsMillis
-
+const maxDuration = sixHoursMillis - fortyMinsMillis
 
 const maxTitleLen = 100
 const maxDescLen = 5000
@@ -257,13 +256,12 @@ async function generateVideos () {
   for (const value of Object.values(editionsJSON)) { edHolder[value.name] = value.language }
 
   const pixabayFiles = fs.readdirSync(pixabayPath).sort()
-  let chap,day;
-  [editionName, chap, playlistToSelect,uploaded, day] = getState()
+  let chap, day;
+  [editionName, chap, playlistToSelect, uploaded, day] = getState()
   chap = parseInt(chap)
 
   // if today is different date, then the upload limits don't count
-  if(day!=new Date().toISOString().substring(8,10))
-    uploaded=0
+  if (day != new Date().toISOString().substring(8, 10)) { uploaded = 0 }
 
   const editionLang = edHolder[editionName].toLowerCase()
 
@@ -271,21 +269,19 @@ async function generateVideos () {
     // Save the current chap & edition state, to recover from here in case of error
     saveState(editionName, chap)
 
-    let currentDuration = new Date().getTime() - beginTime
+    const currentDuration = new Date().getTime() - beginTime
 
-let remainingDuration = maxDuration-currentDuration
+    const remainingDuration = maxDuration - currentDuration
 
-let currChapDuration = chapDuration[chap]*1000 
-
-
+    const currChapDuration = chapDuration[chap] * 1000
 
     let randomNo = getRandomNo(pixabayFiles.length)
     // ignore few pixabay videos, due to distracting video etc
     if (ignorePixaVidIndex.includes(randomNo)) { randomNo = 1 }
 
-        // stop if uploaded files had reached the youtube upload limit or
-        // remaining duration is not enought to hardcode the subtitles & upload
-    if (uploaded >= maxuploads || remainingDuration < currChapDuration* videoTimeRatio[randomNo]  ) { break }
+    // stop if uploaded files had reached the youtube upload limit or
+    // remaining duration is not enought to hardcode the subtitles & upload
+    if (uploaded >= maxuploads || remainingDuration < currChapDuration * videoTimeRatio[randomNo]) { break }
 
     // Pixabay Videos to use for recitation
     const pixaFileWithPath = path.join(pixabayPath, pixabayFiles[randomNo])
@@ -297,7 +293,7 @@ let currChapDuration = chapDuration[chap]*1000
 
     const paddedI = (chap + '').padStart(3, '0')
     const fileSavePath = path.join(hardcodedSubPath, paddedI + '.mp4')
-    spawnSync('ffmpeg', ['-stream_loop', repeat, '-i', pixaFileWithPath, '-i', path.join(audioPath, paddedI + '.mp3'), '-vf', 'subtitles=subtitles/' + editionName + '/' + chap + ".srt:force_style='Alignment=2,OutlineColour=&H100000000,BorderStyle=3,Outline=1,Shadow=0,Fontsize=18,MarginL=0,MarginV=60'", '-crf', '18', '-vcodec', 'libx264','-preset','ultrafast', '-map', '0:v', '-map', '1:a', '-c:a', 'copy', '-shortest', fileSavePath])
+    spawnSync('ffmpeg', ['-stream_loop', repeat, '-i', pixaFileWithPath, '-i', path.join(audioPath, paddedI + '.mp3'), '-vf', 'subtitles=subtitles/' + editionName + '/' + chap + ".srt:force_style='Alignment=2,OutlineColour=&H100000000,BorderStyle=3,Outline=1,Shadow=0,Fontsize=18,MarginL=0,MarginV=60'", '-crf', '18', '-vcodec', 'libx264', '-preset', 'ultrafast', '-map', '0:v', '-map', '1:a', '-c:a', 'copy', '-shortest', fileSavePath])
     console.log('before upload')
     // write code to upload the video using actions script
     await uploadVideo(fileSavePath, editionLang, chap)
@@ -312,13 +308,13 @@ let currChapDuration = chapDuration[chap]*1000
     // Delete the uploaded video to save space in actions
     fs.unlinkSync(fileSavePath)
     // Delete temp directory in actions
-    if(process.env.CI){
-    fs.rmdirSync(process.env.tempdir, {
-      recursive: true
-    })
-    fs.mkdirSync(process.env.tempdir, {
-      recursive: true
-    })
+    if (process.env.CI) {
+      fs.rmdirSync(process.env.tempdir, {
+        recursive: true
+      })
+      fs.mkdirSync(process.env.tempdir, {
+        recursive: true
+      })
     }
     // if subtitles promise holder has reached max subtitles uploads, then wait for all of them to complete
     if (subPromiseHolder.length === maxSubUpload) {
@@ -333,7 +329,6 @@ let currChapDuration = chapDuration[chap]*1000
   const editionIndex = editionsList.indexOf(editionName)
   // if all the chapters are uploaded, then save new edition & chapter 1
   if (chap > 114) { saveState(editionsList[editionIndex + 1], 1) }
-
 }
 
 async function begin () {
@@ -356,12 +351,11 @@ begin()
 // get the yesterdays state, so to continue uploading
 function getState () {
   return fs.readFileSync(stateFile).toString().split(/\r?\n/)
-
 }
 
 // save the state
 function saveState (editionNameArg, chap) {
-  fs.writeFileSync(stateFile, editionNameArg + '\n' + chap + '\n' + playlistToSelect+'\n'+uploaded+'\n'+new Date().toISOString().substring(8,10))
+  fs.writeFileSync(stateFile, editionNameArg + '\n' + chap + '\n' + playlistToSelect + '\n' + uploaded + '\n' + new Date().toISOString().substring(8, 10))
 }
 
 // Generates random number
@@ -384,17 +378,15 @@ async function launchBrowser () {
 
 // Login bypass with recovery email
 async function securityBypass (localPage) {
+  try {
+    const confirmRecoveryXPath = '//*[normalize-space(text())=\'Confirm your recovery email\']'
+    await localPage.waitForXPath(confirmRecoveryXPath)
 
-try {
-  const confirmRecoveryXPath = `//*[normalize-space(text())='Confirm your recovery email']`
-  await localPage.waitForXPath(confirmRecoveryXPath)
-
-  const confirmRecoveryBtn = await localPage.$x(confirmRecoveryXPath)
-  await page.evaluate(el => el.click(), confirmRecoveryBtn[0])
-  
-} catch (error) {
-  console.error(error)
-}
+    const confirmRecoveryBtn = await localPage.$x(confirmRecoveryXPath)
+    await page.evaluate(el => el.click(), confirmRecoveryBtn[0])
+  } catch (error) {
+    console.error(error)
+  }
 
   try {
     const enterRecoveryXPath = '//*[normalize-space(text())=\'Enter recovery email address\']'
@@ -407,7 +399,7 @@ try {
     const selectBtnXPath = '//*[normalize-space(text())=\'Select files\']'
     await localPage.waitForXPath(selectBtnXPath)
   } catch (error) {
-    console.log("Login Failed")
+    console.log('Login Failed')
     console.error(error)
   }
 }

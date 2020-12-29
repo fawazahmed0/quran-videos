@@ -265,9 +265,6 @@ async function generateVideos () {
   if (day != new Date().toISOString().substring(8, 10)) { uploaded = 0 }
 
   const editionLang = edHolder[editionName].toLowerCase()
-    // stores the pixavideos index that needs to be used
-const allowedPixaVidIndex = [...Array(pixabayFiles.length).keys()].filter(e=>!ignorePixaVidIndex.includes(e))
-
 
   for (;chap <= 114; chap++) {
    // if(redoChapters.includes(chap)){
@@ -282,6 +279,15 @@ const allowedPixaVidIndex = [...Array(pixabayFiles.length).keys()].filter(e=>!ig
     const remainingDuration = maxDuration - currentDuration
 
     const currChapDuration = chapDuration[chap] * 1000
+
+  // stores the pixavideos index that needs to be used
+  let allowedPixaVidIndex
+  // if chapter size is bigger, then ignore 1st and 2nd index of pixavids also,as they are of huge size
+  if(chap<30)
+ allowedPixaVidIndex = [...Array(pixabayFiles.length).keys()].filter(e=>!ignorePixaVidIndex.concat(1,2).includes(e))
+ else
+ allowedPixaVidIndex = [...Array(pixabayFiles.length).keys()].filter(e=>!ignorePixaVidIndex.includes(e))
+
 
     let randomIndex = getRandomNo(allowedPixaVidIndex.length)
     let randomNo = allowedPixaVidIndex[randomIndex]

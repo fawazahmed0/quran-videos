@@ -14,6 +14,8 @@ This project is about publishing Quran recitation videos with every language har
 
 The uploaded videos will be available at [here](https://www.youtube.com/user/JavaDB9/playlists) and also the links will be available at [here](https://github.com/fawazahmed0/quran-videos/tree/main/uploaded).
 
+Please do share the recitation videos with your family and friends
+
 
 <br>
 <br>

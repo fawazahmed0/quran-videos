@@ -37,10 +37,10 @@ const editionsList = ['eng-ummmuhammad', 'zho-majian1', 'zho-muhammadmakin', 'sp
 // keep track of where to start
 const stateFile = path.join(__dirname, 'state.txt')
 
-// Keep track of number of files uploaded
-const maxuploads = 24
+// Max videos to upload daily
+const maxuploads = 95
 // No of subtitles to upload concurrently
-const maxSubUpload = 12
+const maxSubUpload = 20
 let uploaded
 
 let email, pass, recovery

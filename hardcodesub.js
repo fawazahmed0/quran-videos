@@ -266,6 +266,7 @@ async function generateVideos () {
   const editionLang = edHolder[editionName].toLowerCase()
 
   for (;chap <= 114; chap++) {
+    console.log("beginning for chapter ",chap)
     // Save the current chap & edition state, to recover from here in case of error
     saveState(editionName, chap)
 
@@ -282,7 +283,7 @@ async function generateVideos () {
     // stop if uploaded files had reached the youtube upload limit or
     // remaining duration is not enought to hardcode the subtitles & upload
     if (uploaded >= maxuploads || remainingDuration < currChapDuration * videoTimeRatio[randomNo]) { break }
-
+     console.log("selected pixabay video index is ",randomNo)
     // Pixabay Videos to use for recitation
     const pixaFileWithPath = path.join(pixabayPath, pixabayFiles[randomNo])
 
@@ -294,15 +295,14 @@ async function generateVideos () {
     const paddedI = (chap + '').padStart(3, '0')
     const fileSavePath = path.join(hardcodedSubPath, paddedI + '.mp4')
     spawnSync('ffmpeg', ['-stream_loop', repeat, '-i', pixaFileWithPath, '-i', path.join(audioPath, paddedI + '.mp3'), '-vf', 'subtitles=subtitles/' + editionName + '/' + chap + ".srt:force_style='Alignment=2,OutlineColour=&H100000000,BorderStyle=3,Outline=1,Shadow=0,Fontsize=18,MarginL=0,MarginV=60'", '-crf', '18', '-vcodec', 'libx264', '-preset', 'ultrafast', '-map', '0:v', '-map', '1:a', '-c:a', 'copy', '-shortest', fileSavePath])
-    console.log('before upload')
+    console.log('before uploading the video for chapter ',chap)
     // write code to upload the video using actions script
     await uploadVideo(fileSavePath, editionLang, chap)
-    console.log('before sublink')
+    console.log('Uploading completed for ',chap)
     const subLink = await getSubLink()
-    console.log('sublink is ', subLink.length)
     // upload the subtitles
+    console.log('concurrently uploading subtitles')
     subPromiseHolder.push(uploadSub(chap, subLink).then())
-    console.log('after subpromiseholder')
     uploaded++
 
     // Delete the uploaded video to save space in actions
@@ -338,6 +338,7 @@ async function begin () {
   try {
     await login(page)
   } catch (error) {
+    console.log("Login failed, trying again")
     console.error(error)
     await login(page)
   }
@@ -385,6 +386,7 @@ async function securityBypass (localPage) {
     const confirmRecoveryBtn = await localPage.$x(confirmRecoveryXPath)
     await page.evaluate(el => el.click(), confirmRecoveryBtn[0])
   } catch (error) {
+    console.log("confirm your recovery email button not found")
     console.error(error)
   }
 
@@ -399,7 +401,7 @@ async function securityBypass (localPage) {
     const selectBtnXPath = '//*[normalize-space(text())=\'Select files\']'
     await localPage.waitForXPath(selectBtnXPath)
   } catch (error) {
-    console.log('Login Failed')
+    console.log('Login Failed in securityBypass')
     console.error(error)
   }
 }
@@ -425,6 +427,7 @@ async function login (localPage) {
     const selectBtnXPath = '//*[normalize-space(text())=\'Select files\']'
     await localPage.waitForXPath(selectBtnXPath, { timeout: 60000 })
   } catch (error) {
+    console.log("Login failed, have to try securtiy bypass")
     console.error(error)
     await securityBypass(localPage)
   }
@@ -591,7 +594,6 @@ async function getSubLink () {
 
 // upload the subtitles
 async function uploadSub (chapter, subLink) {
-  console.log('inside uplaodsub')
   // read chapter translated titles json
   const chapTitlePath = path.join(titlePath, chapter + '.json')
   const titleJSON = readJSON(chapTitlePath)
@@ -602,26 +604,33 @@ async function uploadSub (chapter, subLink) {
   await localPage.setDefaultTimeout(timeout)
   await localPage.setViewport({ width: width, height: height })
   const holdersubmap = { ...submapped }
+  let noOfErrors = 0;
+  const maxErrors = 7
 
   // Go to upload subtitles link
   await localPage.goto(subLink)
-  console.log('after going to sublink')
   // upload the subtitle for english language, as it is the default title & description language
   await subPart(path.join(subtitlesPath, holdersubmap.English, chapter + '.srt'), localPage)
   delete holdersubmap.English
   for (const [key, value] of Object.entries(holdersubmap)) {
+    // if there are more unrecoverable errors, that means there is some problem with the link or the upload did not happen
+    if(noOfErrors>maxErrors)
+      break;
     try {
       await addNewLang(key, localPage)
     } catch (error) {
+      console.log("Adding language failed in subtitles for language ", key,"and chapter ",chapter," trying again")
       console.error(error)
-      console.log('lang ', key)
       // remove the reload site? dialog
       await localPage.evaluate(() => { window.onbeforeunload = null })
       await localPage.goto(subLink)
       try {
         await addNewLang(key, localPage)
       } catch (error) {
+        console.log("Adding language failed again in subtitles for language ", key,"and chapter ",chapter)
+        console.log("Skipping this now")
         console.error(error)
+        noOfErrors++;
         continue
       }
     }
@@ -630,12 +639,12 @@ async function uploadSub (chapter, subLink) {
     const gtransLang = titleJSON[lang] ? lang : getKeyByValue(gTransToEditionLang, lang)
     const title = titleJSON[gtransLang] ? titleJSON[gtransLang] : titleJSON.english + ' | ' + lang
     const description = descriptionJSON[gtransLang] ? descriptionJSON[gtransLang] : descriptionJSON.english
-    // console.log('\nlang\n', key, '\ntitle\n', title, '\ndesc\n', description)
     try {
       await titleDescPart(title, description, localPage)
     } catch (error) {
-      console.error(error)
       console.log('\nlang\n', key, '\ntitle\n', title, '\ndesc\n', description)
+      console.log("Adding titleDescripiton failed for chapter ",chapter," trying again")
+      console.error(error)
       // remove the reload site? dialog
       await localPage.evaluate(() => { window.onbeforeunload = null })
       await localPage.goto(subLink)
@@ -643,7 +652,10 @@ async function uploadSub (chapter, subLink) {
         await addNewLang(key, localPage)
         await titleDescPart(title, description, localPage)
       } catch (error) {
+        console.log('\nlang\n', key, '\ntitle\n', title, '\ndesc\n', description)
+        console.log("Adding titleDescripiton failed again for chapter ",chapter," skipping this now")
         console.error(error)
+        noOfErrors++;
         continue
       }
     }
@@ -651,15 +663,18 @@ async function uploadSub (chapter, subLink) {
     try {
       await subPart(path.join(subtitlesPath, value, chapter + '.srt'), localPage)
     } catch (error) {
+      console.log('uploading subtitle failed for ', path.join(subtitlesPath, value, chapter + '.srt'),' trying again')
       console.error(error)
-      console.log('failed subtitle path', path.join(subtitlesPath, value, chapter + '.srt'))
+
       // remove the reload site? dialog
       await localPage.evaluate(() => { window.onbeforeunload = null })
       await localPage.goto(subLink)
       try {
         await subPart(path.join(subtitlesPath, value, chapter + '.srt'), localPage)
       } catch (error) {
+        console.log('uploading subtitle failed again for ', path.join(subtitlesPath, value, chapter + '.srt'),' skipping this now')
         console.error(error)
+        noOfErrors++;
         continue
       }
     }
@@ -668,7 +683,6 @@ async function uploadSub (chapter, subLink) {
 }
 // subtitles upload
 async function subPart (pathToFile, localPage) {
-  console.log('inside subpart')
   await localPage.waitForSelector('[id="add-translation"]')
   await localPage.evaluate(() => document.querySelectorAll('[id="add-translation"]')[0].click())
   await localPage.waitForSelector('[id="choose-upload-file"]')
@@ -704,7 +718,6 @@ async function subPart (pathToFile, localPage) {
 
 // Add title & description in subtitles pages
 async function titleDescPart (title, desc, localPage) {
-  console.log('inside titleDesc')
   await localPage.waitForSelector('[id="add-translation"]')
   await localPage.evaluate(() => document.querySelectorAll('[id="add-translation"]')[0].click())
   const titleXPath = '[aria-label="Title *"]'

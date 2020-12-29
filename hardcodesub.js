@@ -38,7 +38,7 @@ const editionsList = ['eng-ummmuhammad', 'zho-majian1', 'zho-muhammadmakin', 'sp
 const stateFile = path.join(__dirname, 'state.txt')
 
 // Max videos to upload daily
-const maxuploads = 95
+const maxuploads = 80
 // No of subtitles to upload concurrently
 const maxSubUpload = 20
 let uploaded

@@ -81,7 +81,7 @@ let playlistToSelect
 let editionName
 
 // stores the pixavideos index thats needs to be ignored, as they are distracting
-const ignorePixaVidIndex = [4, 9, 11]
+const ignorePixaVidIndex = [4,7, 9, 11]
 
 // hardcodetime/video duration ratio for each pixa video
 const videoTimeRatio = [0.1751304347826087, 1.789804347826087, 0.5999347826086957, 0.34145652173913044, 0.1971304347826087, 0.22706521739130434, 0.21043478260869566, 0.17365217391304347, 0.1945, 0.22604347826086957, 0.2111086956521739, 0.773804347826087, 0.20578260869565218, 0.1725]

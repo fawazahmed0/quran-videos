@@ -19,7 +19,7 @@ The uploaded videos will be available at [here](https://www.youtube.com/user/Jav
 
 ---
 
-Please do share the recitation videos with your family and friends
+Please do share the recitation videos with your family and friends and Star this repo by clicking on [:star: button](#) above [:arrow_upper_right:](#)
 
 
 <br>

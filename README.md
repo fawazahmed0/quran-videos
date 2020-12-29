@@ -11,7 +11,7 @@
 
 ---
 
-This project is about publishing Quran recitation videos with every language hardcoded subtitle at youtube using [Free Quran-API](https://github.com/fawazahmed0/quran-api)
+This project is about publishing Quran recitation videos with subtitles in every language at youtube using [Free Quran-API](https://github.com/fawazahmed0/quran-api)
 
 
 

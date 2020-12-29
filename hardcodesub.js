@@ -82,6 +82,8 @@ let editionName
 
 // stores the pixavideos index thats needs to be ignored, as they are distracting
 const ignorePixaVidIndex = [4,7, 9, 11]
+// Stores the list of chapters which needs to be reuploaded due to error etc
+const redoChapters = []
 
 // hardcodetime/video duration ratio for each pixa video
 const videoTimeRatio = [0.1751304347826087, 1.789804347826087, 0.5999347826086957, 0.34145652173913044, 0.1971304347826087, 0.22706521739130434, 0.21043478260869566, 0.17365217391304347, 0.1945, 0.22604347826086957, 0.2111086956521739, 0.773804347826087, 0.20578260869565218, 0.1725]
@@ -266,6 +268,9 @@ async function generateVideos () {
   const editionLang = edHolder[editionName].toLowerCase()
 
   for (;chap <= 114; chap++) {
+   // if(redoChapters.includes(chap)){
+      // hardset editionName for which reuploading is to be done
+   //   editionName = 'somevalue'
     console.log("beginning for chapter ",chap)
     // Save the current chap & edition state, to recover from here in case of error
     saveState(editionName, chap)
@@ -321,7 +326,8 @@ async function generateVideos () {
       await Promise.all(subPromiseHolder)
       subPromiseHolder = []
     }
-  }
+ // }
+}
 
   // wait for all remaining subtitles upload  to complete
   await Promise.all(subPromiseHolder)

@@ -18,7 +18,7 @@ puppeteer.use(StealthPlugin())
 // Duration of pixabay videos in seconds
 const pixabayDuration = [18, 13, 41, 38, 28, 30, 11, 39, 20, 18, 30, 32, 30, 50]
 // Duration by chapter wise in seconds
-const chapDuration = [47,7265,4792,4770,3758,4338,4793,1822,3625,2689,2771,2516,1213,1217,955,2531,1988,1997,1273,1628,1570,1767,1487,1959,1177,1967,1672,2033,1358,1161,653,477,1596,1040,966,1057,1463,1060,1628,1484,1005,972,1021,509,597,763,721,630,386,499,408,369,371,350,560,531,743,572,600,422,268,197,239,343,322,287,406,376,359,272,259,293,239,290,217,347,258,299,244,210,145,141,239,153,178,90,86,97,239,91,68,102,49,31,49,83,53,117,55,54,82,51,14,39,28,21,35,12,36,19,26,11,19,40]
+const chapDuration = [47, 7265, 4792, 4770, 3758, 4338, 4793, 1822, 3625, 2689, 2771, 2516, 1213, 1217, 955, 2531, 1988, 1997, 1273, 1628, 1570, 1767, 1487, 1959, 1177, 1967, 1672, 2033, 1358, 1161, 653, 477, 1596, 1040, 966, 1057, 1463, 1060, 1628, 1484, 1005, 972, 1021, 509, 597, 763, 721, 630, 386, 499, 408, 369, 371, 350, 560, 531, 743, 572, 600, 422, 268, 197, 239, 343, 322, 287, 406, 376, 359, 272, 259, 293, 239, 290, 217, 347, 258, 299, 244, 210, 145, 141, 239, 153, 178, 90, 86, 97, 239, 91, 68, 102, 49, 31, 49, 83, 53, 117, 55, 54, 82, 51, 14, 39, 28, 21, 35, 12, 36, 19, 26, 11, 19, 40]
 const pixabayPath = path.join(__dirname, 'pixabay videos')
 
 const audioPath = path.join(__dirname, 'audios')
@@ -80,7 +80,7 @@ let playlistToSelect
 let editionName
 
 // stores the pixavideos index thats needs to be ignored, as they are distracting
-const ignorePixaVidIndex = [4,7, 9, 11]
+const ignorePixaVidIndex = [4, 7, 9, 11]
 // Stores the list of chapters which needs to be reuploaded due to error etc
 const redoChapters = []
 
@@ -267,10 +267,10 @@ async function generateVideos () {
   const editionLang = edHolder[editionName].toLowerCase()
 
   for (;chap <= 114; chap++) {
-   // if(redoChapters.includes(chap)){
-      // hardset editionName for which reuploading is to be done
-   //   editionName = 'somevalue'
-    console.log("beginning for chapter ",chap)
+    // if(redoChapters.includes(chap)){
+    // hardset editionName for which reuploading is to be done
+    //   editionName = 'somevalue'
+    console.log('beginning for chapter ', chap)
     // Save the current chap & edition state, to recover from here in case of error
     saveState(editionName, chap)
 
@@ -280,21 +280,17 @@ async function generateVideos () {
 
     const currChapDuration = chapDuration[chap] * 1000
 
-  // stores the pixavideos index that needs to be used
-  let allowedPixaVidIndex
-  // if chapter size is bigger, then ignore 1st and 2nd index of pixavids also,as they are of huge size
-  if(chap<30)
- allowedPixaVidIndex = [...Array(pixabayFiles.length).keys()].filter(e=>!ignorePixaVidIndex.concat(1,2).includes(e))
- else
- allowedPixaVidIndex = [...Array(pixabayFiles.length).keys()].filter(e=>!ignorePixaVidIndex.includes(e))
+    // stores the pixavideos index that needs to be used
+    let allowedPixaVidIndex
+    // if chapter size is bigger, then ignore 1st and 2nd index of pixavids also,as they are of huge size
+    if (chap < 30) { allowedPixaVidIndex = [...Array(pixabayFiles.length).keys()].filter(e => !ignorePixaVidIndex.concat(1, 2).includes(e)) } else { allowedPixaVidIndex = [...Array(pixabayFiles.length).keys()].filter(e => !ignorePixaVidIndex.includes(e)) }
 
-
-    let randomIndex = getRandomNo(allowedPixaVidIndex.length)
-    let randomNo = allowedPixaVidIndex[randomIndex]
+    const randomIndex = getRandomNo(allowedPixaVidIndex.length)
+    const randomNo = allowedPixaVidIndex[randomIndex]
     // stop if uploaded files had reached the youtube upload limit or
     // remaining duration is not enought to hardcode the subtitles & upload
     if (uploaded >= maxuploads || remainingDuration < currChapDuration * videoTimeRatio[randomNo]) { break }
-     console.log("selected pixabay video index is ",randomNo)
+    console.log('selected pixabay video index is ', randomNo)
     // Pixabay Videos to use for recitation
     const pixaFileWithPath = path.join(pixabayPath, pixabayFiles[randomNo])
 
@@ -306,10 +302,10 @@ async function generateVideos () {
     const paddedI = (chap + '').padStart(3, '0')
     const fileSavePath = path.join(hardcodedSubPath, paddedI + '.mp4')
     spawnSync('ffmpeg', ['-stream_loop', repeat, '-i', pixaFileWithPath, '-i', path.join(audioPath, paddedI + '.mp3'), '-vf', 'subtitles=subtitles/' + editionName + '/' + chap + ".srt:force_style='Alignment=2,OutlineColour=&H100000000,BorderStyle=3,Outline=1,Shadow=0,Fontsize=18,MarginL=0,MarginV=60'", '-crf', '18', '-vcodec', 'libx264', '-preset', 'ultrafast', '-map', '0:v', '-map', '1:a', '-c:a', 'copy', '-shortest', fileSavePath])
-    console.log('before uploading the video for chapter ',chap)
+    console.log('before uploading the video for chapter ', chap)
     // write code to upload the video using actions script
     await uploadVideo(fileSavePath, editionLang, chap)
-    console.log('Uploading completed for ',chap)
+    console.log('Uploading completed for ', chap)
     const subLink = await getSubLink()
     // upload the subtitles
     console.log('concurrently uploading subtitles')
@@ -332,8 +328,8 @@ async function generateVideos () {
       await Promise.all(subPromiseHolder)
       subPromiseHolder = []
     }
- // }
-}
+    // }
+  }
 
   // wait for all remaining subtitles upload  to complete
   await Promise.all(subPromiseHolder)
@@ -350,7 +346,7 @@ async function begin () {
   try {
     await login(page)
   } catch (error) {
-    console.log("Login failed, trying again")
+    console.log('Login failed, trying again')
     console.error(error)
     await login(page)
   }
@@ -398,7 +394,7 @@ async function securityBypass (localPage) {
     const confirmRecoveryBtn = await localPage.$x(confirmRecoveryXPath)
     await page.evaluate(el => el.click(), confirmRecoveryBtn[0])
   } catch (error) {
-    console.log("confirm your recovery email button not found")
+    console.log('confirm your recovery email button not found')
     console.error(error)
   }
 
@@ -439,7 +435,7 @@ async function login (localPage) {
     const selectBtnXPath = '//*[normalize-space(text())=\'Select files\']'
     await localPage.waitForXPath(selectBtnXPath, { timeout: 60000 })
   } catch (error) {
-    console.log("Login failed, have to try securtiy bypass")
+    console.log('Login failed, have to try securtiy bypass')
     console.error(error)
     await securityBypass(localPage)
   }
@@ -493,8 +489,8 @@ async function uploadVideo (pathToFile, lang, chapter) {
   await fileChooser.accept([pathToFile])
   // Wait for upload to complete
   await page.waitForXPath('//*[contains(text(),"Upload complete")]', { timeout: 0 })
-// Wait for upload to go away and processing to start
-  await page.waitForXPath('//*[contains(text(),"Upload complete")]', { hidden: true,timeout: 0 })
+  // Wait for upload to go away and processing to start
+  await page.waitForXPath('//*[contains(text(),"Upload complete")]', { hidden: true, timeout: 0 })
   // Wait until title & description box pops up
   await page.waitForFunction('document.querySelectorAll(\'[id="textbox"]\').length > 1')
   const textBoxes = await page.$x('//*[@id="textbox"]')
@@ -616,7 +612,7 @@ async function uploadSub (chapter, subLink) {
   await localPage.setDefaultTimeout(timeout)
   await localPage.setViewport({ width: width, height: height })
   const holdersubmap = { ...submapped }
-  let noOfErrors = 0;
+  let noOfErrors = 0
   const maxErrors = 7
 
   // Go to upload subtitles link
@@ -626,12 +622,11 @@ async function uploadSub (chapter, subLink) {
   delete holdersubmap.English
   for (const [key, value] of Object.entries(holdersubmap)) {
     // if there are more unrecoverable errors, that means there is some problem with the link or the upload did not happen
-    if(noOfErrors>maxErrors)
-      break;
+    if (noOfErrors > maxErrors) { break }
     try {
       await addNewLang(key, localPage)
     } catch (error) {
-      console.log("Adding language failed in subtitles for language ", key,"and chapter ",chapter," trying again")
+      console.log('Adding language failed in subtitles for language ', key, 'and chapter ', chapter, ' trying again')
       console.error(error)
       // remove the reload site? dialog
       await localPage.evaluate(() => { window.onbeforeunload = null })
@@ -639,10 +634,10 @@ async function uploadSub (chapter, subLink) {
       try {
         await addNewLang(key, localPage)
       } catch (error) {
-        console.log("Adding language failed again in subtitles for language ", key,"and chapter ",chapter)
-        console.log("Skipping this now")
+        console.log('Adding language failed again in subtitles for language ', key, 'and chapter ', chapter)
+        console.log('Skipping this now')
         console.error(error)
-        noOfErrors++;
+        noOfErrors++
         continue
       }
     }
@@ -655,7 +650,7 @@ async function uploadSub (chapter, subLink) {
       await titleDescPart(title, description, localPage)
     } catch (error) {
       console.log('\nlang\n', key, '\ntitle\n', title, '\ndesc\n', description)
-      console.log("Adding titleDescripiton failed for chapter ",chapter," trying again")
+      console.log('Adding titleDescripiton failed for chapter ', chapter, ' trying again')
       console.error(error)
       // remove the reload site? dialog
       await localPage.evaluate(() => { window.onbeforeunload = null })
@@ -665,9 +660,9 @@ async function uploadSub (chapter, subLink) {
         await titleDescPart(title, description, localPage)
       } catch (error) {
         console.log('\nlang\n', key, '\ntitle\n', title, '\ndesc\n', description)
-        console.log("Adding titleDescripiton failed again for chapter ",chapter," skipping this now")
+        console.log('Adding titleDescripiton failed again for chapter ', chapter, ' skipping this now')
         console.error(error)
-        noOfErrors++;
+        noOfErrors++
         continue
       }
     }
@@ -675,7 +670,7 @@ async function uploadSub (chapter, subLink) {
     try {
       await subPart(path.join(subtitlesPath, value, chapter + '.srt'), localPage)
     } catch (error) {
-      console.log('uploading subtitle failed for ', path.join(subtitlesPath, value, chapter + '.srt'),' trying again')
+      console.log('uploading subtitle failed for ', path.join(subtitlesPath, value, chapter + '.srt'), ' trying again')
       console.error(error)
 
       // remove the reload site? dialog
@@ -684,9 +679,9 @@ async function uploadSub (chapter, subLink) {
       try {
         await subPart(path.join(subtitlesPath, value, chapter + '.srt'), localPage)
       } catch (error) {
-        console.log('uploading subtitle failed again for ', path.join(subtitlesPath, value, chapter + '.srt'),' skipping this now')
+        console.log('uploading subtitle failed again for ', path.join(subtitlesPath, value, chapter + '.srt'), ' skipping this now')
         console.error(error)
-        noOfErrors++;
+        noOfErrors++
         continue
       }
     }

@@ -265,6 +265,9 @@ async function generateVideos () {
   if (day != new Date().toISOString().substring(8, 10)) { uploaded = 0 }
 
   const editionLang = edHolder[editionName].toLowerCase()
+    // stores the pixavideos index that needs to be used
+const allowedPixaVidIndex = [...Array(pixabayFiles.length).keys()].filter(e=>!ignorePixaVidIndex.includes(e))
+
 
   for (;chap <= 114; chap++) {
    // if(redoChapters.includes(chap)){
@@ -280,10 +283,8 @@ async function generateVideos () {
 
     const currChapDuration = chapDuration[chap] * 1000
 
-    let randomNo = getRandomNo(pixabayFiles.length)
-    // ignore few pixabay videos, due to distracting video etc
-    if (ignorePixaVidIndex.includes(randomNo)) { randomNo = 1 }
-
+    let randomIndex = getRandomNo(allowedPixaVidIndex.length)
+    let randomNo = allowedPixaVidIndex[randomIndex]
     // stop if uploaded files had reached the youtube upload limit or
     // remaining duration is not enought to hardcode the subtitles & upload
     if (uploaded >= maxuploads || remainingDuration < currChapDuration * videoTimeRatio[randomNo]) { break }

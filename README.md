@@ -1,5 +1,4 @@
 # quran-videos
-Quran Recitation Videos
 
 **Note:** This Project is currently work in progress
 

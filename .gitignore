@@ -8,3 +8,4 @@ todelete
 *.ini
 node_modules/
 *.zip
+oldsubtitles/

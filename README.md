@@ -11,7 +11,8 @@
 
 ---
 
-This project is about publishing Quran recitation videos with subtitles in every language at youtube using [Free Quran-API](https://github.com/fawazahmed0/quran-api)
+This project is about publishing Quran recitation videos with subtitles in every language at youtube using [Free Quran-API](https://github.com/fawazahmed0/quran-api).
+Everything is done automatically by a program which will generate and upload the videos to youtube daily.
 
 
 
@@ -19,7 +20,7 @@ The uploaded videos will be available at [here](https://www.youtube.com/user/Jav
 
 ---
 
-Please do share the [recitation videos](https://www.youtube.com/user/JavaDB9/playlists) with your family and friends and Star this repo by clicking on [:star: button](#) above [:arrow_upper_right:](#)
+Please do share the [recitation videos](https://www.youtube.com/user/JavaDB9/playlists) with your family and friends, you are free to download or reupload the videos at your channel and also Star this repo by clicking on [:star: button](#) above [:arrow_upper_right:](#)
 
 
 <br>

@@ -95,7 +95,7 @@ const sixHoursMillis = 21600000
 // Slack for job timelimit for fifty minutes
 const fiftyMinsMillis = 3000000
 // max duration with slack, i.e 5hours
-const maxDuration = sixHoursMillis - fiftyyMinsMillis
+const maxDuration = sixHoursMillis - fiftyMinsMillis
 
 const maxTitleLen = 100
 const maxDescLen = 5000

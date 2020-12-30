@@ -91,7 +91,7 @@ const videoTimeRatio = [0.1751304347826087, 1.789804347826087, 0.599934782608695
 const beginTime = new Date().getTime()
 
 // Actions job timelimit of 6 hours
-const sixHoursMillis = 9000000
+const sixHoursMillis = 21600000
 // Slack for job timelimit for fifty minutes
 const fiftyMinsMillis = 3000000
 // max duration with slack, i.e 5hours

@@ -93,7 +93,7 @@ const beginTime = new Date().getTime()
 // Actions job timelimit of 6 hours
 const sixHoursMillis = 21600000
 // Slack for job timelimit for sixty minutes
-const sixtyMinsMillis = 3600000
+const sixtyMinsMillis = 3600000*2
 // max duration with slack, i.e 5hours
 const maxDuration = sixHoursMillis - sixtyMinsMillis
 

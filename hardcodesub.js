@@ -18,7 +18,7 @@ puppeteer.use(StealthPlugin())
 // Duration of pixabay videos in seconds
 const pixabayDuration = [18, 13, 41, 38, 28, 30, 11, 39, 20, 18, 30, 32, 30, 50]
 // Duration by chapter wise in seconds
-const chapDuration = [47,7265,4792,4770,3758,4338,4793,1822,3625,2689,2771,2516,1213,1217,955,2531,1988,1997,1273,1628,1570,1767,1487,1959,1177,1967,1672,2033,1358,1161,653,477,1596,1040,914,964,1146,946,1622,1484,1005,972,1021,509,597,763,721,630,386,499,408,369,371,350,560,531,743,572,600,422,268,197,239,343,322,287,406,376,359,272,259,293,239,290,217,347,258,299,244,210,145,141,239,153,178,90,86,97,239,91,68,102,49,31,49,83,53,117,55,54,82,51,14,39,28,21,35,12,36,19,26,11,19,40]
+const chapDuration = [47, 7265, 4792, 4770, 3758, 4338, 4793, 1822, 3625, 2689, 2771, 2516, 1213, 1217, 955, 2531, 1988, 1997, 1273, 1628, 1570, 1767, 1487, 1959, 1177, 1967, 1672, 2033, 1358, 1161, 653, 477, 1596, 1040, 914, 964, 1146, 946, 1622, 1484, 1005, 972, 1021, 509, 597, 763, 721, 630, 386, 499, 408, 369, 371, 350, 560, 531, 743, 572, 600, 422, 268, 197, 239, 343, 322, 287, 406, 376, 359, 272, 259, 293, 239, 290, 217, 347, 258, 299, 244, 210, 145, 141, 239, 153, 178, 90, 86, 97, 239, 91, 68, 102, 49, 31, 49, 83, 53, 117, 55, 54, 82, 51, 14, 39, 28, 21, 35, 12, 36, 19, 26, 11, 19, 40]
 const pixabayPath = path.join(__dirname, 'pixabay videos')
 
 const audioPath = path.join(__dirname, 'audios')
@@ -618,7 +618,23 @@ async function uploadSub (chapter, subLink) {
   // Go to upload subtitles link
   await localPage.goto(subLink)
   // upload the subtitle for english language, as it is the default title & description language
-  await subPart(path.join(subtitlesPath, holdersubmap.English, chapter + '.srt'), localPage)
+  try {
+    await subPart(path.join(subtitlesPath, holdersubmap.English, chapter + '.srt'), localPage)
+  } catch (error) {
+    console.log('uploading first subtitle failed for ', path.join(subtitlesPath, holdersubmap.English, chapter + '.srt'), ' trying again')
+    console.error(error)
+    // remove the reload site? dialog
+    await localPage.evaluate(() => { window.onbeforeunload = null })
+    await localPage.goto(subLink)
+    try {
+      await subPart(path.join(subtitlesPath, holdersubmap.English, chapter + '.srt'), localPage)
+    } catch (error) {
+      console.log('uploading first subtitle failed for ', path.join(subtitlesPath, holdersubmap.English, chapter + '.srt'), ' skipping whole chapter subtitle upload')
+      console.error(error)
+      return
+    }
+  }
+
   delete holdersubmap.English
   for (const [key, value] of Object.entries(holdersubmap)) {
     // if there are more unrecoverable errors, that means there is some problem with the link or the upload did not happen

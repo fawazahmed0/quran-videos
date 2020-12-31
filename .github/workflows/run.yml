@@ -36,7 +36,8 @@ jobs:
         shell: bash
         run: |
           REPO="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
-          git clone $REPO .              
+          git clone $REPO .
+          git pull              
 
       - name: download part
         shell: cmd
@@ -97,7 +98,8 @@ jobs:
         shell: bash
         run: |
           REPO="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
-          git clone $REPO .              
+          git clone $REPO .
+          git pull              
 
       - name: download part
         shell: cmd
@@ -158,7 +160,8 @@ jobs:
         shell: bash
         run: |
           REPO="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
-          git clone $REPO .              
+          git clone $REPO .   
+          git pull           
 
       - name: download part
         shell: cmd
@@ -219,7 +222,8 @@ jobs:
         shell: bash
         run: |
           REPO="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
-          git clone $REPO .              
+          git clone $REPO .   
+          git pull           
 
       - name: download part
         shell: cmd

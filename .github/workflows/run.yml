@@ -14,7 +14,193 @@ env: # Or as an environment variable
   recovery: ${{ secrets.RECOVERY }}  
 
 jobs:
-  build:
+  build1:
+    runs-on: windows-latest
+    steps:
+
+      - name: Get cache directory for npm
+        id: cache-dir
+        shell: bash
+        run: echo "::set-output name=npmcache::$(npm config get cache)"
+
+      - name: Trying to use the old cache if available
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.cache-dir.outputs.npmcache }}
+          key: ${{ runner.os }}-cache-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-cache-
+            ${{ runner.os }}-
+
+      - name: clone
+        shell: bash
+        run: |
+          REPO="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
+          git clone $REPO .              
+
+      - name: download part
+        shell: cmd
+        run: |
+          choco install ffmpeg wget
+          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.3/subtitles.7z
+          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.1/pixabay.videos.zip
+          wget https://github.com/fawazahmed0/audio-ayah-arabic-1/releases/download/v1.4/my-artifact.zip
+          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.2/qatamiaudios.7z
+          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.3/qatami.audios.2.7z
+      - name: zip extract
+        shell: cmd
+        run: |
+          7z x subtitles.7z
+          7z x pixabay.videos.zip
+          7z x my-artifact.zip
+          7z x -y qatamiaudios.7z -oaudios
+          7z x -y qatami.audios.2.7z -oaudios
+      - name: node part
+        env:
+          tempdir: ${{ runner.temp }}     
+        run: |
+          npm install
+          node hardcodesub.js
+
+      # commiting and pushing changes
+      - name: commit and push
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          git config --global user.email github-actions@github.com
+          git config --global user.name github-actions
+          git pull
+          git add -A
+          git commit -m 'Add uploaded links'
+          git push
+
+  build2:
+    if: always()
+    needs: build1
+    runs-on: windows-latest
+    steps:
+
+      - name: Get cache directory for npm
+        id: cache-dir
+        shell: bash
+        run: echo "::set-output name=npmcache::$(npm config get cache)"
+
+      - name: Trying to use the old cache if available
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.cache-dir.outputs.npmcache }}
+          key: ${{ runner.os }}-cache-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-cache-
+            ${{ runner.os }}-
+
+      - name: clone
+        shell: bash
+        run: |
+          REPO="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
+          git clone $REPO .              
+
+      - name: download part
+        shell: cmd
+        run: |
+          choco install ffmpeg wget
+          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.3/subtitles.7z
+          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.1/pixabay.videos.zip
+          wget https://github.com/fawazahmed0/audio-ayah-arabic-1/releases/download/v1.4/my-artifact.zip
+          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.2/qatamiaudios.7z
+          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.3/qatami.audios.2.7z
+      - name: zip extract
+        shell: cmd
+        run: |
+          7z x subtitles.7z
+          7z x pixabay.videos.zip
+          7z x my-artifact.zip
+          7z x -y qatamiaudios.7z -oaudios
+          7z x -y qatami.audios.2.7z -oaudios
+      - name: node part
+        env:
+          tempdir: ${{ runner.temp }}     
+        run: |
+          npm install
+          node hardcodesub.js
+
+      # commiting and pushing changes
+      - name: commit and push
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          git config --global user.email github-actions@github.com
+          git config --global user.name github-actions
+          git pull
+          git add -A
+          git commit -m 'Add uploaded links'
+          git push
+
+  build3:
+    if: always()
+    needs: [build1, build2]
+    runs-on: windows-latest
+    steps:
+
+      - name: Get cache directory for npm
+        id: cache-dir
+        shell: bash
+        run: echo "::set-output name=npmcache::$(npm config get cache)"
+
+      - name: Trying to use the old cache if available
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.cache-dir.outputs.npmcache }}
+          key: ${{ runner.os }}-cache-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-cache-
+            ${{ runner.os }}-
+
+      - name: clone
+        shell: bash
+        run: |
+          REPO="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
+          git clone $REPO .              
+
+      - name: download part
+        shell: cmd
+        run: |
+          choco install ffmpeg wget
+          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.3/subtitles.7z
+          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.1/pixabay.videos.zip
+          wget https://github.com/fawazahmed0/audio-ayah-arabic-1/releases/download/v1.4/my-artifact.zip
+          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.2/qatamiaudios.7z
+          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.3/qatami.audios.2.7z
+      - name: zip extract
+        shell: cmd
+        run: |
+          7z x subtitles.7z
+          7z x pixabay.videos.zip
+          7z x my-artifact.zip
+          7z x -y qatamiaudios.7z -oaudios
+          7z x -y qatami.audios.2.7z -oaudios
+      - name: node part
+        env:
+          tempdir: ${{ runner.temp }}     
+        run: |
+          npm install
+          node hardcodesub.js
+
+      # commiting and pushing changes
+      - name: commit and push
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          git config --global user.email github-actions@github.com
+          git config --global user.name github-actions
+          git pull
+          git add -A
+          git commit -m 'Add uploaded links'
+          git push
+
+  build4:
+    if: always()
+    needs: [build1, build2, build3]
     runs-on: windows-latest
     steps:
 

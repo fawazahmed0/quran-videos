@@ -304,9 +304,9 @@ async function generateVideos () {
     spawnSync('ffmpeg', ['-stream_loop', repeat, '-i', pixaFileWithPath, '-i', path.join(audioPath, paddedI + '.mp3'), '-vf', 'subtitles=subtitles/' + editionName + '/' + chap + ".srt:force_style='Alignment=2,OutlineColour=&H100000000,BorderStyle=3,Outline=1,Shadow=0,Fontsize=18,MarginL=0,MarginV=60'", '-crf', '18', '-vcodec', 'libx264', '-preset', 'ultrafast', '-map', '0:v', '-map', '1:a', '-c:a', 'copy', '-shortest', fileSavePath])
     console.log('before uploading the video for chapter ', chap)
     // write code to upload the video using actions script
-    await uploadVideo(fileSavePath, editionLang, chap)
+   let title = await uploadVideo(fileSavePath, editionLang, chap)
     console.log('Uploading completed for ', chap)
-    const subLink = await getSubLink()
+    const subLink = await getSubLink(title)
     // upload the subtitles
     console.log('concurrently uploading subtitles')
     subPromiseHolder.push(uploadSub(chap, subLink).then())
@@ -467,6 +467,8 @@ async function uploadVideo (pathToFile, lang, chapter) {
   const newPlaylist = tags[0] + ' ' + lang
   const videoLang = ytLang || 'English'
 
+  const finalTitle = capitalize(title).substring(0, maxTitleLen)
+
   // Also add english tags in addition to translated tags
   if (gtransLang !== 'english') { tags = tags.concat(tagsJSON.english) }
 
@@ -497,7 +499,7 @@ async function uploadVideo (pathToFile, lang, chapter) {
   // Add the title value
   await textBoxes[0].focus()
   await sleep(1000)
-  await textBoxes[0].type(capitalize(title).substring(0, maxTitleLen))
+  await textBoxes[0].type(finalTitle)
   // Add the Description content
   await textBoxes[1].type(description.substring(0, maxDescLen))
 
@@ -576,13 +578,15 @@ async function uploadVideo (pathToFile, lang, chapter) {
   // await page.waitForXPath('//*[contains(text(),"Finished processing")]', { timeout: 0})
   // Wait for closebtn to show up
   await page.waitForXPath(closeBtnXPath)
+
+  return finalTitle
 }
 
 async function sleep (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-async function getSubLink () {
+async function getSubLink (title) {
   await page.evaluate(() => { window.onbeforeunload = null })
   await page.goto(studioURL)
   const subtitlesTabXPath = '//*[normalize-space(text())=\'Subtitles\']'
@@ -595,7 +599,7 @@ async function getSubLink () {
   await page.waitForFunction('document.querySelectorAll(\'[id="video-title"]\').length > 5')
   await sleep(2000)
 
-  const subLink = await page.evaluate(() => Array.from(document.querySelectorAll('[id="video-title"]')).map(e => e.href).filter(e => /.*?translations$/.test(e))[0])
+  const subLink = await page.evaluate(titletext =>  Array.from(document.querySelectorAll('[id="video-title"]')).map(e => [e.textContent.trim(),e.href]).filter(e =>e[0].toLowerCase()==titletext.toLowerCase() && /.*?translations$/.test(e[1]))[0][1],title)
 
   return subLink
 }

@@ -255,8 +255,13 @@ async function begin () {
       break
     } catch (error) {
       console.error(error)
-      if (i === 1) break
-      console.log('Login failed, trying again one more time')
+      const nextText = i === 0 ? ' trying again' : ' failed again, stopping everything'
+      console.log('Login failed ',nextText)
+      if(i===1){
+        await browser.close()
+        return
+      }
+
     }
   }
   // close the page to save resources

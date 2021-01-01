@@ -79,8 +79,6 @@ const studioURL = 'https://studio.youtube.com'
 
 // stores the pixavideos index thats needs to be ignored, as they are distracting
 const ignorePixaVidIndex = [4, 7, 9, 11]
-// Stores the list of chapters which needs to be reuploaded due to error etc
-const redoChapters = []
 
 // hardcodetime/video duration ratio for each pixa video
 const videoTimeRatio = [0.1751304347826087, 1.789804347826087, 0.5999347826086957, 0.34145652173913044, 0.1971304347826087, 0.22706521739130434, 0.21043478260869566, 0.17365217391304347, 0.1945, 0.22604347826086957, 0.2111086956521739, 0.773804347826087, 0.20578260869565218, 0.1725]
@@ -295,14 +293,7 @@ async function begin () {
     })
 
     PromiseHolder.push(uploadPromise)
-    // if  promise holder has reached max uploads, then wait for all of them to complete
-    // or if chap is 1 then wait for playlist to generate
-    if (PromiseHolder.length === maxConcurrentUpload || chap === 1) {
-      await Promise.all(PromiseHolder)
-      PromiseHolder = []
-      // Save the current chap & edition state, to recover from here in case of error
-      saveState(editionName, chap)
-    }
+
     chap++
     // if all the chapters are uploaded, then start from new edition & chapter 1
     if (chap > 114) {
@@ -310,8 +301,15 @@ async function begin () {
       const editionIndex = editionsList.indexOf(editionName)
       editionName = editionsList[editionIndex + 1]
     }
-
     fileSavePromise = generateMP4(editionName, chap)
+    // if  promise holder has reached max uploads, then wait for all of them to complete
+    // or if chap was 1 then wait for playlist to generate
+    if (PromiseHolder.length === maxConcurrentUpload || chap - 1 === 1) {
+      await Promise.all(PromiseHolder)
+      PromiseHolder = []
+      // Save the current chap & edition state, to recover from here in case of error
+      saveState(editionName, chap)
+    }
   }
 
   // wait for remaining uploads & subtitles uploads

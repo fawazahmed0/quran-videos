@@ -292,12 +292,12 @@ async function begin () {
 
     if (fileSavePath === null) break
     try {
-      const uploadPromise = uploadWithSub(fileSavePath, editionLang, chap, editionName).then((chapVal,edVal) => {
+      const uploadPromise = uploadWithSub(fileSavePath, editionLang, chap, editionName).then(values => {
         uploaded++
         deleteFile(fileSavePath)
         // Remove the promise from PromiseHolder array as it is completed
         PromiseHolder.splice(PromiseHolder.indexOf(uploadPromise), 1)
-        return [chapVal, edVal]
+        return [values[0], values[1]]
       })
 
       PromiseHolder.push(uploadPromise)
@@ -322,7 +322,7 @@ async function begin () {
        // if  promise holder has reached max concurrent uploads, then wait for atleast one of them to complete
     if (PromiseHolder.length === maxConcurrentUpload ) {
       console.log("inside promise race")
-    let [[chapVal, edVal]]=  await Promise.race(PromiseHolder)
+    let [chapVal, edVal]=  await Promise.race(PromiseHolder)
       // Save the current chap & edition state, to recover from here in case of error
       saveState(edVal, chapVal)
     }

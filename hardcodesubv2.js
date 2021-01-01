@@ -314,6 +314,7 @@ async function begin () {
     // if  promise holder has reached max uploads, then wait for all of them to complete
     // or if chap was 1 then wait for playlist to generate
     if (PromiseHolder.length === maxConcurrentUpload || chap - 1 === 1) {
+      console.log("inside promise all , waiting for all")
       await Promise.all(PromiseHolder)
       PromiseHolder = []
       // Save the current chap & edition state, to recover from here in case of error
@@ -454,6 +455,7 @@ async function uploadWithSub (fileSavePath, editionLang, chap, editionName) {
 
 
 async function uploadVideo (pathToFile, lang, chapter, editionName) {
+  console.log("beginning video upload for chaper, ", chapter)
   const page = await getNewPage()
   const chapTitlePath = path.join(titlePath, chapter + '.json')
   const titleJSON = readJSON(chapTitlePath)
@@ -493,6 +495,7 @@ async function uploadVideo (pathToFile, lang, chapter, editionName) {
   }
   // Remove hidden closebtn text
   const closeBtn = await page.$x(closeBtnXPath)
+  await page.bringToFront()
   await page.evaluate(el => { el.textContent = 'oldclosse' }, closeBtn[0])
 
   const selectBtn = await page.$x(selectBtnXPath)
@@ -508,6 +511,7 @@ async function uploadVideo (pathToFile, lang, chapter, editionName) {
   // Wait until title & description box pops up
   await page.waitForFunction('document.querySelectorAll(\'[id="textbox"]\').length > 1')
   const textBoxes = await page.$x('//*[@id="textbox"]')
+  await page.bringToFront()
   // Add the title value
   await textBoxes[0].focus()
   await sleep(1000)
@@ -590,13 +594,14 @@ async function uploadVideo (pathToFile, lang, chapter, editionName) {
   // await page.waitForXPath('//*[contains(text(),"Finished processing")]', { timeout: 0})
   // Wait for closebtn to show up
   await page.waitForXPath(closeBtnXPath)
-
+  await sleep(2000)
   const subLink = await getSubLink(finalTitle, page)
   await page.close()
   return subLink
 }
 
 async function getSubLink (title, page) {
+  await page.bringToFront()
   await page.evaluate(() => { window.onbeforeunload = null })
   await page.goto(studioURL)
   const subtitlesTabXPath = '//*[normalize-space(text())=\'Subtitles\']'
@@ -608,14 +613,23 @@ async function getSubLink (title, page) {
   await page.waitForSelector('[id="video-title"]')
   await page.waitForFunction('document.querySelectorAll(\'[id="video-title"]\').length > 5')
   await sleep(2000)
+let subLink;
+  try {
+    subLink = await page.evaluate(titletext => Array.from(document.querySelectorAll('[id="video-title"]')).map(e => [e.textContent.trim(), e.href]).filter(e => e[0].toLowerCase() == titletext.toLowerCase() && /.*?translations$/.test(e[1]))[0][1], title)
 
-  const subLink = await page.evaluate(titletext => Array.from(document.querySelectorAll('[id="video-title"]')).map(e => [e.textContent.trim(), e.href]).filter(e => e[0].toLowerCase() == titletext.toLowerCase() && /.*?translations$/.test(e[1]))[0][1], title)
+} catch (error) {
+  console.log("error in sublink, trying again ")
+  console.error(error)
+  subLink = await page.evaluate(titletext => Array.from(document.querySelectorAll('[id="video-title"]')).map(e => [e.textContent.trim(), e.href]).filter(e => e[0].toLowerCase() == titletext.toLowerCase() && /.*?translations$/.test(e[1]))[0][1], title)
+
+}
 
   return subLink
 }
 
 // upload the subtitles
 async function uploadSub (chapter, subLink) {
+  console.log("beginning subtitles upload for ", chapter)
   // read chapter translated titles json
   const chapTitlePath = path.join(titlePath, chapter + '.json')
   const titleJSON = readJSON(chapTitlePath)
@@ -631,6 +645,7 @@ async function uploadSub (chapter, subLink) {
 
   // Go to upload subtitles link
   await localPage.goto(subLink)
+  await localPage.bringToFront()
   // upload the subtitle for english language, as it is the default title & description language
   try {
     await subPart(path.join(subtitlesPath, holdersubmap.English, chapter + '.srt'), localPage)

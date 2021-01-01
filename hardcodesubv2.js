@@ -600,8 +600,14 @@ async function uploadVideo (pathToFile, lang, chapter, editionName) {
   // await page.waitForXPath('//*[contains(text(),"Finished processing")]', { timeout: 0})
   // Wait for closebtn to show up
   await page.waitForXPath(closeBtnXPath)
-  await sleep(2000)
-  const subLink = await getSubLink(finalTitle, page)
+  let subLink
+  try {
+     subLink = await getSubLink(finalTitle, page)
+  } catch (error) {
+    console.log("error getting subLink, trying again")
+    subLink = await getSubLink(finalTitle, page)
+    
+  }
   await page.close()
   return subLink
 }

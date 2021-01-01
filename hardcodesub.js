@@ -392,7 +392,7 @@ async function securityBypass (localPage) {
     await localPage.waitForXPath(confirmRecoveryXPath)
 
     const confirmRecoveryBtn = await localPage.$x(confirmRecoveryXPath)
-    await page.evaluate(el => el.click(), confirmRecoveryBtn[0])
+    await localPage.evaluate(el => el.click(), confirmRecoveryBtn[0])
   } catch (error) {
     console.log('confirm your recovery email button not found')
     console.error(error)

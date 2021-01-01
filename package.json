@@ -4,12 +4,11 @@
   "description": "Quran Recitation Videos",
   "main": "hardcodesub.js",
   "dependencies": {
-    "puppeteer": "latest",
-    "node-fetch": "latest",
-    "promisify-child-process": "latest",
-    "puppeteer-extra": "latest",
-    "puppeteer-extra-plugin-stealth": "latest",
-    "puppeteer-extra-plugin-adblocker": "latest"
+    "puppeteer": "5.5.0",
+    "node-fetch": "2.6.1",
+    "promisify-child-process": "4.1.1",
+    "puppeteer-extra": "3.1.15",
+    "puppeteer-extra-plugin-stealth": "2.6.5"
   },
   "repository": {
     "type": "git",

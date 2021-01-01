@@ -286,13 +286,17 @@ async function begin () {
     console.log('video generation complete for ', chap)
 
     if (fileSavePath === null) break
+    try {
+      const uploadPromise = uploadWithSub(fileSavePath, editionLang, chap, editionName).then(() => {
+        uploaded++
+        deleteFile(fileSavePath)
+      })
 
-    const uploadPromise = uploadWithSub(fileSavePath, editionLang, chap, editionName).then(() => {
-      uploaded++
-      deleteFile(fileSavePath)
-    })
-
-    PromiseHolder.push(uploadPromise)
+      PromiseHolder.push(uploadPromise)
+    } catch (error) {
+      console.log('uploading video or subtitle uploading failed for ', chap, ' and edition named ', editionName)
+      console.error(error)
+    }
 
     chap++
     // if all the chapters are uploaded, then start from new edition & chapter 1
@@ -444,7 +448,7 @@ async function uploadWithSub (fileSavePath, editionLang, chap, editionName) {
   await uploadSub(chap, subLink)
 }
 
-// keep playlistBool true, only if its 1 chap
+
 async function uploadVideo (pathToFile, lang, chapter, editionName) {
   const page = await getNewPage()
   const chapTitlePath = path.join(titlePath, chapter + '.json')
@@ -470,8 +474,19 @@ async function uploadVideo (pathToFile, lang, chapter, editionName) {
 
   const closeBtnXPath = '//*[normalize-space(text())=\'Close\']'
   const selectBtnXPath = '//*[normalize-space(text())=\'Select files\']'
-  await page.waitForXPath(selectBtnXPath)
-  await page.waitForXPath(closeBtnXPath)
+  for (let i = 0; i < 2; i++) {
+    try {
+      await page.waitForXPath(selectBtnXPath)
+      await page.waitForXPath(closeBtnXPath)
+      break
+    } catch (error) {
+      const nextText = i === 0 ? ' trying again' : ' failed again'
+      console.log('failed to find the select files button for chapter ', chapter, nextText)
+      console.error(error)
+      await page.evaluate(() => { window.onbeforeunload = null })
+      await page.goto(uploadURL)
+    }
+  }
   // Remove hidden closebtn text
   const closeBtn = await page.$x(closeBtnXPath)
   await page.evaluate(el => { el.textContent = 'oldclosse' }, closeBtn[0])

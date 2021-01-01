@@ -6,6 +6,7 @@
   "dependencies": {
     "puppeteer": "latest",
     "node-fetch": "latest",
+    "promisify-child-process" : "latest",
     "puppeteer-extra": "latest",
     "puppeteer-extra-plugin-stealth": "latest",
     "puppeteer-extra-plugin-adblocker": "latest"

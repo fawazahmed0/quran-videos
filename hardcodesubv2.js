@@ -314,6 +314,14 @@ async function begin() {
         })
 
         PromiseHolder.push(uploadPromise)
+                // if  promise holder has reached max uploads, then wait for all of them to complete 
+        // or if chap is 1 then wait for playlist to generate
+        if (PromiseHolder.length === maxConcurrentUpload || chap ==1) {
+            await Promise.all(PromiseHolder)
+            PromiseHolder = []
+                    // Save the current chap & edition state, to recover from here in case of error
+        saveState(editionName, chap)
+        }
         chap++;
         // if all the chapters are uploaded, then start from new edition & chapter 1
         if (chap > 114) {
@@ -323,13 +331,7 @@ async function begin() {
         }
 
         fileSavePromise =  generateMP4(editionName, chap);
-        // if  promise holder has reached max uploads, then wait for all of them to complete
-        if (PromiseHolder.length === maxConcurrentUpload) {
-            await Promise.all(PromiseHolder)
-            PromiseHolder = []
-                    // Save the current chap & edition state, to recover from here in case of error
-        saveState(editionName, chap)
-        }
+
   
 
     }

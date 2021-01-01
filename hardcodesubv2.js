@@ -72,7 +72,7 @@ const editionsLink = apiLink + '/editions'
 let browser
 const height = 1024
 const width = 1280
-const timeout = 60000
+const timeout = 120000
 
 const uploadURL = 'https://www.youtube.com/upload'
 const studioURL = 'https://studio.youtube.com'
@@ -431,7 +431,7 @@ async function securityBypass (localPage) {
     console.error(error)
   }
 
-  try {
+
     const enterRecoveryXPath = '//*[normalize-space(text())=\'Enter recovery email address\']'
     await localPage.waitForXPath(enterRecoveryXPath)
     await localPage.type('input[type="email"]', recovery)
@@ -441,10 +441,7 @@ async function securityBypass (localPage) {
     })
     const selectBtnXPath = '//*[normalize-space(text())=\'Select files\']'
     await localPage.waitForXPath(selectBtnXPath)
-  } catch (error) {
-    console.log('Login Failed in securityBypass')
-    console.error(error)
-  }
+
 }
 
 async function uploadWithSub (fileSavePath, editionLang, chap, editionName) {

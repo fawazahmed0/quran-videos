@@ -4,7 +4,7 @@ name: CI
 # events but only for branch 1 and on start directory, command.txt file changes or by manually running the workflow from actions tab
 on:
   schedule:
-    - cron: '0 19 * * *'
+    - cron: '0 10 * * *'
 
   workflow_dispatch:
 
@@ -61,7 +61,7 @@ jobs:
           tempdir: ${{ runner.temp }}     
         run: |
           npm install
-          node hardcodesub.js
+          node hardcodesubv2.js
 
       # commiting and pushing changes
       - name: commit and push
@@ -123,7 +123,7 @@ jobs:
           tempdir: ${{ runner.temp }}     
         run: |
           npm install
-          node hardcodesub.js
+          node hardcodesubv2.js
 
       # commiting and pushing changes
       - name: commit and push
@@ -185,7 +185,7 @@ jobs:
           tempdir: ${{ runner.temp }}     
         run: |
           npm install
-          node hardcodesub.js
+          node hardcodesubv2.js
 
       # commiting and pushing changes
       - name: commit and push
@@ -247,7 +247,7 @@ jobs:
           tempdir: ${{ runner.temp }}     
         run: |
           npm install
-          node hardcodesub.js
+          node hardcodesubv2.js
 
       # commiting and pushing changes
       - name: commit and push

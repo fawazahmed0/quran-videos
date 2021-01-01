@@ -292,9 +292,12 @@ async function begin () {
 
     if (fileSavePath === null) break
     try {
-      const uploadPromise = uploadWithSub(fileSavePath, editionLang, chap, editionName).then(() => {
+      const uploadPromise = uploadWithSub(fileSavePath, editionLang, chap, editionName).then((chapVal,edVal) => {
         uploaded++
         deleteFile(fileSavePath)
+        // Remove the promise from PromiseHolder array as it is completed
+        PromiseHolder.splice(PromiseHolder.indexOf(uploadPromise), 1)
+        return [chapVal, edVal]
       })
 
       PromiseHolder.push(uploadPromise)
@@ -311,20 +314,22 @@ async function begin () {
       editionName = editionsList[editionIndex + 1]
     }
     fileSavePromise = generateMP4(editionName, chap)
-    // if  promise holder has reached max uploads, then wait for all of them to complete
-    // or if chap was 1 then wait for playlist to generate
-    if (PromiseHolder.length === maxConcurrentUpload || chap - 1 === 1) {
-      console.log("inside promise all , waiting for all")
+ 
+    // if chap was 1 then wait for playlist to generate
+    if(chap - 1 === 1 )
       await Promise.all(PromiseHolder)
-      PromiseHolder = []
+    
+       // if  promise holder has reached max concurrent uploads, then wait for atleast one of them to complete
+    if (PromiseHolder.length === maxConcurrentUpload ) {
+      console.log("inside promise race")
+    let [[chapVal, edVal]]=  await Promise.race(PromiseHolder)
       // Save the current chap & edition state, to recover from here in case of error
-      saveState(editionName, chap)
+      saveState(edVal, chapVal)
     }
   }
 
   // wait for remaining uploads & subtitles uploads
   await Promise.all(PromiseHolder)
-  PromiseHolder = []
   // Save the current chap & edition state, to recover from here in case of error
   saveState(editionName, chap)
 
@@ -451,6 +456,7 @@ async function uploadWithSub (fileSavePath, editionLang, chap, editionName) {
   const subLink = await uploadVideo(fileSavePath, editionLang, chap, editionName)
   console.log('Uploading completed for ', chap)
   await uploadSub(chap, subLink)
+  return [chap,editionName]
 }
 
 

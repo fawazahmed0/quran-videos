@@ -723,7 +723,7 @@ async function subPart (pathToFile, localPage) {
   await localPage.waitForSelector('[id="add-translation"]')
   await localPage.evaluate(() => document.querySelectorAll('[id="add-translation"]')[0].click())
   await localPage.waitForSelector('[id="choose-upload-file"]')
-  await localPage.click('#choose-upload-file')
+  await localPage.evaluate(() => document.querySelectorAll('[id="choose-upload-file"]')[0].click())
   const continueBtnXPath = '//*[normalize-space(text())=\'Continue\']'
   await localPage.waitForXPath(continueBtnXPath)
   const continueBtn = await localPage.$x(continueBtnXPath)

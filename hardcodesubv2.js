@@ -55,7 +55,7 @@ fs.mkdirSync(uploadLinkPath, {
 const stateFile = path.join(__dirname, 'state.txt')
 
 // Max videos to upload daily
-const maxuploads = 80
+const maxuploads = 92
 // No of uploads concurrently
 const maxConcurrentUpload = 5
 let uploaded
@@ -84,12 +84,6 @@ const timeout = 60000
 
 const uploadURL = 'https://www.youtube.com/upload'
 const studioURL = 'https://studio.youtube.com'
-
-
-// Stores the playlist option to select
-let playlistToSelect
-// stores the editionName, which is being uploaded
-let editionName
 
 
 // stores the pixavideos index thats needs to be ignored, as they are distracting
@@ -267,6 +261,10 @@ const capitalize = words => words.split(' ').map(w => w[0].toUpperCase() + w.sub
 
 async function begin() {
 
+    
+
+
+
     [editionsJSON] = await getLinksJSON([editionsLink + '.json'])
     await launchBrowser()
     let page = await getNewPage()
@@ -289,26 +287,28 @@ async function begin() {
     edHolder = {}
     for (const value of Object.values(editionsJSON)) { edHolder[value.name] = value.language }
 
-
-    let chap, day;
-    [editionName, chap, playlistToSelect, uploaded, day] = getState()
+    let chap, day, editionName;
+    [editionName, chap, uploaded, day] = getState()
     chap = parseInt(chap)
 
     // if today is different date, then the upload limits don't count
     if (day != new Date().toISOString().substring(8, 10)) { uploaded = 0 }
 
-    const editionLang = edHolder[editionName].toLowerCase()
+
     let fileSavePromise =  generateMP4(editionName, chap);
-    while (uploaded <= maxuploads) {
+    while (uploaded < maxuploads) {
 
         console.log('beginning for chapter ', chap)
 
+        let editionLang = edHolder[editionName].toLowerCase()
 
         let fileSavePath = await fileSavePromise
 
-        if (uploaded >= maxuploads || fileSavePath === null) break;
+        console.log('video generation complete for ', chap)
 
-        let uploadPromise = uploadWithSub(fileSavePath, editionLang, chap).then(() => {
+        if (fileSavePath === null) break;
+
+        let uploadPromise = uploadWithSub(fileSavePath, editionLang, chap, editionName).then(() => {
             uploaded++
             deleteFile(fileSavePath)
         })
@@ -323,7 +323,7 @@ async function begin() {
         }
 
         fileSavePromise =  generateMP4(editionName, chap);
-        // if subtitles promise holder has reached max subtitles uploads, then wait for all of them to complete
+        // if  promise holder has reached max uploads, then wait for all of them to complete
         if (PromiseHolder.length === maxConcurrentUpload) {
             await Promise.all(PromiseHolder)
             PromiseHolder = []
@@ -333,6 +333,13 @@ async function begin() {
   
 
     }
+
+        // wait for remaining uploads & subtitles uploads
+        await Promise.all(PromiseHolder)
+        PromiseHolder = []
+                // Save the current chap & edition state, to recover from here in case of error
+    saveState(editionName, chap)
+    
     await browser.close()
 
 }
@@ -341,6 +348,8 @@ async function begin() {
 begin()
 
 async function generateMP4(editionName, chap) {
+   
+ // return path.join(hardcodedSubPath, (chap + '').padStart(3, '0') + '.mp4')
 
     const currentDuration = new Date().getTime() - beginTime
 
@@ -470,15 +479,15 @@ async function securityBypass(localPage) {
 
 
 
-async function uploadWithSub(fileSavePath, editionLang, chap) {
+async function uploadWithSub(fileSavePath, editionLang, chap, editionName) {
 
-    const subLink = await uploadVideo(fileSavePath, editionLang, chap)
+    const subLink = await uploadVideo(fileSavePath, editionLang, chap, editionName)
     console.log('Uploading completed for ', chap)
     await uploadSub(chap, subLink)
 }
 
 // keep playlistBool true, only if its 1 chap
-async function uploadVideo(pathToFile, lang, chapter) {
+async function uploadVideo(pathToFile, lang, chapter, editionName) {
 
     let page = await getNewPage()
     const chapTitlePath = path.join(titlePath, chapter + '.json')
@@ -490,7 +499,8 @@ async function uploadVideo(pathToFile, lang, chapter) {
     const title = titleJSON[gtransLang] ? titleJSON[gtransLang] : titleJSON.english + ' | ' + lang
     const description = descriptionJSON[gtransLang] ? descriptionJSON[gtransLang] : descriptionJSON.english
     let tags = tagsJSON[gtransLang] ? tagsJSON[gtransLang] : tagsJSON.english
-    const newPlaylist = tags[0] + ' ' + lang
+    let playlistNameText = tags[0] + ' ' + lang
+    playlistNameText = playlistNameText.substring(0, 148)
     const videoLang = ytLang || 'English'
 
     const finalTitle = capitalize(title).substring(0, maxTitleLen)
@@ -547,21 +557,21 @@ async function uploadVideo(pathToFile, lang, chapter) {
         const createplaylist = await page.$x(newPlaylistXPath)
         await page.evaluate(el => el.click(), createplaylist[0])
         // Enter new playlist name
-        await page.keyboard.type(' ' + newPlaylist.substring(0, 148))
+        await page.keyboard.type(' ' + playlistNameText)
         // click create & then done button
         const createplaylistbtn = await page.$x('//*[normalize-space(text())=\'Create\']')
         await page.evaluate(el => el.click(), createplaylistbtn[1])
         createplaylistdone = await page.$x('//*[normalize-space(text())=\'Done\']')
         await page.evaluate(el => el.click(), createplaylistdone[0])
         // assign newPlaylist name, so in next chapter time it will be used to select that playlist
-        playlistToSelect = newPlaylist
+
     } else {
         // Selecting playlist
         await page.evaluate(el => el.click(), playlist[0])
-        const playlistToSelectXPath = '//*[normalize-space(text())=\'' + playlistToSelect + '\']'
+        const playlistToSelectXPath = '//*[normalize-space(text())=\'' + playlistNameText + '\']'
         await page.waitForXPath(playlistToSelectXPath)
-        const playlistName = await page.$x(playlistToSelectXPath)
-        await page.evaluate(el => el.click(), playlistName[0])
+        const playlistNameSelector = await page.$x(playlistToSelectXPath)
+        await page.evaluate(el => el.click(), playlistNameSelector[0])
         createplaylistdone = await page.$x('//*[normalize-space(text())=\'Done\']')
         await page.evaluate(el => el.click(), createplaylistdone[0])
     }
@@ -832,8 +842,8 @@ function getState() {
 }
 
 // save the state
-function saveState(editionNameArg, chap) {
-    fs.writeFileSync(stateFile, editionNameArg + '\n' + chap + '\n' + playlistToSelect + '\n' + uploaded + '\n' + new Date().toISOString().substring(8, 10))
+function saveState(editionName, chap) {
+    fs.writeFileSync(stateFile, editionName + '\n' + chap  + '\n' + uploaded + '\n' + new Date().toISOString().substring(8, 10))
 }
 
 // Generates random number

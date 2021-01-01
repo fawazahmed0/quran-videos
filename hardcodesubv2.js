@@ -53,7 +53,7 @@ const stateFile = path.join(__dirname, 'state.txt')
 // Max videos to upload daily
 const maxuploads = 92
 // No of uploads concurrently
-const maxConcurrentUpload = 5
+const maxConcurrentUpload = 3
 let uploaded
 
 let email, pass, recovery

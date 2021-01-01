@@ -72,7 +72,7 @@ const editionsLink = apiLink + '/editions'
 let browser
 const height = 1024
 const width = 1280
-const timeout = 120000
+const timeout = 60000
 
 const uploadURL = 'https://www.youtube.com/upload'
 const studioURL = 'https://studio.youtube.com'
@@ -434,6 +434,8 @@ async function securityBypass (localPage) {
 
     const enterRecoveryXPath = '//*[normalize-space(text())=\'Enter recovery email address\']'
     await localPage.waitForXPath(enterRecoveryXPath)
+    await localPage.focus('input[type="email"]')
+    await sleep(500)
     await localPage.type('input[type="email"]', recovery)
     await localPage.keyboard.press('Enter')
     await localPage.waitForNavigation({

@@ -280,21 +280,19 @@ async function begin () {
   // if today is different date, then the upload limits don't count
   if (day != new Date().toISOString().substring(8, 10)) { uploaded = 0 }
 
-  let fileSavePromise = generateMP4(editionName, chap)
   while (uploaded < maxuploads) {
     console.log('beginning for chapter ', chap)
 
     const editionLang = edHolder[editionName].toLowerCase()
 
-    const fileSavePath = await fileSavePromise
+    const randomNo = getAdjustedRandomNo()
+     // break if cannot encode the video within github actions limit
+    if(checkTimeSuffice(chap, randomNo)===false)
+    break;
 
-    console.log('video generation complete for ', chap)
-
-    if (fileSavePath === null) break
     try {
-      const uploadPromise = uploadWithSub(fileSavePath, editionLang, chap, editionName).then(values => {
+      const uploadPromise = genUploadWithSub( editionLang, chap, editionName, randomNo).then(values => {
         uploaded++
-        deleteFile(fileSavePath)
         // Remove the promise from PromiseHolder array as it is completed
         PromiseHolder.splice(PromiseHolder.indexOf(uploadPromise), 1)
         return [values[0], values[1]]
@@ -313,7 +311,6 @@ async function begin () {
       const editionIndex = editionsList.indexOf(editionName)
       editionName = editionsList[editionIndex + 1]
     }
-    fileSavePromise = generateMP4(editionName, chap)
 
     // if chap was 1 then wait for playlist to generate
     if (chap - 1 === 1) { await Promise.all(PromiseHolder) }
@@ -337,23 +334,36 @@ async function begin () {
 
 begin()
 
-async function generateMP4 (editionName, chap) {
-  // return path.join(hardcodedSubPath, (chap + '').padStart(3, '0') + '.mp4')
+// Get random number by ignore few ignored pixabay indices
+function getAdjustedRandomNo(){
+  // stores the pixavideos index that needs to be used
+  const allowedPixaVidIndex = [...Array(pixabayFiles.length).keys()].filter(e => !ignorePixaVidIndex.includes(e))
+  const randomIndex = getRandomNo(allowedPixaVidIndex.length)
+  return allowedPixaVidIndex[randomIndex]
 
+}
+
+// Returns true if sufficient time is there to generate the video in actions
+function checkTimeSuffice(chap, randomNo){
   const currentDuration = new Date().getTime() - beginTime
 
   const remainingDuration = maxDuration - currentDuration
 
   const currChapDuration = chapDuration[chap] * 1000
 
-  // stores the pixavideos index that needs to be used
-  const allowedPixaVidIndex = [...Array(pixabayFiles.length).keys()].filter(e => !ignorePixaVidIndex.includes(e))
-  const randomIndex = getRandomNo(allowedPixaVidIndex.length)
-  const randomNo = allowedPixaVidIndex[randomIndex]
+
 
   // stop if uploaded files had reached the youtube upload limit or
   // remaining duration is not enought to hardcode the subtitles & upload
-  if (remainingDuration < currChapDuration * videoTimeRatio[randomNo]) { return null }
+  if (remainingDuration < currChapDuration * videoTimeRatio[randomNo]) { return false }
+  else {return true}
+
+}
+
+async function generateMP4 (editionName, chap, randomNo) {
+  // return path.join(hardcodedSubPath, (chap + '').padStart(3, '0') + '.mp4')
+
+
   console.log('selected pixabay video index is ', randomNo)
   // Pixabay Videos to use for recitation
   const pixaFileWithPath = path.join(pixabayPath, pixabayFiles[randomNo])
@@ -446,10 +456,13 @@ async function securityBypass (localPage) {
   const selectBtnXPath = '//*[normalize-space(text())=\'Select files\']'
   await localPage.waitForXPath(selectBtnXPath)
 }
-
-async function uploadWithSub (fileSavePath, editionLang, chap, editionName) {
+// Generates the video and then uploads it and then uploads it's subtitles
+async function genUploadWithSub ( editionLang, chap, editionName, randomNo) {
+  const fileSavePath = await generateMP4(editionName, chap,randomNo)
+  console.log('video generation complete for ', chap)
   const subLink = await uploadVideo(fileSavePath, editionLang, chap, editionName)
   console.log('Uploading completed for ', chap)
+  deleteFile(fileSavePath)
   await uploadSub(chap, subLink)
   return [chap, editionName]
 }

@@ -83,6 +83,9 @@ const ignorePixaVidIndex = []
 // hardcodetime/video duration ratio for each pixa video
 // const videoTimeRatio = [0.1751304347826087, 1.789804347826087, 0.5999347826086957, 0.34145652173913044, 0.1971304347826087, 0.22706521739130434, 0.21043478260869566, 0.17365217391304347, 0.1945, 0.22604347826086957, 0.2111086956521739, 0.773804347826087, 0.20578260869565218, 0.1725]
 
+// Average hardcodetime/video duration ratio for pixa video
+const avgVideoRatio = 0.25
+
 // Stores the beginning time
 const beginTime = new Date().getTime()
 
@@ -356,7 +359,7 @@ async function generateMP4 (editionName, chap) {
 
   // stop if uploaded files had reached the youtube upload limit or
   // remaining duration is not enought to hardcode the subtitles & upload
-  if (remainingDuration < currChapDuration * 0.25) { return null }
+  if (remainingDuration < currChapDuration * avgVideoRatio) { return null }
   console.log('selected pixabay video index is ', randomNo)
   // Pixabay Videos to use for recitation
   const pixaFileWithPath = path.join(pixabayPath, pixabayFiles[randomNo])

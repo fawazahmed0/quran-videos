@@ -17,7 +17,7 @@ for(let i=0;i<pixabayFiles.length;i++){
   await generateMP4('eng-ummmuhammad', 1,i,path.join(hardcodedSubPath, i + '.mp4'))
   const currentDuration2 = new Date().getTime()
   let timeTaken =currentDuration2-currentDuration;
-   let ratio = timeTaken/46000
+   let ratio = timeTaken/40000
    console.log("ratio is ",ratio," for ",i)  
    temparr.push(ratio)
 }
@@ -36,7 +36,7 @@ async function generateMP4 (editionName, chap, randomNo,fileSavePath ) {
     const pixaFileWithPath = path.join(pixabayPath, pixabayFiles[randomNo])
   
     // Increase the video size to more than chapter duration
-    const repeat = Math.ceil(46 / pixabayDuration[randomNo])
+    const repeat = Math.ceil(40 / pixabayDuration[randomNo])
   
     const paddedI = (chap + '').padStart(3, '0')
     await spawn('ffmpeg', ['-stream_loop', repeat, '-i', pixaFileWithPath, '-i', path.join(audioPath, paddedI + '.mp3'), '-vf', 'subtitles=subtitles/' + editionName + '/' + chap + ".srt:force_style='Alignment=2,OutlineColour=&H100000000,BorderStyle=3,Outline=1,Shadow=0,Fontsize=18,MarginL=0,MarginV=60'", '-crf', '18', '-vcodec', 'libx264', '-preset', 'ultrafast', '-map', '0:v', '-map', '1:a', '-c:a', 'copy', '-shortest', fileSavePath])

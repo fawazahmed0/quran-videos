@@ -252,7 +252,7 @@ async function begin () {
   const page = await getNewPage()
   for (let i = 0; i < 2; i++) {
     try {
-    //  await login(page)
+      await login(page)
       break
     } catch (error) {
       console.error(error)
@@ -448,9 +448,9 @@ async function securityBypass (localPage) {
 }
 
 async function uploadWithSub (fileSavePath, editionLang, chap, editionName) {
- // const subLink = await uploadVideo(fileSavePath, editionLang, chap, editionName)
-//  console.log('Uploading completed for ', chap)
- // await uploadSub(chap, subLink)
+  const subLink = await uploadVideo(fileSavePath, editionLang, chap, editionName)
+  console.log('Uploading completed for ', chap)
+  await uploadSub(chap, subLink)
   return [chap, editionName]
 }
 

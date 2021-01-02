@@ -107,7 +107,8 @@ jobs:
         run: |
           choco install ffmpeg wget
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.3/subtitles.7z
-          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.1/pixabay.videos.zip
+          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.4/pixabay.videos.7z.001
+          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.4/pixabay.videos.7z.002
           wget https://github.com/fawazahmed0/audio-ayah-arabic-1/releases/download/v1.4/my-artifact.zip
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.2/qatamiaudios.7z
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.3/qatami.audios.2.7z
@@ -115,7 +116,7 @@ jobs:
         shell: cmd
         run: |
           7z x subtitles.7z
-          7z x pixabay.videos.zip
+          7z x pixabay.videos.7z.001
           7z x my-artifact.zip
           7z x -y qatamiaudios.7z -oaudios
           7z x -y qatami.audios.2.7z -oaudios
@@ -137,6 +138,7 @@ jobs:
           git add -A
           git commit -m 'Add uploaded links'
           git push
+
 
   build3:
     needs: [build1, build2]
@@ -161,15 +163,16 @@ jobs:
         shell: bash
         run: |
           REPO="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
-          git clone $REPO .   
-          git pull           
+          git clone $REPO .
+          git pull              
 
       - name: download part
         shell: cmd
         run: |
           choco install ffmpeg wget
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.3/subtitles.7z
-          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.1/pixabay.videos.zip
+          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.4/pixabay.videos.7z.001
+          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.4/pixabay.videos.7z.002
           wget https://github.com/fawazahmed0/audio-ayah-arabic-1/releases/download/v1.4/my-artifact.zip
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.2/qatamiaudios.7z
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.3/qatami.audios.2.7z
@@ -177,7 +180,7 @@ jobs:
         shell: cmd
         run: |
           7z x subtitles.7z
-          7z x pixabay.videos.zip
+          7z x pixabay.videos.7z.001
           7z x my-artifact.zip
           7z x -y qatamiaudios.7z -oaudios
           7z x -y qatami.audios.2.7z -oaudios
@@ -223,15 +226,16 @@ jobs:
         shell: bash
         run: |
           REPO="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
-          git clone $REPO .   
-          git pull           
+          git clone $REPO .
+          git pull              
 
       - name: download part
         shell: cmd
         run: |
           choco install ffmpeg wget
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.3/subtitles.7z
-          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.1/pixabay.videos.zip
+          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.4/pixabay.videos.7z.001
+          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.4/pixabay.videos.7z.002
           wget https://github.com/fawazahmed0/audio-ayah-arabic-1/releases/download/v1.4/my-artifact.zip
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.2/qatamiaudios.7z
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.3/qatami.audios.2.7z
@@ -239,7 +243,7 @@ jobs:
         shell: cmd
         run: |
           7z x subtitles.7z
-          7z x pixabay.videos.zip
+          7z x pixabay.videos.7z.001
           7z x my-artifact.zip
           7z x -y qatamiaudios.7z -oaudios
           7z x -y qatami.audios.2.7z -oaudios
@@ -261,4 +265,3 @@ jobs:
           git add -A
           git commit -m 'Add uploaded links'
           git push
-

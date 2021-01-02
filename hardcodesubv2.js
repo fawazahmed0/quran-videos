@@ -77,7 +77,7 @@ const uploadURL = 'https://www.youtube.com/upload'
 const studioURL = 'https://studio.youtube.com'
 
 // stores the pixavideos index thats needs to be ignored, as they are distracting
-const ignorePixaVidIndex = [2, 10]
+const ignorePixaVidIndex = [2, 10, 14]
 
 // hardcodetime/video duration ratio for each pixa video
 const videoTimeRatio = [0.21765,0.47625,0.2964,0.45255,0.35145,0.256775,0.226225,0.2646,0.279925,0.254,0.5163,0.2703,0.32655,0.512075,0.27505,0.293575,0.309975,0.26925]

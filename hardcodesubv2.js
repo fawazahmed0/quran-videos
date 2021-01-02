@@ -52,7 +52,7 @@ const stateFile = path.join(__dirname, 'state.txt')
 // Max videos to upload daily
 const maxuploads = 92
 // No of uploads concurrently
-const maxConcurrentUpload = 1
+const maxConcurrentUpload = 3
 let uploaded
 
 let email, pass, recovery
@@ -280,13 +280,13 @@ async function begin () {
   // if today is different date, then the upload limits don't count
   if (day != new Date().toISOString().substring(8, 10)) { uploaded = 0 }
 
- // let fileSavePromise = generateMP4(editionName, chap)
+  let fileSavePromise = generateMP4(editionName, chap)
   while (uploaded < maxuploads) {
     console.log('beginning for chapter ', chap)
 
     const editionLang = edHolder[editionName].toLowerCase()
 
-    const fileSavePath = await generateMP4(editionName, chap)
+    const fileSavePath = await fileSavePromise
 
     console.log('video generation complete for ', chap)
 
@@ -313,7 +313,7 @@ async function begin () {
       const editionIndex = editionsList.indexOf(editionName)
       editionName = editionsList[editionIndex + 1]
     }
-    //fileSavePromise = generateMP4(editionName, chap)
+    fileSavePromise = generateMP4(editionName, chap)
 
     // if chap was 1 then wait for playlist to generate
     if (chap - 1 === 1) { await Promise.all(PromiseHolder) }

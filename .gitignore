@@ -8,6 +8,8 @@ todelete
 *.ini
 node_modules/
 *.zip
+*.7z
+*.7z.*
 oldsubtitles/
 qatamiaudios.7z
 subtitles.7z

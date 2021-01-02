@@ -15,7 +15,7 @@ puppeteer.use(StealthPlugin())
 // Duration of pixabay videos in seconds
 const pixabayDuration = [13, 9, 35, 33, 24, 7, 16, 25, 24, 43, 41, 53, 35, 29, 24, 18, 10, 30]
 // Duration by chapter wise in seconds
-const chapDuration = [40,7549,4511,4399,3418,3751,3945,1511,3126,2267,2507,2200,1052,1148,841,2327,1866,1842,1188,1511,1557,1631,1402,1658,1109,1640,1347,1717,1210,1005,583,453,1495,1005,914,964,1146,946,1622,1484,1005,972,1021,509,597,763,721,630,386,499,408,369,371,350,560,531,743,572,600,422,268,197,239,343,322,287,406,376,359,272,259,293,239,290,217,347,258,299,244,210,145,141,239,153,178,90,86,97,239,91,68,102,49,31,49,83,53,117,55,54,82,51,14,39,28,21,35,12,36,19,26,11,19,40]
+const chapDuration = [40, 7549, 4511, 4399, 3418, 3751, 3945, 1511, 3126, 2267, 2507, 2200, 1052, 1148, 841, 2327, 1866, 1842, 1188, 1511, 1557, 1631, 1402, 1658, 1109, 1640, 1347, 1717, 1210, 1005, 583, 453, 1495, 1005, 914, 964, 1146, 946, 1622, 1484, 1005, 972, 1021, 509, 597, 763, 721, 630, 386, 499, 408, 369, 371, 350, 560, 531, 743, 572, 600, 422, 268, 197, 239, 343, 322, 287, 406, 376, 359, 272, 259, 293, 239, 290, 217, 347, 258, 299, 244, 210, 145, 141, 239, 153, 178, 90, 86, 97, 239, 91, 68, 102, 49, 31, 49, 83, 53, 117, 55, 54, 82, 51, 14, 39, 28, 21, 35, 12, 36, 19, 26, 11, 19, 40]
 const pixabayPath = path.join(__dirname, 'pixabay videos')
 const pixabayFiles = fs.readdirSync(pixabayPath).sort()
 
@@ -80,7 +80,7 @@ const studioURL = 'https://studio.youtube.com'
 const ignorePixaVidIndex = [2, 10, 14]
 
 // hardcodetime/video duration ratio for each pixa video
-const videoTimeRatio = [0.21765,0.47625,0.2964,0.45255,0.35145,0.256775,0.226225,0.2646,0.279925,0.254,0.5163,0.2703,0.32655,0.512075,0.27505,0.293575,0.309975,0.26925]
+const videoTimeRatio = [0.21765, 0.47625, 0.2964, 0.45255, 0.35145, 0.256775, 0.226225, 0.2646, 0.279925, 0.254, 0.5163, 0.2703, 0.32655, 0.512075, 0.27505, 0.293575, 0.309975, 0.26925]
 // Average hardcodetime/video duration ratio for pixa video
 // const avgVideoRatio = 0.3
 
@@ -286,12 +286,11 @@ async function begin () {
     const editionLang = edHolder[editionName].toLowerCase()
 
     const randomNo = getAdjustedRandomNo()
-     // break if cannot encode the video within github actions limit
-    if(checkTimeSuffice(chap, randomNo)===false)
-    break;
+    // break if cannot encode the video within github actions limit
+    if (checkTimeSuffice(chap, randomNo) === false) { break }
 
     try {
-      const uploadPromise = genUploadWithSub( editionLang, chap, editionName, randomNo).then(values => {
+      const uploadPromise = genUploadWithSub(editionLang, chap, editionName, randomNo).then(values => {
         uploaded++
         // Remove the promise from PromiseHolder array as it is completed
         PromiseHolder.splice(PromiseHolder.indexOf(uploadPromise), 1)
@@ -335,34 +334,28 @@ async function begin () {
 begin()
 
 // Get random number by ignore few ignored pixabay indices
-function getAdjustedRandomNo(){
+function getAdjustedRandomNo () {
   // stores the pixavideos index that needs to be used
   const allowedPixaVidIndex = [...Array(pixabayFiles.length).keys()].filter(e => !ignorePixaVidIndex.includes(e))
   const randomIndex = getRandomNo(allowedPixaVidIndex.length)
   return allowedPixaVidIndex[randomIndex]
-
 }
 
 // Returns true if sufficient time is there to generate the video in actions
-function checkTimeSuffice(chap, randomNo){
+function checkTimeSuffice (chap, randomNo) {
   const currentDuration = new Date().getTime() - beginTime
 
   const remainingDuration = maxDuration - currentDuration
 
   const currChapDuration = chapDuration[chap] * 1000
 
-
-
   // stop if uploaded files had reached the youtube upload limit or
   // remaining duration is not enought to hardcode the subtitles & upload
-  if (remainingDuration < currChapDuration * videoTimeRatio[randomNo]) { return false }
-  else {return true}
-
+  if (remainingDuration < currChapDuration * videoTimeRatio[randomNo]) { return false } else { return true }
 }
 
 async function generateMP4 (editionName, chap, randomNo) {
   // return path.join(hardcodedSubPath, (chap + '').padStart(3, '0') + '.mp4')
-
 
   console.log('selected pixabay video index is ', randomNo)
   // Pixabay Videos to use for recitation
@@ -457,8 +450,8 @@ async function securityBypass (localPage) {
   await localPage.waitForXPath(selectBtnXPath)
 }
 // Generates the video and then uploads it and then uploads it's subtitles
-async function genUploadWithSub ( editionLang, chap, editionName, randomNo) {
-  const fileSavePath = await generateMP4(editionName, chap,randomNo)
+async function genUploadWithSub (editionLang, chap, editionName, randomNo) {
+  const fileSavePath = await generateMP4(editionName, chap, randomNo)
   console.log('video generation complete for ', chap)
   const subLink = await uploadVideo(fileSavePath, editionLang, chap, editionName)
   console.log('Uploading completed for ', chap)

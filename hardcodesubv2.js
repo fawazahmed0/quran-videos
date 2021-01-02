@@ -450,7 +450,7 @@ async function securityBypass (localPage) {
 async function uploadWithSub (fileSavePath, editionLang, chap, editionName) {
   const subLink = await uploadVideo(fileSavePath, editionLang, chap, editionName)
   console.log('Uploading completed for ', chap)
- // await uploadSub(chap, subLink)
+  await uploadSub(chap, subLink)
   return [chap, editionName]
 }
 

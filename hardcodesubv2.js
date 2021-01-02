@@ -81,10 +81,9 @@ const studioURL = 'https://studio.youtube.com'
 const ignorePixaVidIndex = [2, 10]
 
 // hardcodetime/video duration ratio for each pixa video
-// const videoTimeRatio = [0.1751304347826087, 1.789804347826087, 0.5999347826086957, 0.34145652173913044, 0.1971304347826087, 0.22706521739130434, 0.21043478260869566, 0.17365217391304347, 0.1945, 0.22604347826086957, 0.2111086956521739, 0.773804347826087, 0.20578260869565218, 0.1725]
-
+const videoTimeRatio = [0.14323913043478262,0.34430434782608693,0.21891304347826088,0.32817391304347826,0.22567391304347825,0.20780434782608695,0.1963695652173913,0.2265,0.26217391304347826,0.2331304347826087,0.2757391304347826,0.26456521739130434,0.2121086956521739,0.246,0.2602608695652174,0.3771086956521739,0.2599130434782609,0.24143478260869566]
 // Average hardcodetime/video duration ratio for pixa video
-const avgVideoRatio = 0.3
+// const avgVideoRatio = 0.3
 
 // Stores the beginning time
 const beginTime = new Date().getTime()
@@ -355,7 +354,7 @@ async function generateMP4 (editionName, chap) {
 
   // stop if uploaded files had reached the youtube upload limit or
   // remaining duration is not enought to hardcode the subtitles & upload
-  if (remainingDuration < currChapDuration * avgVideoRatio) { return null }
+  if (remainingDuration < currChapDuration * videoTimeRatio[randomNo]) { return null }
   console.log('selected pixabay video index is ', randomNo)
   // Pixabay Videos to use for recitation
   const pixaFileWithPath = path.join(pixabayPath, pixabayFiles[randomNo])

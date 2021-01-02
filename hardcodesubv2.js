@@ -78,7 +78,7 @@ const uploadURL = 'https://www.youtube.com/upload'
 const studioURL = 'https://studio.youtube.com'
 
 // stores the pixavideos index thats needs to be ignored, as they are distracting
-const ignorePixaVidIndex = []
+const ignorePixaVidIndex = [2,10]
 
 // hardcodetime/video duration ratio for each pixa video
 // const videoTimeRatio = [0.1751304347826087, 1.789804347826087, 0.5999347826086957, 0.34145652173913044, 0.1971304347826087, 0.22706521739130434, 0.21043478260869566, 0.17365217391304347, 0.1945, 0.22604347826086957, 0.2111086956521739, 0.773804347826087, 0.20578260869565218, 0.1725]
@@ -351,7 +351,7 @@ async function generateMP4 (editionName, chap) {
   const currChapDuration = chapDuration[chap] * 1000
 
   // stores the pixavideos index that needs to be used
-  const allowedPixaVidIndex = [...Array(pixabayFiles.length).keys()].filter(e => !ignorePixaVidIndex.concat().includes(e)) 
+  const allowedPixaVidIndex = [...Array(pixabayFiles.length).keys()].filter(e => !ignorePixaVidIndex.includes(e)) 
   const randomIndex = getRandomNo(allowedPixaVidIndex.length)
   const randomNo = allowedPixaVidIndex[randomIndex]
 

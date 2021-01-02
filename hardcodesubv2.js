@@ -13,7 +13,7 @@ puppeteer.use(StealthPlugin())
 
 // each index corresponds to 001.mp4 .. to n.mp4
 // Duration of pixabay videos in seconds
-const pixabayDuration = [18, 13, 41, 38, 28, 11, 22, 32, 30, 50, 47, 60,40,33,30,24,16,36]
+const pixabayDuration = [18, 13, 41, 38, 28, 11, 22, 32, 30, 50, 47, 60, 40, 33, 30, 24, 16, 36]
 // Duration by chapter wise in seconds
 const chapDuration = [47, 7265, 4792, 4770, 3758, 4338, 4793, 1822, 3625, 2689, 2771, 2516, 1213, 1217, 955, 2531, 1988, 1997, 1273, 1628, 1570, 1767, 1487, 1959, 1177, 1967, 1672, 2033, 1358, 1161, 653, 477, 1596, 1040, 914, 964, 1146, 946, 1622, 1484, 1005, 972, 1021, 509, 597, 763, 721, 630, 386, 499, 408, 369, 371, 350, 560, 531, 743, 572, 600, 422, 268, 197, 239, 343, 322, 287, 406, 376, 359, 272, 259, 293, 239, 290, 217, 347, 258, 299, 244, 210, 145, 141, 239, 153, 178, 90, 86, 97, 239, 91, 68, 102, 49, 31, 49, 83, 53, 117, 55, 54, 82, 51, 14, 39, 28, 21, 35, 12, 36, 19, 26, 11, 19, 40]
 
@@ -78,7 +78,7 @@ const uploadURL = 'https://www.youtube.com/upload'
 const studioURL = 'https://studio.youtube.com'
 
 // stores the pixavideos index thats needs to be ignored, as they are distracting
-const ignorePixaVidIndex = [2,10]
+const ignorePixaVidIndex = [2, 10]
 
 // hardcodetime/video duration ratio for each pixa video
 // const videoTimeRatio = [0.1751304347826087, 1.789804347826087, 0.5999347826086957, 0.34145652173913044, 0.1971304347826087, 0.22706521739130434, 0.21043478260869566, 0.17365217391304347, 0.1945, 0.22604347826086957, 0.2111086956521739, 0.773804347826087, 0.20578260869565218, 0.1725]
@@ -259,19 +259,18 @@ async function begin () {
     } catch (error) {
       console.error(error)
       const nextText = i === 0 ? ' trying again' : ' failed again, stopping everything'
-      console.log('Login failed ',nextText)
-      if(i===1){
+      console.log('Login failed ', nextText)
+      if (i === 1) {
         await browser.close()
         return
       }
-
     }
   }
   // close the page to save resources
   await page.close()
 
   // Holds  uploading promises
-  let PromiseHolder = []
+  const PromiseHolder = []
   // Edition name to Edition Language mapping
   edHolder = {}
   for (const value of Object.values(editionsJSON)) { edHolder[value.name] = value.language }
@@ -317,15 +316,14 @@ async function begin () {
       editionName = editionsList[editionIndex + 1]
     }
     fileSavePromise = generateMP4(editionName, chap)
- 
+
     // if chap was 1 then wait for playlist to generate
-    if(chap - 1 === 1 )
-      await Promise.all(PromiseHolder)
-    
-       // if  promise holder has reached max concurrent uploads, then wait for atleast one of them to complete
-    if (PromiseHolder.length === maxConcurrentUpload ) {
-      console.log("inside promise race")
-    let [chapVal, edVal]=  await Promise.race(PromiseHolder)
+    if (chap - 1 === 1) { await Promise.all(PromiseHolder) }
+
+    // if  promise holder has reached max concurrent uploads, then wait for atleast one of them to complete
+    if (PromiseHolder.length === maxConcurrentUpload) {
+      console.log('inside promise race')
+      const [chapVal, edVal] = await Promise.race(PromiseHolder)
       // Save the current chap & edition state, to recover from here in case of error
       saveState(edVal, chapVal)
     }
@@ -351,7 +349,7 @@ async function generateMP4 (editionName, chap) {
   const currChapDuration = chapDuration[chap] * 1000
 
   // stores the pixavideos index that needs to be used
-  const allowedPixaVidIndex = [...Array(pixabayFiles.length).keys()].filter(e => !ignorePixaVidIndex.includes(e)) 
+  const allowedPixaVidIndex = [...Array(pixabayFiles.length).keys()].filter(e => !ignorePixaVidIndex.includes(e))
   const randomIndex = getRandomNo(allowedPixaVidIndex.length)
   const randomNo = allowedPixaVidIndex[randomIndex]
 
@@ -438,31 +436,28 @@ async function securityBypass (localPage) {
     console.error(error)
   }
 
-
-    const enterRecoveryXPath = '//*[normalize-space(text())=\'Enter recovery email address\']'
-    await localPage.waitForXPath(enterRecoveryXPath)
-    await localPage.focus('input[type="email"]')
-    await sleep(500)
-    await localPage.type('input[type="email"]', recovery)
-    await localPage.keyboard.press('Enter')
-    await localPage.waitForNavigation({
-      waitUntil: 'networkidle0'
-    })
-    const selectBtnXPath = '//*[normalize-space(text())=\'Select files\']'
-    await localPage.waitForXPath(selectBtnXPath)
-
+  const enterRecoveryXPath = '//*[normalize-space(text())=\'Enter recovery email address\']'
+  await localPage.waitForXPath(enterRecoveryXPath)
+  await localPage.focus('input[type="email"]')
+  await sleep(500)
+  await localPage.type('input[type="email"]', recovery)
+  await localPage.keyboard.press('Enter')
+  await localPage.waitForNavigation({
+    waitUntil: 'networkidle0'
+  })
+  const selectBtnXPath = '//*[normalize-space(text())=\'Select files\']'
+  await localPage.waitForXPath(selectBtnXPath)
 }
 
 async function uploadWithSub (fileSavePath, editionLang, chap, editionName) {
   const subLink = await uploadVideo(fileSavePath, editionLang, chap, editionName)
   console.log('Uploading completed for ', chap)
   await uploadSub(chap, subLink)
-  return [chap,editionName]
+  return [chap, editionName]
 }
 
-
 async function uploadVideo (pathToFile, lang, chapter, editionName) {
-  console.log("beginning video upload for chaper, ", chapter)
+  console.log('beginning video upload for chaper, ', chapter)
   const page = await getNewPage()
   const chapTitlePath = path.join(titlePath, chapter + '.json')
   const titleJSON = readJSON(chapTitlePath)
@@ -603,11 +598,10 @@ async function uploadVideo (pathToFile, lang, chapter, editionName) {
   await page.waitForXPath(closeBtnXPath)
   let subLink
   try {
-     subLink = await getSubLink(finalTitle, page)
-  } catch (error) {
-    console.log("error getting subLink, trying again")
     subLink = await getSubLink(finalTitle, page)
-    
+  } catch (error) {
+    console.log('error getting subLink, trying again')
+    subLink = await getSubLink(finalTitle, page)
   }
   await page.close()
   return subLink
@@ -626,23 +620,21 @@ async function getSubLink (title, page) {
   await page.waitForSelector('[id="video-title"]')
   await page.waitForFunction('document.querySelectorAll(\'[id="video-title"]\').length > 5')
   await sleep(2000)
-let subLink;
+  let subLink
   try {
     subLink = await page.evaluate(titletext => Array.from(document.querySelectorAll('[id="video-title"]')).map(e => [e.textContent.trim(), e.href]).filter(e => e[0].toLowerCase() == titletext.toLowerCase() && /.*?translations$/.test(e[1]))[0][1], title)
-
-} catch (error) {
-  console.log("error in sublink, trying again ")
-  console.error(error)
-  subLink = await page.evaluate(titletext => Array.from(document.querySelectorAll('[id="video-title"]')).map(e => [e.textContent.trim(), e.href]).filter(e => e[0].toLowerCase() == titletext.toLowerCase() && /.*?translations$/.test(e[1]))[0][1], title)
-
-}
+  } catch (error) {
+    console.log('error in sublink, trying again ')
+    console.error(error)
+    subLink = await page.evaluate(titletext => Array.from(document.querySelectorAll('[id="video-title"]')).map(e => [e.textContent.trim(), e.href]).filter(e => e[0].toLowerCase() == titletext.toLowerCase() && /.*?translations$/.test(e[1]))[0][1], title)
+  }
 
   return subLink
 }
 
 // upload the subtitles
 async function uploadSub (chapter, subLink) {
-  console.log("beginning subtitles upload for ", chapter)
+  console.log('beginning subtitles upload for ', chapter)
   // read chapter translated titles json
   const chapTitlePath = path.join(titlePath, chapter + '.json')
   const titleJSON = readJSON(chapTitlePath)

@@ -84,7 +84,7 @@ const ignorePixaVidIndex = []
 // const videoTimeRatio = [0.1751304347826087, 1.789804347826087, 0.5999347826086957, 0.34145652173913044, 0.1971304347826087, 0.22706521739130434, 0.21043478260869566, 0.17365217391304347, 0.1945, 0.22604347826086957, 0.2111086956521739, 0.773804347826087, 0.20578260869565218, 0.1725]
 
 // Average hardcodetime/video duration ratio for pixa video
-const avgVideoRatio = 0.25
+const avgVideoRatio = 0.3
 
 // Stores the beginning time
 const beginTime = new Date().getTime()
@@ -351,9 +351,7 @@ async function generateMP4 (editionName, chap) {
   const currChapDuration = chapDuration[chap] * 1000
 
   // stores the pixavideos index that needs to be used
-  let allowedPixaVidIndex
-  // if chapter size is bigger, then ignore 1st and 2nd index of pixavids also,as they are of huge size
-  if (chap < 30) { allowedPixaVidIndex = [...Array(pixabayFiles.length).keys()].filter(e => !ignorePixaVidIndex.concat(1, 2).includes(e)) } else { allowedPixaVidIndex = [...Array(pixabayFiles.length).keys()].filter(e => !ignorePixaVidIndex.includes(e)) }
+  const allowedPixaVidIndex = [...Array(pixabayFiles.length).keys()].filter(e => !ignorePixaVidIndex.concat().includes(e)) 
   const randomIndex = getRandomNo(allowedPixaVidIndex.length)
   const randomNo = allowedPixaVidIndex[randomIndex]
 

@@ -14,7 +14,7 @@
 This project is about publishing Quran recitation videos with subtitles in every language at youtube using [Free Quran-API](https://github.com/fawazahmed0/quran-api).
 
 #### How it works:
-Everything is done automatically by a [program](https://github.com/fawazahmed0/quran-videos/blob/main/hardcodesub.js) which will generate and upload the videos to youtube daily.
+Everything is done automatically by a [program](https://github.com/fawazahmed0/quran-videos/blob/main/hardcodesubv2.js) which will generate and upload the videos to youtube daily.
 
 
 

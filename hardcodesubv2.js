@@ -725,7 +725,9 @@ async function uploadSub (chapter, subLink) {
     } catch (error) {
       console.log('uploading subtitle failed for ', path.join(subtitlesPath, value, chapter + '.srt'), ' trying again')
       console.error(error)
-
+     // The uploading subtitles fails for filipino, so don't waste time trying again for it 
+      if(key==="Filipino")
+       continue
       // remove the reload site? dialog
       await localPage.evaluate(() => { window.onbeforeunload = null })
       await localPage.goto(subLink)

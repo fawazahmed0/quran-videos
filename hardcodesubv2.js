@@ -281,6 +281,7 @@ async function begin () {
   // if today is different date, then the upload limits don't count
   if (day != new Date().toISOString().substring(8, 10)) { uploaded = 0 }
 
+  let fileSavePromise = generateMP4(editionName, chap)
   while (uploaded < maxuploads) {
     console.log('beginning for chapter ', chap)
 
@@ -289,7 +290,7 @@ async function begin () {
     const randomNo = getAdjustedRandomNo()
     // break if cannot encode the video within github actions limit
     if (checkTimeSuffice(chap, randomNo) === false) { break }
-    const fileSavePath = await generateMP4(editionName, chap, randomNo)
+    const fileSavePath = await fileSavePromise
     console.log('video generation complete for ', chap)
     try {
       const uploadPromise = uploadWithSub(fileSavePath,editionLang, chap, editionName).then(values => {
@@ -312,6 +313,7 @@ async function begin () {
       const editionIndex = editionsList.indexOf(editionName)
       editionName = editionsList[editionIndex + 1]
     }
+    fileSavePromise = generateMP4(editionName, chap)
 
     // if chap was 1 then wait for playlist to generate
     if (chap - 1 === 1) { await Promise.all(PromiseHolder) }

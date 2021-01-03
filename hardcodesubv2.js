@@ -81,7 +81,7 @@ const studioURL = 'https://studio.youtube.com'
 const ignorePixaVidIndex = [2, 10, 14]
 
 // hardcodetime/video duration ratio for each pixa video
-const videoTimeRatio = [0.21765, 0.47625, 0.2964, 0.45255, 0.35145, 0.256775, 0.226225, 0.2646, 0.279925, 0.254, 0.5163, 0.2703, 0.32655, 0.512075, 0.27505, 0.293575, 0.309975, 0.26925]
+const videoTimeRatio = [0.14312820512820512,0.35302564102564105,0.22987179487179488,0.34197435897435896,0.221,0.20241025641025642,0.18035897435897436,0.2297948717948718,0.23971794871794871,0.18792307692307691,0.25887179487179485,0.2291025641025641,0.20997435897435898,0.24566666666666667,0.2414102564102564,0.34212820512820513,0.24666666666666667,0.4205897435897436]
 // Average hardcodetime/video duration ratio for pixa video
 // const avgVideoRatio = 0.3
 
@@ -368,7 +368,7 @@ async function generateMP4 (editionName, chap, randomNo) {
 
   const paddedI = (chap + '').padStart(3, '0')
   const fileSavePath = path.join(hardcodedSubPath, paddedI + '.mp4')
-  await exec('ffmpeg '+['-stream_loop', repeat, '-i', '"'+pixaFileWithPath+'"', '-i', '"'+path.join(audioPath, paddedI + '.mp3')+'"', '-vf', '"subtitles=subtitles/' + editionName + '/' + chap + `.srt:force_style='Alignment=2,OutlineColour=&H100000000,BorderStyle=3,Outline=1,Shadow=0,Fontsize=18,MarginL=0,MarginV=60'"`, '-crf', '30', '-vcodec', 'libx264', '-preset', 'ultrafast', '-map', '0:v', '-map', '1:a', '-c:a', 'copy', '-shortest', '"'+fileSavePath+'"'].join(' '));
+  await exec('ffmpeg '+['-stream_loop', repeat, '-i', '"'+pixaFileWithPath+'"', '-i', '"'+path.join(audioPath, paddedI + '.mp3')+'"', '-vf', '"subtitles=subtitles/' + editionName + '/' + chap + `.srt:force_style='Alignment=2,OutlineColour=&H100000000,BorderStyle=3,Outline=1,Shadow=0,Fontsize=18,MarginL=0,MarginV=60'"`, '-crf', '24', '-vcodec', 'libx264', '-preset', 'ultrafast', '-map', '0:v', '-map', '1:a', '-c:a', 'copy', '-shortest', '"'+fileSavePath+'"'].join(' '));
   return fileSavePath
 }
 

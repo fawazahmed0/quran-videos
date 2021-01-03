@@ -80,6 +80,15 @@ const studioURL = 'https://studio.youtube.com'
 // stores the pixavideos index thats needs to be ignored, as they are distracting
 const ignorePixaVidIndex = [2, 10, 14]
 
+  // stores the pixavideos index that needs to be used
+const allowedPixaVidIndex = [...Array(pixabayFiles.length).keys()].filter(e => !ignorePixaVidIndex.includes(e))
+  // stores random numbers by ignoring few ignored pixabay indices
+  let adjustedRandomArray = []
+  for(let i=0;i<200;i++){
+    const randomIndex = getRandomNo(allowedPixaVidIndex.length)
+    adjustedRandomArray[i] = allowedPixaVidIndex[randomIndex]
+  }
+
 // hardcodetime/video duration ratio for each pixa video
 const videoTimeRatio = [0.14312820512820512,0.35302564102564105,0.22987179487179488,0.34197435897435896,0.221,0.20241025641025642,0.18035897435897436,0.2297948717948718,0.23971794871794871,0.18792307692307691,0.25887179487179485,0.2291025641025641,0.20997435897435898,0.24566666666666667,0.2414102564102564,0.34212820512820513,0.24666666666666667,0.4205897435897436]
 // Average hardcodetime/video duration ratio for pixa video
@@ -287,9 +296,9 @@ async function begin () {
 
     const editionLang = edHolder[editionName].toLowerCase()
 
-    const randomNo = getAdjustedRandomNo()
+
     // break if cannot encode the video within github actions limit
-    if (checkTimeSuffice(chap, randomNo) === false) { break }
+    if (checkTimeSuffice(chap) === false) { break }
     const fileSavePath = await fileSavePromise
     console.log('video generation complete for ', chap)
     try {
@@ -337,30 +346,22 @@ async function begin () {
 
 begin()
 
-// Get random number by ignore few ignored pixabay indices
-function getAdjustedRandomNo () {
-  // stores the pixavideos index that needs to be used
-  const allowedPixaVidIndex = [...Array(pixabayFiles.length).keys()].filter(e => !ignorePixaVidIndex.includes(e))
-  const randomIndex = getRandomNo(allowedPixaVidIndex.length)
-  return allowedPixaVidIndex[randomIndex]
-}
-
 // Returns true if sufficient time is there to generate the video in actions
-function checkTimeSuffice (chap, randomNo) {
+function checkTimeSuffice (chap) {
   const currentDuration = new Date().getTime() - beginTime
 
   const remainingDuration = maxDuration - currentDuration
 
   const currChapDuration = chapDuration[chap] * 1000
-
+  const randomNo = adjustedRandomArray[chap]
   // stop if uploaded files had reached the youtube upload limit or
   // remaining duration is not enought to hardcode the subtitles & upload
   if (remainingDuration < currChapDuration * videoTimeRatio[randomNo]) { return false } else { return true }
 }
 
-async function generateMP4 (editionName, chap, randomNo) {
+async function generateMP4 (editionName, chap) {
   // return path.join(hardcodedSubPath, (chap + '').padStart(3, '0') + '.mp4')
-
+  const randomNo = adjustedRandomArray[chap]
   console.log('selected pixabay video index is ', randomNo)
   // Pixabay Videos to use for recitation
   const pixaFileWithPath = path.join(pixabayPath, pixabayFiles[randomNo])

@@ -288,9 +288,10 @@ async function begin () {
     const randomNo = getAdjustedRandomNo()
     // break if cannot encode the video within github actions limit
     if (checkTimeSuffice(chap, randomNo) === false) { break }
-
+    const fileSavePath = await generateMP4(editionName, chap, randomNo)
+    console.log('video generation complete for ', chap)
     try {
-      const uploadPromise = genUploadWithSub(editionLang, chap, editionName, randomNo).then(values => {
+      const uploadPromise = uploadWithSub(fileSavePath,editionLang, chap, editionName).then(values => {
         uploaded++
         // Remove the promise from PromiseHolder array as it is completed
         PromiseHolder.splice(PromiseHolder.indexOf(uploadPromise), 1)
@@ -450,9 +451,7 @@ async function securityBypass (localPage) {
   await localPage.waitForXPath(selectBtnXPath)
 }
 // Generates the video and then uploads it and then uploads it's subtitles
-async function genUploadWithSub (editionLang, chap, editionName, randomNo) {
-  const fileSavePath = await generateMP4(editionName, chap, randomNo)
-  console.log('video generation complete for ', chap)
+async function uploadWithSub (fileSavePath,editionLang, chap, editionName) {
   const subLink = await uploadVideo(fileSavePath, editionLang, chap, editionName)
   console.log('Uploading completed for ', chap)
   deleteFile(fileSavePath)

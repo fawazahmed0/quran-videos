@@ -680,20 +680,22 @@ async function uploadSub (chapter, subLink) {
   await localPage.goto(subLink)
   await localPage.bringToFront()
   // upload the subtitle for english language, as it is the default title & description language
-  try {
-    await subPart(path.join(subtitlesPath, holdersubmap.English, chapter + '.srt'), localPage)
-  } catch (error) {
-    console.log('uploading first subtitle failed for ', path.join(subtitlesPath, holdersubmap.English, chapter + '.srt'), ' trying again')
-    console.error(error)
-    // remove the reload site? dialog
-    await localPage.evaluate(() => { window.onbeforeunload = null })
-    await localPage.goto(subLink)
+  for(i=0;i<2;i++){
     try {
       await subPart(path.join(subtitlesPath, holdersubmap.English, chapter + '.srt'), localPage)
+      break;
     } catch (error) {
-      console.log('uploading first subtitle failed for ', path.join(subtitlesPath, holdersubmap.English, chapter + '.srt'), ' skipping whole chapter subtitle upload')
-      console.error(error)
-      return
+      const nextText = i === 0 ? ' trying again' : ' failed again, stopping subtitle upload'
+       console.error(error)
+          // remove the reload site? dialog
+    await localPage.evaluate(() => { window.onbeforeunload = null })
+    await localPage.goto(subLink)
+    // Sometimes publish button exists which can cause issue
+    if(await checkClickPublishBtn(localPage))
+     break;
+     console.log('uploading first subtitle failed for ', path.join(subtitlesPath, holdersubmap.English, chapter + '.srt'), nextText)
+    if(i===1)
+    return
     }
   }
 
@@ -767,6 +769,23 @@ async function uploadSub (chapter, subLink) {
     }
   }
   await localPage.close()
+}
+
+async function checkClickPublishBtn(localPage){
+
+  try {
+    const publishXPath = '//*[normalize-space(text())=\'Publish\']/parent::*[not(@disabled)]'
+    await localPage.waitForXPath(publishXPath)
+    const publish = await localPage.$x(publishXPath)
+    await publish[0].click()
+    return true
+    
+  } catch (error) {
+    console.log("error while checking publish button")
+    return false
+  }
+
+
 }
 // subtitles upload
 async function subPart (pathToFile, localPage) {

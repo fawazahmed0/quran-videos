@@ -77,22 +77,33 @@ const timeout = 60000
 const uploadURL = 'https://www.youtube.com/upload'
 const studioURL = 'https://studio.youtube.com'
 
-// stores the pixavideos index thats needs to be ignored, as they are distracting
-const ignorePixaVidIndex = [2, 10, 14]
-
-  // stores the pixavideos index that needs to be used
-const allowedPixaVidIndex = [...Array(pixabayFiles.length).keys()].filter(e => !ignorePixaVidIndex.includes(e))
-  // stores random numbers by ignoring few ignored pixabay indices
-  let adjustedRandomArray = []
-  for(let i=0;i<200;i++){
-    const randomIndex = getRandomNo(allowedPixaVidIndex.length)
-    adjustedRandomArray[i] = allowedPixaVidIndex[randomIndex]
-  }
-
 // hardcodetime/video duration ratio for each pixa video
 const videoTimeRatio = [0.14312820512820512,0.35302564102564105,0.22987179487179488,0.34197435897435896,0.221,0.20241025641025642,0.18035897435897436,0.2297948717948718,0.23971794871794871,0.18792307692307691,0.25887179487179485,0.2291025641025641,0.20997435897435898,0.24566666666666667,0.2414102564102564,0.34212820512820513,0.24666666666666667,0.4205897435897436]
 // Average hardcodetime/video duration ratio for pixa video
 // const avgVideoRatio = 0.3
+const videoRatioLimit = 0.25
+// stores the pixavideos index thats needs to be ignored, as they are distracting
+const ignorePixaVidIndex = [2, 10, 14]
+
+  // stores the pixavideos index that needs to be used
+let allowedPixaVidIndex =[...Array(pixabayFiles.length).keys()].filter(e => !ignorePixaVidIndex.includes(e))
+  // Stores the pixavideos index that are of small size, to be used for large chapters
+let allowedPixaVidIndexSmallSize =  [...Array(pixabayFiles.length).keys()].filter((e,i) => !ignorePixaVidIndex.includes(e) && videoTimeRatio[i]<videoRatioLimit)
+  // stores random numbers by ignoring few ignored pixabay indices
+  let adjustedRandomArray = []
+  for(let i=1;i<=114;i++){
+    let allowdPixIndices;
+    // if chapter duratio is less than 30mins ,use normal index, else use indexes which generates video of small size
+    if(chapDuration[i]<1800)
+      allowdPixIndices = allowedPixaVidIndex
+    else
+      allowdPixIndices = allowedPixaVidIndexSmallSize
+
+      const randomIndex = getRandomNo(allowdPixIndices.length)
+      adjustedRandomArray[i] = allowdPixIndices[randomIndex];   
+  }
+
+
 
 // Stores the beginning time
 const beginTime = new Date().getTime()

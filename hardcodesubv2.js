@@ -52,8 +52,7 @@ const stateFile = path.join(__dirname, 'state.txt')
 
 // Max videos to upload daily
 const maxuploads = 92
-// No of uploads concurrently
-const maxConcurrentUpload
+
 let uploaded
 
 let email, pass, recovery
@@ -290,7 +289,8 @@ async function begin () {
   }
   // close the page to save resources
   await page.close()
-
+// No of uploads concurrently
+  let maxConcurrentUpload
   // Holds  uploading promises
   const PromiseHolder = []
   // Edition name to Edition Language mapping

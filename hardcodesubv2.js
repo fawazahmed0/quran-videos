@@ -81,15 +81,18 @@ const studioURL = 'https://studio.youtube.com'
 const videoTimeRatio = [0.14312820512820512,0.35302564102564105,0.22987179487179488,0.34197435897435896,0.221,0.20241025641025642,0.18035897435897436,0.2297948717948718,0.23971794871794871,0.18792307692307691,0.25887179487179485,0.2291025641025641,0.20997435897435898,0.24566666666666667,0.2414102564102564,0.34212820512820513,0.24666666666666667,0.4205897435897436]
 // Average hardcodetime/video duration ratio for pixa video
 // const avgVideoRatio = 0.3
-const videoRatioLimit = 0.25
+
 // stores the pixavideos index thats needs to be ignored, as they are distracting
 const ignorePixaVidIndex = [2, 10, 14]
+
+// Large size pixa indices, produces large size on video generation
+const largeSizePixaIndices = [2,4,7,8,10,13,14,15,16,17]
 
   // stores the pixavideos index that needs to be used
 let allowedPixaVidIndex =[...Array(pixabayFiles.length).keys()].filter(e => !ignorePixaVidIndex.includes(e))
   // Stores the pixavideos index that are of small size, to be used for large chapters
-let allowedPixaVidIndexSmallSize =  [...Array(pixabayFiles.length).keys()].filter((e,i) => !ignorePixaVidIndex.includes(e) && videoTimeRatio[i]<videoRatioLimit)
-  // stores random numbers by ignoring few ignored pixabay indices
+let allowedPixaVidIndexSmallSize =  [...Array(pixabayFiles.length).keys()].filter((e,i) => !ignorePixaVidIndex.concat(largeSizePixaIndices).includes(e))
+// stores random numbers by ignoring few ignored pixabay indices
   let adjustedRandomArray = []
   for(let i=1;i<=114;i++){
     let allowdPixIndices;
@@ -298,19 +301,20 @@ async function begin () {
   [editionName, chap, uploaded, day] = getState()
   chap = parseInt(chap)
 
-  // if today is different date, then the upload limits don't count
-  if (day != new Date().toISOString().substring(8, 10)) { uploaded = 0 }
-
- 
   while (uploaded < maxuploads) {
-    console.log('beginning for chapter ', chap)
 
-    const editionLang = edHolder[editionName].toLowerCase()
-
+      // if now is different date, then the upload limits resets
+  if (day != new Date().toISOString().substring(8, 10)) {
+     uploaded = 0 
+     day = new Date().toISOString().substring(8, 10)
+    }
 
     // break if cannot encode the video within github actions limit
     if (checkTimeSuffice(chap) === false) { break }
-   
+
+    console.log('beginning for chapter ', chap)
+
+    const editionLang = edHolder[editionName].toLowerCase()
   
     try {
       const uploadPromise = genUploadWithSub(editionLang, chap, editionName).then(values => {

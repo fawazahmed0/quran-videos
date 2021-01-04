@@ -625,6 +625,8 @@ async function uploadVideo (pathToFile, lang, chapter, editionName) {
     subLink = await getSubLink(finalTitle, page)
   } catch (error) {
     console.log('error getting subLink, trying again')
+    // wait for sometime before trying again, so that the subtitles link comes up
+    await sleep(120000)
     subLink = await getSubLink(finalTitle, page)
   }
   await page.close()
@@ -639,19 +641,21 @@ async function getSubLink (title, page) {
   await page.waitForXPath(subtitlesTabXPath)
   const subtitlesTab = await page.$x(subtitlesTabXPath)
   await page.evaluate(el => el.click(), subtitlesTab[0])
-
   await page.waitForNavigation()
-  await page.waitForSelector('[id="video-title"]')
-  await page.waitForFunction('document.querySelectorAll(\'[id="video-title"]\').length > 5')
-  await sleep(2000)
-  let subLink
+  let subLink;
+for(let i=0;i<2;i++){
   try {
+    await page.waitForSelector('[id="video-title"]')
+    await page.waitForFunction('document.querySelectorAll(\'[id="video-title"]\').length > 5')
     subLink = await page.evaluate(titletext => Array.from(document.querySelectorAll('[id="video-title"]')).map(e => [e.textContent.trim(), e.href]).filter(e => e[0].toLowerCase() == titletext.toLowerCase() && /.*?translations$/.test(e[1]))[0][1], title)
+    break;
   } catch (error) {
     console.log('error in sublink, trying again ')
     console.error(error)
-    subLink = await page.evaluate(titletext => Array.from(document.querySelectorAll('[id="video-title"]')).map(e => [e.textContent.trim(), e.href]).filter(e => e[0].toLowerCase() == titletext.toLowerCase() && /.*?translations$/.test(e[1]))[0][1], title)
+    await page.evaluate(() => { window.onbeforeunload = null })
+    await page.reload({ waitUntil: 'networkidle0' })
   }
+}
 
   return subLink
 }

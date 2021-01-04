@@ -53,7 +53,7 @@ const stateFile = path.join(__dirname, 'state.txt')
 // Max videos to upload daily
 const maxuploads = 92
 // No of uploads concurrently
-const maxConcurrentUpload = 3
+const maxConcurrentUpload
 let uploaded
 
 let email, pass, recovery
@@ -114,9 +114,9 @@ const beginTime = new Date().getTime()
 // Actions job timelimit of 6 hours
 const sixHoursMillis = 21600000
 // Slack for job timelimit for eighty minutes
-const eightyMinsMillis = 4800000
+const hundredMinsMillis = 6000000
 // max duration with slack, i.e 4hours 40mins
-const maxDuration = sixHoursMillis - eightyMinsMillis
+const maxDuration = sixHoursMillis - hundredMinsMillis
 
 const maxTitleLen = 100
 const maxDescLen = 5000
@@ -303,6 +303,7 @@ async function begin () {
 
   while (uploaded < maxuploads) {
 
+     maxConcurrentUpload = chap<40?2:3
       // if now is different date, then the upload limits resets
   if (day != new Date().toISOString().substring(8, 10)) {
      uploaded = 0 

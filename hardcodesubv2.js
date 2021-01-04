@@ -301,8 +301,6 @@ async function begin () {
   [editionName, chap, uploaded, day] = getState()
   chap = parseInt(chap)
 
-
-  let fileSavePromise = generateMP4(editionName, chap)
   while (uploaded < maxuploads) {
 
       // if now is different date, then the upload limits resets
@@ -319,10 +317,9 @@ async function begin () {
     const editionLang = edHolder[editionName].toLowerCase()
   
    
-    const fileSavePath = await fileSavePromise
     console.log('video generation complete for ', chap)
     try {
-      const uploadPromise = uploadWithSub(fileSavePath,editionLang, chap, editionName).then(values => {
+      const uploadPromise = genUploadWithSub(editionLang, chap, editionName).then(values => {
         uploaded++
         // Remove the promise from PromiseHolder array as it is completed
         PromiseHolder.splice(PromiseHolder.indexOf(uploadPromise), 1)
@@ -342,7 +339,7 @@ async function begin () {
       const editionIndex = editionsList.indexOf(editionName)
       editionName = editionsList[editionIndex + 1]
     }
-    fileSavePromise = generateMP4(editionName, chap)
+
 
     // if chap was 1 then wait for playlist to generate
     if (chap - 1 === 1) { await Promise.all(PromiseHolder) }
@@ -474,7 +471,8 @@ async function securityBypass (localPage) {
   await localPage.waitForXPath(selectBtnXPath)
 }
 // Generates the video and then uploads it and then uploads it's subtitles
-async function uploadWithSub (fileSavePath,editionLang, chap, editionName) {
+async function genUploadWithSub (editionLang, chap, editionName) {
+  const fileSavePath = await generateMP4(editionName, chap)
   const subLink = await uploadVideo(fileSavePath, editionLang, chap, editionName)
   console.log('Uploading completed for ', chap)
   deleteFile(fileSavePath)

@@ -302,8 +302,8 @@ async function begin () {
   chap = parseInt(chap)
 
   while (uploaded < maxuploads) {
-
-     maxConcurrentUpload = chap<40?2:3
+     // Keep concurrency to 3, for chapter greater or equal to 19 ,as they are of small sizes
+     maxConcurrentUpload = chap<19?2:3
       // if now is different date, then the upload limits resets
   if (day != new Date().toISOString().substring(8, 10)) {
      uploaded = 0 

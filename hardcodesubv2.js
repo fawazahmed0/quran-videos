@@ -300,7 +300,7 @@ async function begin () {
     // break if cannot encode the video within github actions limit
     if (checkTimeSuffice(chap) === false) { break }
    
-    console.log('video generation complete for ', chap)
+  
     try {
       const uploadPromise = genUploadWithSub(editionLang, chap, editionName).then(values => {
         uploaded++
@@ -456,6 +456,7 @@ async function securityBypass (localPage) {
 // Generates the video and then uploads it and then uploads it's subtitles
 async function genUploadWithSub (editionLang, chap, editionName) {
   const fileSavePath = await generateMP4(editionName, chap)
+  console.log('video generation complete for ', chap)
   const subLink = await uploadVideo(fileSavePath, editionLang, chap, editionName)
   console.log('Uploading completed for ', chap)
   deleteFile(fileSavePath)

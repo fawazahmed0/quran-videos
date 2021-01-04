@@ -376,7 +376,7 @@ function checkTimeSuffice (chap) {
   const randomNo = adjustedRandomArray[chap]
   // stop if uploaded files had reached the youtube upload limit or
   // remaining duration is not enought to hardcode the subtitles & upload
-  if (remainingDuration < currChapDuration * videoTimeRatio[randomNo]*maxConcurrentUpload) { return false } else { return true }
+  if (remainingDuration < currChapDuration * videoTimeRatio[randomNo]) { return false } else { return true }
 }
 
 async function generateMP4 (editionName, chap) {

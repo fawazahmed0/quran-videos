@@ -680,7 +680,7 @@ async function uploadSub (chapter, subLink) {
   await localPage.goto(subLink)
   await localPage.bringToFront()
   // upload the subtitle for english language, as it is the default title & description language
-  for(i=0;i<2;i++){
+  for(let i=0;i<2;i++){
     try {
       await subPart(path.join(subtitlesPath, holdersubmap.English, chapter + '.srt'), localPage)
       break;
@@ -703,70 +703,76 @@ async function uploadSub (chapter, subLink) {
   for (const [key, value] of Object.entries(holdersubmap)) {
     // if there are more unrecoverable errors, that means there is some problem with the link or the upload did not happen
     if (noOfErrors > maxErrors) { break }
-    try {
-      await addNewLang(key, localPage)
-    } catch (error) {
-      console.log('Adding language failed in subtitles for language ', key, 'and chapter ', chapter, ' trying again')
-      console.error(error)
-      // remove the reload site? dialog
-      await localPage.evaluate(() => { window.onbeforeunload = null })
-      await localPage.goto(subLink)
+    for(let i=0;i<2;i++){
       try {
         await addNewLang(key, localPage)
+        break;
       } catch (error) {
-        console.log('Adding language failed again in subtitles for language ', key, 'and chapter ', chapter)
-        console.log('Skipping this now')
+        const nextText = i === 0 ? ' trying again' : ' skipping for now'
+        console.log('Adding language failed in subtitles for language ', key, 'and chapter ', chapter, nextText)
         console.error(error)
-        noOfErrors++
-        continue
+        await localPage.evaluate(() => { window.onbeforeunload = null })
+        await localPage.goto(subLink)
+        if(i===1){
+          noOfErrors++
+          continue
+        }
       }
+
     }
 
     const lang = edHolder[value].toLowerCase()
     const gtransLang = titleJSON[lang] ? lang : getKeyByValue(gTransToEditionLang, lang)
     const title = titleJSON[gtransLang] ? titleJSON[gtransLang] : titleJSON.english + ' | ' + lang
     const description = descriptionJSON[gtransLang] ? descriptionJSON[gtransLang] : descriptionJSON.english
-    try {
-      await titleDescPart(title, description, localPage)
-    } catch (error) {
-      console.log('\nlang\n', key, '\ntitle\n', title, '\ndesc\n', description)
-      console.log('Adding titleDescripiton failed for chapter ', chapter, ' trying again')
-      console.error(error)
-      // remove the reload site? dialog
-      await localPage.evaluate(() => { window.onbeforeunload = null })
-      await localPage.goto(subLink)
+    
+    for(let i=0;i<2;i++){
       try {
+        if(i===1)
         await addNewLang(key, localPage)
         await titleDescPart(title, description, localPage)
+        break;
       } catch (error) {
+        const nextText = i === 0 ? ' trying again' : ' skipping for now'
         console.log('\nlang\n', key, '\ntitle\n', title, '\ndesc\n', description)
-        console.log('Adding titleDescripiton failed again for chapter ', chapter, ' skipping this now')
+        console.log('Adding titleDescripiton failed for chapter ', chapter, nextText)
         console.error(error)
+              // remove the reload site? dialog
+      await localPage.evaluate(() => { window.onbeforeunload = null })
+      await localPage.goto(subLink)
+      if(i===1){
+        // sometimes publish button exists which could cause this issue
+        await checkClickPublishBtn(localPage)
         noOfErrors++
         continue
+      }
+      }
+    }
+    for(let i=0;i<2;i++){
+
+      try {
+        await subPart(path.join(subtitlesPath, value, chapter + '.srt'), localPage)
+        break;
+      } catch (error) {
+        const nextText = i === 0 ? ' trying again' : ' skipping for now'
+        console.log('uploading subtitle failed for ', path.join(subtitlesPath, value, chapter + '.srt'), nextText)
+        console.error(error)
+       // The uploading subtitles fails for filipino, so don't waste time trying again for it 
+        if(key==="Filipino")
+         continue
+               // remove the reload site? dialog
+      await localPage.evaluate(() => { window.onbeforeunload = null })
+      await localPage.goto(subLink)
+      if(i===1){
+                // sometimes publish button exists which could cause this issue
+                await checkClickPublishBtn(localPage)
+        noOfErrors++
+        continue
+      }
+        
       }
     }
 
-    try {
-      await subPart(path.join(subtitlesPath, value, chapter + '.srt'), localPage)
-    } catch (error) {
-      console.log('uploading subtitle failed for ', path.join(subtitlesPath, value, chapter + '.srt'), ' trying again')
-      console.error(error)
-     // The uploading subtitles fails for filipino, so don't waste time trying again for it 
-      if(key==="Filipino")
-       continue
-      // remove the reload site? dialog
-      await localPage.evaluate(() => { window.onbeforeunload = null })
-      await localPage.goto(subLink)
-      try {
-        await subPart(path.join(subtitlesPath, value, chapter + '.srt'), localPage)
-      } catch (error) {
-        console.log('uploading subtitle failed again for ', path.join(subtitlesPath, value, chapter + '.srt'), ' skipping this now')
-        console.error(error)
-        noOfErrors++
-        continue
-      }
-    }
   }
   await localPage.close()
 }
@@ -777,7 +783,8 @@ async function checkClickPublishBtn(localPage){
     const publishXPath = '//*[normalize-space(text())=\'Publish\']/parent::*[not(@disabled)]'
     await localPage.waitForXPath(publishXPath)
     const publish = await localPage.$x(publishXPath)
-    await publish[0].click()
+    for(const publishBtn of publish)
+    await publishBtn.click()
     return true
     
   } catch (error) {

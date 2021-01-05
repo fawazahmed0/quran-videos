@@ -682,7 +682,7 @@ async function uploadSub (chapter, subLink) {
   // upload the subtitle for english language, as it is the default title & description language
   for(let i=0;i<2;i++){
     try {
-      await subPart(path.join(subtitlesPath, holdersubmap.English, chapter + '.srt'), localPage)
+      await subPart(path.join(subtitlesPath, holdersubmap.English, chapter + '.vtt'), localPage)
       break;
     } catch (error) {
       const nextText = i === 0 ? ' trying again' : ' failed again, stopping subtitle upload'
@@ -693,7 +693,7 @@ async function uploadSub (chapter, subLink) {
     // Sometimes publish button exists which can cause issue
     if(await checkClickPublishBtn(localPage))
      break;
-     console.log('uploading first subtitle failed for ', path.join(subtitlesPath, holdersubmap.English, chapter + '.srt'), nextText)
+     console.log('uploading first subtitle failed for ', path.join(subtitlesPath, holdersubmap.English, chapter + '.vtt'), nextText)
     if(i===1)
     return
     }
@@ -751,11 +751,11 @@ async function uploadSub (chapter, subLink) {
     for(let i=0;i<2;i++){
 
       try {
-        await subPart(path.join(subtitlesPath, value, chapter + '.srt'), localPage)
+        await subPart(path.join(subtitlesPath, value, chapter + '.vtt'), localPage)
         break;
       } catch (error) {
         const nextText = i === 0 ? ' trying again' : ' skipping for now'
-        console.log('uploading subtitle failed for ', path.join(subtitlesPath, value, chapter + '.srt'), nextText)
+        console.log('uploading subtitle failed for ', path.join(subtitlesPath, value, chapter + '.vtt'), nextText)
         console.error(error)
        // The uploading subtitles fails for filipino, so don't waste time trying again for it 
         if(key==="Filipino")

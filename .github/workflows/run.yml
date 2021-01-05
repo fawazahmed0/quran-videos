@@ -43,7 +43,7 @@ jobs:
         shell: cmd
         run: |
           choco install ffmpeg wget
-          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.5/subtitlesv3.7z
+          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.6/subtitles.7z
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.4/pixabay.videos.7z.001
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.4/pixabay.videos.7z.002
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.5/qatami.audios.v3.7z
@@ -52,7 +52,7 @@ jobs:
       - name: zip extract
         shell: cmd
         run: |
-          7z x subtitlesv3.7z
+          7z x subtitles.7z
           7z x pixabay.videos.7z.001
           7z x qatami.audios.v3.7z
           7z x -y qatamiaudios.7z -oaudios
@@ -106,7 +106,7 @@ jobs:
         shell: cmd
         run: |
           choco install ffmpeg wget
-          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.5/subtitlesv3.7z
+          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.6/subtitles.7z
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.4/pixabay.videos.7z.001
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.4/pixabay.videos.7z.002
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.5/qatami.audios.v3.7z
@@ -115,7 +115,7 @@ jobs:
       - name: zip extract
         shell: cmd
         run: |
-          7z x subtitlesv3.7z
+          7z x subtitles.7z
           7z x pixabay.videos.7z.001
           7z x qatami.audios.v3.7z
           7z x -y qatamiaudios.7z -oaudios
@@ -169,7 +169,7 @@ jobs:
         shell: cmd
         run: |
           choco install ffmpeg wget
-          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.5/subtitlesv3.7z
+          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.6/subtitles.7z
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.4/pixabay.videos.7z.001
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.4/pixabay.videos.7z.002
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.5/qatami.audios.v3.7z
@@ -178,7 +178,7 @@ jobs:
       - name: zip extract
         shell: cmd
         run: |
-          7z x subtitlesv3.7z
+          7z x subtitles.7z
           7z x pixabay.videos.7z.001
           7z x qatami.audios.v3.7z
           7z x -y qatamiaudios.7z -oaudios
@@ -233,7 +233,7 @@ jobs:
         shell: cmd
         run: |
           choco install ffmpeg wget
-          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.5/subtitlesv3.7z
+          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.6/subtitles.7z
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.4/pixabay.videos.7z.001
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.4/pixabay.videos.7z.002
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.5/qatami.audios.v3.7z
@@ -242,7 +242,7 @@ jobs:
       - name: zip extract
         shell: cmd
         run: |
-          7z x subtitlesv3.7z
+          7z x subtitles.7z
           7z x pixabay.videos.7z.001
           7z x qatami.audios.v3.7z
           7z x -y qatamiaudios.7z -oaudios

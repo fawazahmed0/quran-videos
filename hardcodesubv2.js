@@ -781,7 +781,7 @@ async function checkClickPublishBtn(localPage){
 
   try {
     const publishXPath = '//*[normalize-space(text())=\'Publish\']/parent::*[not(@disabled)]'
-    await localPage.waitForXPath(publishXPath)
+    await localPage.waitForXPath(publishXPath,{timeout:10000})
     const publish = await localPage.$x(publishXPath)
     for(const publishBtn of publish)
     await publishBtn.click()

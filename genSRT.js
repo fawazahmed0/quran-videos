@@ -39,20 +39,30 @@ fs.mkdirSync(path.join(__dirname, 'subtitles',file.replace(/\.[^\.]*$/gi,"")), {
   recursive: true
 });
 
-let textArr = []
+let vttHeader = ["WEBVTT",""]
 
+let verticalTopPosition = " line:0%"
+
+let textArr = []
+let vttArr =[]
 let counter = 0
 for (i = 1; i <= 114; i++) {
     textArr = []
+    vttArr=[]
     for (j = 1; j <= chaplength[i - 1]; j++) {
        textArr.push(j)
+       vttArr.push(j)
        textArr.push(srtTimings[counter])
+       vttArr.push(srtTimings[counter].replace(/,/gi,".")+verticalTopPosition)
        textArr.push(tranArr[counter])
+       vttArr.push(tranArr[counter])
        textArr.push("")
+       vttArr.push("")
       counter++
     }
 
     fs.writeFileSync(path.join(__dirname, 'subtitles',file.replace(/\.[^\.]*$/gi,""),i+'.srt'), textArr.join('\n'))
+    fs.writeFileSync(path.join(__dirname, 'subtitles',file.replace(/\.[^\.]*$/gi,""),i+'.vtt'), vttHeader.concat(vttArr).join('\n'))
   }
 
 

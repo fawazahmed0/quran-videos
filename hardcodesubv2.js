@@ -656,6 +656,7 @@ for(let i=0;i<2;i++){
     console.error(error)
     if(i===1)
       throw error
+    await sleep(3000)
     await page.evaluate(() => { window.onbeforeunload = null })
     await page.goto(studioURL)
     await page.waitForXPath(subtitlesTabXPath)

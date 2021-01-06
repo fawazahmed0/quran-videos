@@ -482,7 +482,7 @@ async function uploadVideo (pathToFile, lang, chapter, editionName) {
   const description = descriptionJSON[gtransLang] ? descriptionJSON[gtransLang] : descriptionJSON.english
   let tags = tagsJSON[gtransLang] ? tagsJSON[gtransLang] : tagsJSON.english
   let playlistNameText = tags[0] + ' ' + lang
-  playlistNameText = playlistNameText.substring(0, 148)
+  playlistNameText = capitalize(playlistNameText).substring(0, 148)
   const videoLang = ytLang || 'English'
 
   const finalTitle = capitalize(title).substring(0, maxTitleLen)

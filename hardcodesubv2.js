@@ -1,8 +1,8 @@
 const fs = require('fs')
 const path = require('path')
 const fetch = require('node-fetch')
-const util = require('util');
-const exec = util.promisify(require('child_process').exec);
+const util = require('util')
+const exec = util.promisify(require('child_process').exec)
 
 // puppeteer-extra is a drop-in replacement for puppeteer,
 // it augments the installed puppeteer with plugin functionality.
@@ -77,7 +77,7 @@ const uploadURL = 'https://www.youtube.com/upload'
 const studioURL = 'https://studio.youtube.com'
 
 // hardcodetime/video duration ratio for each pixa video
-const videoTimeRatio = [0.14312820512820512,0.35302564102564105,0.22987179487179488,0.34197435897435896,0.221,0.20241025641025642,0.18035897435897436,0.2297948717948718,0.23971794871794871,0.18792307692307691,0.25887179487179485,0.2291025641025641,0.20997435897435898,0.24566666666666667,0.2414102564102564,0.34212820512820513,0.24666666666666667,0.4205897435897436]
+const videoTimeRatio = [0.14312820512820512, 0.35302564102564105, 0.22987179487179488, 0.34197435897435896, 0.221, 0.20241025641025642, 0.18035897435897436, 0.2297948717948718, 0.23971794871794871, 0.18792307692307691, 0.25887179487179485, 0.2291025641025641, 0.20997435897435898, 0.24566666666666667, 0.2414102564102564, 0.34212820512820513, 0.24666666666666667, 0.4205897435897436]
 // Average hardcodetime/video duration ratio for pixa video
 // const avgVideoRatio = 0.3
 
@@ -85,27 +85,22 @@ const videoTimeRatio = [0.14312820512820512,0.35302564102564105,0.22987179487179
 const ignorePixaVidIndex = [2, 10, 14]
 
 // Large size pixa indices, produces large size on video generation
-const largeSizePixaIndices = [2,4,7,8,10,13,14,15,16,17]
+const largeSizePixaIndices = [2, 4, 7, 8, 10, 13, 14, 15, 16, 17]
 
-  // stores the pixavideos index that needs to be used
-let allowedPixaVidIndex =[...Array(pixabayFiles.length).keys()].filter(e => !ignorePixaVidIndex.includes(e))
-  // Stores the pixavideos index that are of small size, to be used for large chapters
-let allowedPixaVidIndexSmallSize =  [...Array(pixabayFiles.length).keys()].filter((e,i) => !ignorePixaVidIndex.concat(largeSizePixaIndices).includes(e))
+// stores the pixavideos index that needs to be used
+const allowedPixaVidIndex = [...Array(pixabayFiles.length).keys()].filter(e => !ignorePixaVidIndex.includes(e))
+// Stores the pixavideos index that are of small size, to be used for large chapters
+const allowedPixaVidIndexSmallSize = [...Array(pixabayFiles.length).keys()].filter((e, i) => !ignorePixaVidIndex.concat(largeSizePixaIndices).includes(e))
 // stores random numbers by ignoring few ignored pixabay indices
-  let adjustedRandomArray = []
-  for(let i=1;i<=114;i++){
-    let allowdPixIndices;
-    // if chapter duratio is less than 30mins ,use normal index, else use indexes which generates video of small size
-    if(chapDuration[i]<1800)
-      allowdPixIndices = allowedPixaVidIndex
-    else
-      allowdPixIndices = allowedPixaVidIndexSmallSize
+const adjustedRandomArray = []
+for (let i = 1; i <= 114; i++) {
+  let allowdPixIndices
+  // if chapter duratio is less than 30mins ,use normal index, else use indexes which generates video of small size
+  if (chapDuration[i] < 1800) { allowdPixIndices = allowedPixaVidIndex } else { allowdPixIndices = allowedPixaVidIndexSmallSize }
 
-      const randomIndex = getRandomNo(allowdPixIndices.length)
-      adjustedRandomArray[i] = allowdPixIndices[randomIndex];   
-  }
-
-
+  const randomIndex = getRandomNo(allowdPixIndices.length)
+  adjustedRandomArray[i] = allowdPixIndices[randomIndex]
+}
 
 // Stores the beginning time
 const beginTime = new Date().getTime()
@@ -289,7 +284,7 @@ async function begin () {
   }
   // close the page to save resources
   await page.close()
-// No of uploads concurrently
+  // No of uploads concurrently
   let maxConcurrentUpload
   // Holds  uploading promises
   const PromiseHolder = []
@@ -302,12 +297,12 @@ async function begin () {
   chap = parseInt(chap)
 
   while (uploaded < maxuploads) {
-     // Keep concurrency to 3, for chapter greater or equal to 19 ,as they are of small sizes
-     maxConcurrentUpload = 2
-      // if now is different date, then the upload limits resets
-  if (day != new Date().toISOString().substring(8, 10)) {
-     uploaded = 0 
-     day = new Date().toISOString().substring(8, 10)
+    // Keep concurrency to 3, for chapter greater or equal to 19 ,as they are of small sizes
+    maxConcurrentUpload = 2
+    // if now is different date, then the upload limits resets
+    if (day != new Date().toISOString().substring(8, 10)) {
+      uploaded = 0
+      day = new Date().toISOString().substring(8, 10)
     }
 
     // break if cannot encode the video within github actions limit
@@ -316,7 +311,7 @@ async function begin () {
     console.log('beginning for chapter ', chap)
 
     const editionLang = edHolder[editionName].toLowerCase()
-  
+
     try {
       const uploadPromise = genUploadWithSub(editionLang, chap, editionName).then(values => {
         uploaded++
@@ -338,7 +333,6 @@ async function begin () {
       const editionIndex = editionsList.indexOf(editionName)
       editionName = editionsList[editionIndex + 1]
     }
-
 
     // if chap was 1 then wait for playlist to generate
     if (chap - 1 === 1) { await Promise.all(PromiseHolder) }
@@ -387,7 +381,7 @@ async function generateMP4 (editionName, chap) {
 
   const paddedI = (chap + '').padStart(3, '0')
   const fileSavePath = path.join(hardcodedSubPath, paddedI + '.mp4')
-  await exec('ffmpeg '+['-stream_loop', repeat, '-i', '"'+pixaFileWithPath+'"', '-i', '"'+path.join(audioPath, paddedI + '.mp3')+'"', '-vf', '"subtitles=subtitles/' + editionName + '/' + chap + `.srt:force_style='Alignment=2,OutlineColour=&H100000000,BorderStyle=3,Outline=1,Shadow=0,Fontsize=18,MarginL=0,MarginV=15'"`, '-crf', '24', '-vcodec', 'libx264', '-preset', 'ultrafast', '-map', '0:v', '-map', '1:a', '-c:a', 'copy', '-shortest', '"'+fileSavePath+'"'].join(' '), { maxBuffer: Infinity });
+  await exec('ffmpeg ' + ['-stream_loop', repeat, '-i', '"' + pixaFileWithPath + '"', '-i', '"' + path.join(audioPath, paddedI + '.mp3') + '"', '-vf', '"subtitles=subtitles/' + editionName + '/' + chap + '.srt:force_style=\'Alignment=2,OutlineColour=&H100000000,BorderStyle=3,Outline=1,Shadow=0,Fontsize=18,MarginL=0,MarginV=15\'"', '-crf', '24', '-vcodec', 'libx264', '-preset', 'ultrafast', '-map', '0:v', '-map', '1:a', '-c:a', 'copy', '-shortest', '"' + fileSavePath + '"'].join(' '), { maxBuffer: Infinity })
   return fileSavePath
 }
 
@@ -640,28 +634,27 @@ async function getSubLink (title, page) {
   const subtitlesTabXPath = '//*[normalize-space(text())=\'Subtitles\']'
   await page.waitForXPath(subtitlesTabXPath)
 
-  let subLink;
-for(let i=0;i<2;i++){
-  try {
-    const subtitlesTab = await page.$x(subtitlesTabXPath)
-    await page.evaluate(el => el.click(), subtitlesTab[0])
-    await page.waitForNavigation()
-    await page.waitForSelector('[id="video-title"]')
-    await page.waitForFunction('document.querySelectorAll(\'[id="video-title"]\').length > 5')
-    subLink = await page.evaluate(titletext => Array.from(document.querySelectorAll('[id="video-title"]')).map(e => [e.textContent.trim(), e.href]).filter(e => e[0].toLowerCase() == titletext.toLowerCase() && /.*?translations$/.test(e[1]))[0][1], title)
-    break;
-  } catch (error) {
-    const nextText = i === 0 ? ' trying again' : ' failed again'
-    console.log('error in sublink ',nextText)
-    console.error(error)
-    if(i===1)
-      throw error
-    await sleep(3000)
-    await page.evaluate(() => { window.onbeforeunload = null })
-    await page.goto(studioURL)
-    await page.waitForXPath(subtitlesTabXPath)
+  let subLink
+  for (let i = 0; i < 2; i++) {
+    try {
+      const subtitlesTab = await page.$x(subtitlesTabXPath)
+      await page.evaluate(el => el.click(), subtitlesTab[0])
+      await page.waitForNavigation()
+      await page.waitForSelector('[id="video-title"]')
+      await page.waitForFunction('document.querySelectorAll(\'[id="video-title"]\').length > 5')
+      subLink = await page.evaluate(titletext => Array.from(document.querySelectorAll('[id="video-title"]')).map(e => [e.textContent.trim(), e.href]).filter(e => e[0].toLowerCase() == titletext.toLowerCase() && /.*?translations$/.test(e[1]))[0][1], title)
+      break
+    } catch (error) {
+      const nextText = i === 0 ? ' trying again' : ' failed again'
+      console.log('error in sublink ', nextText)
+      console.error(error)
+      if (i === 1) { throw error }
+      await sleep(3000)
+      await page.evaluate(() => { window.onbeforeunload = null })
+      await page.goto(studioURL)
+      await page.waitForXPath(subtitlesTabXPath)
+    }
   }
-}
 
   return subLink
 }
@@ -686,121 +679,109 @@ async function uploadSub (chapter, subLink) {
   await localPage.goto(subLink)
   await localPage.bringToFront()
   // upload the subtitle for english language, as it is the default title & description language
-  for(let i=0;i<2;i++){
+  for (let i = 0; i < 2; i++) {
     try {
       await subPart(path.join(subtitlesPath, holdersubmap.English, chapter + '.vtt'), localPage)
-      break;
+      break
     } catch (error) {
       const nextText = i === 0 ? ' trying again' : ' failed again, stopping subtitle upload'
-       console.error(error)
-          // remove the reload site? dialog
-    await localPage.evaluate(() => { window.onbeforeunload = null })
-    await localPage.goto(subLink)
-    // Sometimes publish button exists which can cause issue
-    if(await checkClickPublishBtn(localPage))
-     break;
-     console.log('uploading first subtitle failed for ', path.join(subtitlesPath, holdersubmap.English, chapter + '.vtt'), nextText)
-    if(i===1)
-    return
+      console.error(error)
+      // remove the reload site? dialog
+      await localPage.evaluate(() => { window.onbeforeunload = null })
+      await localPage.goto(subLink)
+      // Sometimes publish button exists which can cause issue
+      if (await checkClickPublishBtn(localPage)) { break }
+      console.log('uploading first subtitle failed for ', path.join(subtitlesPath, holdersubmap.English, chapter + '.vtt'), nextText)
+      if (i === 1) { return }
     }
   }
 
   delete holdersubmap.English
   for (const [key, value] of Object.entries(holdersubmap)) {
     // if there are more unrecoverable errors, that means there is some problem with the link or the upload did not happen
-    if (noOfErrors > maxErrors) { 
-      console.log("Max Errors exceeded for chapter ",chapter," breaking from subupload");
-       break; }
-    for(let i=0;i<2;i++){
+    if (noOfErrors > maxErrors) {
+      console.log('Max Errors exceeded for chapter ', chapter, ' breaking from subupload')
+      break
+    }
+    for (let i = 0; i < 2; i++) {
       try {
         await addNewLang(key, localPage)
-        break;
+        break
       } catch (error) {
         const nextText = i === 0 ? ' trying again' : ' skipping for now'
         console.log('Adding language failed in subtitles for language ', key, 'and chapter ', chapter, nextText)
         console.error(error)
         await localPage.evaluate(() => { window.onbeforeunload = null })
         await localPage.goto(subLink)
-        if(i===1){
+        if (i === 1) {
           noOfErrors++
-          break;
+          break
         }
       }
-
     }
 
     const lang = edHolder[value].toLowerCase()
     const gtransLang = titleJSON[lang] ? lang : getKeyByValue(gTransToEditionLang, lang)
     const title = titleJSON[gtransLang] ? titleJSON[gtransLang] : titleJSON.english + ' | ' + lang
     const description = descriptionJSON[gtransLang] ? descriptionJSON[gtransLang] : descriptionJSON.english
-    
-    for(let i=0;i<2;i++){
+
+    for (let i = 0; i < 2; i++) {
       try {
-        if(i===1)
-        await addNewLang(key, localPage)
+        if (i === 1) { await addNewLang(key, localPage) }
         await titleDescPart(title, description, localPage)
-        break;
+        break
       } catch (error) {
         const nextText = i === 0 ? ' trying again' : ' skipping for now'
         console.log('\nlang\n', key, '\ntitle\n', title, '\ndesc\n', description)
         console.log('Adding titleDescripiton failed for chapter ', chapter, nextText)
         console.error(error)
-              // remove the reload site? dialog
-      await localPage.evaluate(() => { window.onbeforeunload = null })
-      await localPage.goto(subLink)
-      if(i===1){
+        // remove the reload site? dialog
+        await localPage.evaluate(() => { window.onbeforeunload = null })
+        await localPage.goto(subLink)
+        if (i === 1) {
         // sometimes publish button exists which could cause this issue
-        await checkClickPublishBtn(localPage)
-        noOfErrors++
-        break
-      }
+          await checkClickPublishBtn(localPage)
+          noOfErrors++
+          break
+        }
       }
     }
-    for(let i=0;i<2;i++){
-
+    for (let i = 0; i < 2; i++) {
       try {
         await subPart(path.join(subtitlesPath, value, chapter + '.vtt'), localPage)
-        break;
+        break
       } catch (error) {
         const nextText = i === 0 ? ' trying again' : ' skipping for now'
         console.log('uploading subtitle failed for ', path.join(subtitlesPath, value, chapter + '.vtt'), nextText)
         console.error(error)
-       // The uploading subtitles fails for filipino, so don't waste time trying again for it 
-        if(key==="Filipino")
-         break
-               // remove the reload site? dialog
-      await localPage.evaluate(() => { window.onbeforeunload = null })
-      await localPage.goto(subLink)
-      if(i===1){
-                // sometimes publish button exists which could cause this issue
-                await checkClickPublishBtn(localPage)
-        noOfErrors++
-        break
-      }
-        
+        // The uploading subtitles fails for filipino, so don't waste time trying again for it
+        if (key === 'Filipino') { break }
+        // remove the reload site? dialog
+        await localPage.evaluate(() => { window.onbeforeunload = null })
+        await localPage.goto(subLink)
+        if (i === 1) {
+          // sometimes publish button exists which could cause this issue
+          await checkClickPublishBtn(localPage)
+          noOfErrors++
+          break
+        }
       }
     }
-
   }
   await localPage.close()
 }
 
-async function checkClickPublishBtn(localPage){
-
+async function checkClickPublishBtn (localPage) {
   try {
     const publishXPath = '//*[normalize-space(text())=\'Publish\']/parent::*[not(@disabled)]'
-    await localPage.waitForXPath(publishXPath,{timeout:10000})
+    await localPage.waitForXPath(publishXPath, { timeout: 10000 })
     const publish = await localPage.$x(publishXPath)
-    for(const publishBtn of publish)
-    await publishBtn.click()
+    for (const publishBtn of publish) { await publishBtn.click() }
     return true
-    
   } catch (error) {
-    console.log("error while checking publish button")
+    console.log('error while checking publish button')
     return false
   }
-
-
 }
 // subtitles upload
 async function subPart (pathToFile, localPage) {

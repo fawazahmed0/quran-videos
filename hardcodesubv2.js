@@ -715,7 +715,7 @@ async function uploadSub (chapter, subLink) {
         await localPage.goto(subLink)
         if(i===1){
           noOfErrors++
-          continue
+          break;
         }
       }
 
@@ -744,7 +744,7 @@ async function uploadSub (chapter, subLink) {
         // sometimes publish button exists which could cause this issue
         await checkClickPublishBtn(localPage)
         noOfErrors++
-        continue
+        break
       }
       }
     }
@@ -759,7 +759,7 @@ async function uploadSub (chapter, subLink) {
         console.error(error)
        // The uploading subtitles fails for filipino, so don't waste time trying again for it 
         if(key==="Filipino")
-         continue
+         break
                // remove the reload site? dialog
       await localPage.evaluate(() => { window.onbeforeunload = null })
       await localPage.goto(subLink)
@@ -767,7 +767,7 @@ async function uploadSub (chapter, subLink) {
                 // sometimes publish button exists which could cause this issue
                 await checkClickPublishBtn(localPage)
         noOfErrors++
-        continue
+        break
       }
         
       }

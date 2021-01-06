@@ -624,9 +624,9 @@ async function uploadVideo (pathToFile, lang, chapter, editionName) {
   try {
     subLink = await getSubLink(finalTitle, page)
   } catch (error) {
-    console.log('error getting subLink, trying again')
+    console.log('error getting subLink in uploadVideo function, trying again')
     // wait for sometime before trying again, so that the subtitles link comes up
-    await sleep(120000)
+    await sleep(300000)
     subLink = await getSubLink(finalTitle, page)
   }
   await page.close()
@@ -639,21 +639,26 @@ async function getSubLink (title, page) {
   await page.goto(studioURL)
   const subtitlesTabXPath = '//*[normalize-space(text())=\'Subtitles\']'
   await page.waitForXPath(subtitlesTabXPath)
-  const subtitlesTab = await page.$x(subtitlesTabXPath)
-  await page.evaluate(el => el.click(), subtitlesTab[0])
-  await page.waitForNavigation()
+
   let subLink;
 for(let i=0;i<2;i++){
   try {
+    const subtitlesTab = await page.$x(subtitlesTabXPath)
+    await page.evaluate(el => el.click(), subtitlesTab[0])
+    await page.waitForNavigation()
     await page.waitForSelector('[id="video-title"]')
     await page.waitForFunction('document.querySelectorAll(\'[id="video-title"]\').length > 5')
     subLink = await page.evaluate(titletext => Array.from(document.querySelectorAll('[id="video-title"]')).map(e => [e.textContent.trim(), e.href]).filter(e => e[0].toLowerCase() == titletext.toLowerCase() && /.*?translations$/.test(e[1]))[0][1], title)
     break;
   } catch (error) {
-    console.log('error in sublink, trying again ')
+    const nextText = i === 0 ? ' trying again' : ' failed again'
+    console.log('error in sublink ',nextText)
     console.error(error)
+    if(i===1)
+      throw error
     await page.evaluate(() => { window.onbeforeunload = null })
-    await page.reload({ waitUntil: 'networkidle0' })
+    await page.goto(studioURL)
+    await page.waitForXPath(subtitlesTabXPath)
   }
 }
 

@@ -52,6 +52,8 @@ const stateFile = path.join(__dirname, 'state.txt')
 
 // Max videos to upload daily
 const maxuploads = 92
+  // No of uploads concurrently
+const maxConcurrentUpload = 2
 
 let uploaded
 
@@ -284,8 +286,6 @@ async function begin () {
   }
   // close the page to save resources
   await page.close()
-  // No of uploads concurrently
-  let maxConcurrentUpload
   // Holds  uploading promises
   const PromiseHolder = []
   // Edition name to Edition Language mapping
@@ -297,8 +297,6 @@ async function begin () {
   chap = parseInt(chap)
 
   while (uploaded < maxuploads) {
-    // Keep concurrency to 3, for chapter greater or equal to 19 ,as they are of small sizes
-    maxConcurrentUpload = 2
     // if now is different date, then the upload limits resets
     if (day != new Date().toISOString().substring(8, 10)) {
       uploaded = 0
@@ -334,8 +332,6 @@ async function begin () {
       editionName = editionsList[editionIndex + 1]
     }
 
-    // if chap was 1 then wait for playlist to generate
-    if (chap - 1 === 1) { await Promise.all(PromiseHolder) }
 
     // if  promise holder has reached max concurrent uploads, then wait for atleast one of them to complete
     if (PromiseHolder.length === maxConcurrentUpload) {

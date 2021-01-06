@@ -680,7 +680,7 @@ async function uploadSub (chapter, subLink) {
   await localPage.setViewport({ width: width, height: height })
   const holdersubmap = { ...submapped }
   let noOfErrors = 0
-  const maxErrors = 7
+  const maxErrors = 15
 
   // Go to upload subtitles link
   await localPage.goto(subLink)

@@ -52,7 +52,7 @@ const stateFile = path.join(__dirname, 'state.txt')
 
 // Max videos to upload daily
 const maxuploads = 92
-  // No of uploads concurrently
+// No of uploads concurrently
 const maxConcurrentUpload = 2
 
 let uploaded
@@ -331,7 +331,6 @@ async function begin () {
       const editionIndex = editionsList.indexOf(editionName)
       editionName = editionsList[editionIndex + 1]
     }
-
 
     // if  promise holder has reached max concurrent uploads, then wait for atleast one of them to complete
     if (PromiseHolder.length === maxConcurrentUpload) {

@@ -626,7 +626,7 @@ async function uploadVideo (pathToFile, lang, chapter, editionName) {
   } catch (error) {
     console.log('error getting subLink in uploadVideo function, trying again')
     // wait for sometime before trying again, so that the subtitles link comes up
-    await sleep(300000)
+    await sleep(120000)
     subLink = await getSubLink(finalTitle, page)
   }
   await page.close()

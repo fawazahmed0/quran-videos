@@ -708,7 +708,9 @@ async function uploadSub (chapter, subLink) {
   delete holdersubmap.English
   for (const [key, value] of Object.entries(holdersubmap)) {
     // if there are more unrecoverable errors, that means there is some problem with the link or the upload did not happen
-    if (noOfErrors > maxErrors) { break }
+    if (noOfErrors > maxErrors) { 
+      console.log("Max Errors exceeded for chapter ",chapter," breaking from subupload");
+       break; }
     for(let i=0;i<2;i++){
       try {
         await addNewLang(key, localPage)

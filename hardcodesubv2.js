@@ -56,6 +56,8 @@ const maxuploads = 92
 const maxConcurrentUpload = 2
 
 let uploaded
+// Stores todays date i.e 11 or 12 etc
+let day
 
 let email, pass, recovery
 if (process.env.CI) {
@@ -292,7 +294,7 @@ async function begin () {
   edHolder = {}
   for (const value of Object.values(editionsJSON)) { edHolder[value.name] = value.language }
 
-  let chap, day, editionName;
+  let chap, editionName;
   [editionName, chap, uploaded, day] = getState()
   chap = parseInt(chap)
 
@@ -872,7 +874,7 @@ function getState () {
 
 // save the state
 function saveState (editionName, chap) {
-  fs.writeFileSync(stateFile, editionName + '\n' + chap + '\n' + uploaded + '\n' + new Date().toISOString().substring(8, 10))
+  fs.writeFileSync(stateFile, editionName + '\n' + chap + '\n' + uploaded + '\n' + day)
 }
 
 // Generates random number

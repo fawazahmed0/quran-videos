@@ -54,6 +54,9 @@ for (i = 1; i <= 114; i++) {
        vttArr.push(j)
        textArr.push(srtTimings[counter])
        vttArr.push(srtTimings[counter].replace(/,/gi,".")+verticalTopPosition)
+       if(file.startsWith('jpn')||file.startsWith('zho'))
+       textArr.push(tranArr[counter].replace(/。/gi,'。 ').replace(/，/gi,'， '))
+       else
        textArr.push(tranArr[counter])
        vttArr.push(tranArr[counter])
        textArr.push("")

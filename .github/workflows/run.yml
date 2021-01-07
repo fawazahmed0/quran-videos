@@ -124,6 +124,7 @@ jobs:
         run: |
           choco install ffmpeg wget
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.6/subtitles.7z
+          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.7/subtitlesasian.7z
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.4/pixabay.videos.7z.001
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.4/pixabay.videos.7z.002
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.5/qatami.audios.v3.7z
@@ -134,6 +135,7 @@ jobs:
         shell: cmd
         run: |
           7z x subtitles.7z
+          7z x -y subtitlesasian.7z -osubtitles
           7z x pixabay.videos.7z.001
           7z x qatami.audios.v3.7z
           7z x -y qatamiaudios.7z -oaudios
@@ -158,6 +160,7 @@ jobs:
           git add -A
           git commit -m 'Add uploaded links'
           git push
+
   build3:
     needs: [build1, build2]
     runs-on: windows-latest
@@ -195,6 +198,7 @@ jobs:
         run: |
           choco install ffmpeg wget
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.6/subtitles.7z
+          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.7/subtitlesasian.7z
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.4/pixabay.videos.7z.001
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.4/pixabay.videos.7z.002
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.5/qatami.audios.v3.7z
@@ -205,6 +209,7 @@ jobs:
         shell: cmd
         run: |
           7z x subtitles.7z
+          7z x -y subtitlesasian.7z -osubtitles
           7z x pixabay.videos.7z.001
           7z x qatami.audios.v3.7z
           7z x -y qatamiaudios.7z -oaudios
@@ -229,6 +234,7 @@ jobs:
           git add -A
           git commit -m 'Add uploaded links'
           git push
+    
   build4:
     needs: [build1, build2, build3]
     runs-on: windows-latest
@@ -266,6 +272,7 @@ jobs:
         run: |
           choco install ffmpeg wget
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.6/subtitles.7z
+          wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.7/subtitlesasian.7z
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.4/pixabay.videos.7z.001
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.4/pixabay.videos.7z.002
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.5/qatami.audios.v3.7z
@@ -276,6 +283,7 @@ jobs:
         shell: cmd
         run: |
           7z x subtitles.7z
+          7z x -y subtitlesasian.7z -osubtitles
           7z x pixabay.videos.7z.001
           7z x qatami.audios.v3.7z
           7z x -y qatamiaudios.7z -oaudios

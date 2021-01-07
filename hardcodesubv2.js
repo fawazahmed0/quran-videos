@@ -1,5 +1,6 @@
 const fs = require('fs')
 const path = require('path')
+const os = require('os')
 const fetch = require('node-fetch')
 const util = require('util')
 const exec = util.promisify(require('child_process').exec)
@@ -387,12 +388,23 @@ function deleteFile (pathToFile) {
   fs.unlinkSync(pathToFile)
   // Delete temp directory in actions
   if (process.env.CI) {
-    fs.rmdirSync(process.env.tempdir, {
-      recursive: true
-    })
-    fs.mkdirSync(process.env.tempdir, {
-      recursive: true
-    })
+    emptyDir(process.env.tempdir)
+    emptyDir(os.tmpdir())
+  }
+}
+
+// Empty the directory
+function emptyDir (pathToDir) {
+  for (const file of fs.readdirSync(pathToDir)) {
+    const pathToDelete = path.join(pathToDir, file)
+
+    try {
+      if (fs.statSync(pathToDelete).isDirectory()) {
+        fs.rmdirSync(pathToDelete, {
+          recursive: true
+        })
+      } else { fs.unlinkSync(pathToDelete) }
+    } catch (error) {}
   }
 }
 

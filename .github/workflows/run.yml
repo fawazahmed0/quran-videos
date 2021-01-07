@@ -18,28 +18,34 @@ jobs:
     runs-on: windows-latest
     steps:
 
+      - name: clone
+        shell: bash
+        working-directory: C:/quran-videos.git
+        run: |
+          mkdir C:/quran-videos.git
+          REPO="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
+          git clone $REPO C:/quran-videos.git
+          git pull          
+
       - name: Get cache directory for npm
         id: cache-dir
+        working-directory: C:/quran-videos.git
         shell: bash
         run: echo "::set-output name=npmcache::$(npm config get cache)"
 
       - name: Trying to use the old cache if available
         uses: actions/cache@v2
+        working-directory: C:/quran-videos.git        
         with:
           path: ${{ steps.cache-dir.outputs.npmcache }}
           key: ${{ runner.os }}-cache-${{ hashFiles('**/package.json') }}
           restore-keys: |
             ${{ runner.os }}-cache-
             ${{ runner.os }}-
-
-      - name: clone
-        shell: bash
-        run: |
-          REPO="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
-          git clone $REPO .
-          git pull              
+          
 
       - name: download part
+        working-directory: C:/quran-videos.git      
         shell: cmd
         run: |
           choco install ffmpeg wget
@@ -50,6 +56,7 @@ jobs:
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.2/qatamiaudios.7z
           wget https://github.com/fawazahmed0/quran-videos/releases/download/v0.0.3/qatami.audios.2.7z
       - name: zip extract
+        working-directory: C:/quran-videos.git      
         shell: cmd
         run: |
           7z x subtitles.7z
@@ -58,6 +65,7 @@ jobs:
           7z x -y qatamiaudios.7z -oaudios
           7z x -y qatami.audios.2.7z -oaudios
       - name: node part
+        working-directory: C:/quran-videos.git      
         env:
           tempdir: ${{ runner.temp }}     
         run: |
@@ -68,6 +76,7 @@ jobs:
       - name: commit and push
         if: ${{ always() }}
         shell: bash
+        working-directory: C:/quran-videos.git        
         run: |
           git config --global user.email github-actions@github.com
           git config --global user.name github-actions

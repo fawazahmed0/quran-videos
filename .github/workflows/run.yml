@@ -33,9 +33,8 @@ jobs:
         shell: bash
         run: echo "::set-output name=npmcache::$(npm config get cache)"
 
-      - name: Trying to use the old cache if available
-        uses: actions/cache@v2
-        working-directory: C:/quran-videos.git        
+      - name: Trying to use the old cache if available        
+        uses: actions/cache@v2      
         with:
           path: ${{ steps.cache-dir.outputs.npmcache }}
           key: ${{ runner.os }}-cache-${{ hashFiles('**/package.json') }}

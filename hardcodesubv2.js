@@ -1,5 +1,6 @@
 const fs = require('fs')
 const path = require('path')
+const os = require('os')
 const fetch = require('node-fetch')
 const util = require('util')
 const exec = util.promisify(require('child_process').exec)
@@ -388,6 +389,7 @@ function deleteFile (pathToFile) {
   // Delete temp directory in actions
   if (process.env.CI) {
     emptyDir(process.env.tempdir)
+    emptyDir(os.tmpdir())
   }
 }
 

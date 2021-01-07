@@ -17,6 +17,7 @@ jobs:
   build1:
     runs-on: windows-latest
     steps:
+      - run: Get-PSDrive
 
       - name: Get cache directory for npm
         id: cache-dir

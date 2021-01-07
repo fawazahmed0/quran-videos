@@ -20,12 +20,15 @@ jobs:
 
       - name: clone
         shell: bash
-        working-directory: C:/quran-videos.git
         run: |
           mkdir C:/quran-videos.git
           REPO="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
-          git clone $REPO C:/quran-videos.git
-          git pull          
+          git clone $REPO C:/quran-videos.git  
+      
+      - name: pull
+        shell: bash
+        working-directory: C:/quran-videos.git
+        run: git pull
 
       - name: Get cache directory for npm
         id: cache-dir

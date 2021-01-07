@@ -478,8 +478,8 @@ async function genUploadWithSub (editionLang, chap, editionName) {
   console.log('video generation complete for ', chap)
   const subLink = await uploadVideo(fileSavePath, editionLang, chap, editionName)
   console.log('Uploading completed for ', chap)
-  deleteFile(fileSavePath)
   await uploadSub(chap, subLink)
+  deleteFile(fileSavePath)
   return [chap, editionName]
 }
 

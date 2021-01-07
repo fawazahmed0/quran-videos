@@ -383,28 +383,13 @@ async function generateMP4 (editionName, chap) {
   return fileSavePath
 }
 
-function deleteFile (pathToFile) {
+async function deleteFile (pathToFile) {
   // Delete the uploaded video to save space in actions
   fs.unlinkSync(pathToFile)
   // Delete temp directory in actions
   if (process.env.CI) {
-    emptyDir(process.env.tempdir)
-    emptyDir(os.tmpdir())
-  }
-}
-
-// Empty the directory
-function emptyDir (pathToDir) {
-  for (const file of fs.readdirSync(pathToDir)) {
-    const pathToDelete = path.join(pathToDir, file)
-
-    try {
-      if (fs.statSync(pathToDelete).isDirectory()) {
-        fs.rmdirSync(pathToDelete, {
-          recursive: true
-        })
-      } else { fs.unlinkSync(pathToDelete) }
-    } catch (error) {}
+    await exec('del /q/f/s '+process.env.tempdir)
+    await exec('del /q/f/s '+path.join(os.tmpdir(),'*'))
   }
 }
 
@@ -478,7 +463,7 @@ async function genUploadWithSub (editionLang, chap, editionName) {
   console.log('video generation complete for ', chap)
   const subLink = await uploadVideo(fileSavePath, editionLang, chap, editionName)
   console.log('Uploading completed for ', chap)
-  deleteFile(fileSavePath)
+  await deleteFile(fileSavePath)
   await uploadSub(chap, subLink)
   return [chap, editionName]
 }

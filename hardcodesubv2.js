@@ -298,14 +298,10 @@ async function begin () {
   let chap, editionName;
   [editionName, chap, uploaded, day] = getState()
   chap = parseInt(chap)
+  resetDayValues()
 
   while (uploaded < maxuploads) {
-    // if now is different date, then the upload limits resets
-    if (day != new Date().toISOString().substring(8, 10)) {
-      uploaded = 0
-      day = new Date().toISOString().substring(8, 10)
-    }
-
+    resetDayValues()
     // break if cannot encode the video within github actions limit
     if (checkTimeSuffice(chap) === false) { break }
 
@@ -365,6 +361,15 @@ function checkTimeSuffice (chap) {
   // stop if uploaded files had reached the youtube upload limit or
   // remaining duration is not enought to hardcode the subtitles & upload
   if (remainingDuration < currChapDuration * videoTimeRatio[randomNo]) { return false } else { return true }
+}
+// reset the uploaded to 0 if todays date is different and update the day value
+function resetDayValues(){
+      // if now is different date, then the upload limits resets
+      if (day != new Date().toISOString().substring(8, 10)) {
+        uploaded = 0
+        day = new Date().toISOString().substring(8, 10)
+      }
+  
 }
 
 async function generateMP4 (editionName, chap) {

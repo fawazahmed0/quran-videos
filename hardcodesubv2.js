@@ -52,7 +52,7 @@ fs.mkdirSync(uploadLinkPath, {
 const stateFile = path.join(__dirname, 'state.txt')
 
 // Max videos to upload daily
-const maxuploads = 92
+const maxuploads = 95
 // No of uploads concurrently
 const maxConcurrentUpload = 2
 
@@ -112,10 +112,10 @@ const beginTime = new Date().getTime()
 
 // Actions job timelimit of 6 hours
 const sixHoursMillis = 21600000
-// Slack for job timelimit for fifty minutes
-const fiftyMinsMillis = 3000000
-// max duration with slack, i.e 5hours 10mins
-const maxDuration = sixHoursMillis - fiftyMinsMillis
+// Slack for job timelimit for sixty minutes
+const sixtyMinsMillis = 3600000
+// max duration with slack, i.e 5hours
+const maxDuration = sixHoursMillis - sixtyMinsMillis
 
 const maxTitleLen = 100
 const maxDescLen = 5000

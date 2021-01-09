@@ -301,7 +301,6 @@ async function begin () {
   resetDayValues()
 
   while (uploaded < maxuploads) {
-    resetDayValues()
     // break if cannot encode the video within github actions limit
     if (checkTimeSuffice(chap) === false) { break }
 
@@ -338,6 +337,7 @@ async function begin () {
       // Save the current chap & edition state, to recover from here in case of error
       saveState(edVal, chapVal)
     }
+    resetDayValues()
   }
 
   // wait for remaining uploads & subtitles uploads

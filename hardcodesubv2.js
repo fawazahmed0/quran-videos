@@ -619,7 +619,7 @@ async function uploadVideo (pathToFile, lang, chapter, editionName) {
   } catch (error) {
     console.log('error getting subLink in uploadVideo function, trying again')
     // wait for sometime before trying again, so that the subtitles link comes up
-    await sleep(120000)
+    await sleep(240000)
     subLink = await getSubLink(finalTitle, page)
   }
   await page.close()
@@ -648,7 +648,7 @@ async function getSubLink (title, page) {
       console.log('error in sublink ', nextText)
       console.error(error)
       if (i === 1) { throw error }
-      await sleep(3000)
+      await sleep(6000)
       await page.evaluate(() => { window.onbeforeunload = null })
       await page.goto(studioURL)
       await page.waitForXPath(subtitlesTabXPath)

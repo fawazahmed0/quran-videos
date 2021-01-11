@@ -363,13 +363,12 @@ function checkTimeSuffice (chap) {
   if (remainingDuration < currChapDuration * videoTimeRatio[randomNo]) { return false } else { return true }
 }
 // reset the uploaded to 0 if todays date is different and update the day value
-function resetDayValues(){
-      // if now is different date, then the upload limits resets
-      if (day != new Date().toISOString().substring(8, 10)) {
-        uploaded = 0
-        day = new Date().toISOString().substring(8, 10)
-      }
-  
+function resetDayValues () {
+  // if now is different date, then the upload limits resets
+  if (day != new Date().toISOString().substring(8, 10)) {
+    uploaded = 0
+    day = new Date().toISOString().substring(8, 10)
+  }
 }
 
 async function generateMP4 (editionName, chap) {
@@ -393,8 +392,8 @@ async function deleteFile (pathToFile) {
   fs.unlinkSync(pathToFile)
   // Delete temp directory in actions
   if (process.env.CI) {
-    await exec('del /q/f/s '+process.env.tempdir)
-    await exec('del /q/f/s '+path.join(os.tmpdir(),'*'))
+    await exec('del /q/f/s ' + process.env.tempdir)
+    await exec('del /q/f/s ' + path.join(os.tmpdir(), '*'))
   }
 }
 
@@ -614,18 +613,17 @@ async function uploadVideo (pathToFile, lang, chapter, editionName) {
   // Wait for closebtn to show up
   await page.waitForXPath(closeBtnXPath)
   let subLink
-  for(let i=0;i<3;i++){
+  for (let i = 0; i < 3; i++) {
     try {
       subLink = await getSubLink(finalTitle, page)
-      break;
+      break
     } catch (error) {
       const nextText = i !== 2 ? ' trying again' : ' failed again, sublink will be undefined'
       console.log('error getting subLink in uploadVideo function ', nextText)
-      console.error(error)     
+      console.error(error)
       // wait for sometime before trying again, so that the subtitles link comes up
       await sleep(300000)
     }
-
   }
 
   await page.close()

@@ -614,14 +614,20 @@ async function uploadVideo (pathToFile, lang, chapter, editionName) {
   // Wait for closebtn to show up
   await page.waitForXPath(closeBtnXPath)
   let subLink
-  try {
-    subLink = await getSubLink(finalTitle, page)
-  } catch (error) {
-    console.log('error getting subLink in uploadVideo function, trying again')
-    // wait for sometime before trying again, so that the subtitles link comes up
-    await sleep(240000)
-    subLink = await getSubLink(finalTitle, page)
+  for(let i=0;i<3;i++){
+    try {
+      subLink = await getSubLink(finalTitle, page)
+      break;
+    } catch (error) {
+      const nextText = i !== 2 ? ' trying again' : ' failed again, sublink will be undefined'
+      console.log('error getting subLink in uploadVideo function ', nextText)
+      console.error(error)     
+      // wait for sometime before trying again, so that the subtitles link comes up
+      await sleep(300000)
+    }
+
   }
+
   await page.close()
   return subLink
 }

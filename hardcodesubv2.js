@@ -618,7 +618,7 @@ async function uploadVideo (pathToFile, lang, chapter, editionName) {
       subLink = await getSubLink(finalTitle, page)
       break
     } catch (error) {
-      const nextText = i !== 2 ? ' trying again' : ' failed again, sublink will be undefined'
+      const nextText = i !== 2 ? ' trying again' : ' failed again, sublink will be undefined for title '+finalTitle
       console.log('error getting subLink in uploadVideo function ', nextText)
       console.error(error)
       // wait for sometime before trying again, so that the subtitles link comes up

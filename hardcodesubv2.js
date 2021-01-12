@@ -645,7 +645,7 @@ async function getSubLink (title, page) {
       await page.waitForNavigation()
       await page.waitForSelector('[id="video-title"]')
       await page.waitForFunction('document.querySelectorAll(\'[id="video-title"]\').length > 5')
-      subLink = await page.evaluate(titletext => Array.from(document.querySelectorAll('[id="video-title"]')).map(e => [e.textContent.trim(), e.href]).filter(e => e[0].toLowerCase() == titletext.toLowerCase() && /.*?translations$/.test(e[1]))[0][1], title)
+      subLink = await page.evaluate(titletext => Array.from(document.querySelectorAll('[id="video-title"]')).map(e => [e.textContent.trim(), e.href]).filter(e => e[0]!=="" && titletext.toLowerCase().includes(e[0].toLowerCase()) && /.*?translations$/.test(e[1]))[0][1], title)
       break
     } catch (error) {
       const nextText = i === 0 ? ' trying again' : ' failed again'

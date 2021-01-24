@@ -465,7 +465,15 @@ async function securityBypass (localPage) {
 async function genUploadWithSub (editionLang, chap, editionName) {
   const fileSavePath = await generateMP4(editionName, chap)
   console.log('video generation complete for ', chap)
-  const subLink = await uploadVideo(fileSavePath, editionLang, chap, editionName)
+  let subLink;
+  try {
+    subLink = await uploadVideo(fileSavePath, editionLang, chap, editionName)
+  } catch (error) {
+    console.log("error while uploading video, trying one last attempt")
+    console.error(error)
+    subLink = await uploadVideo(fileSavePath, editionLang, chap, editionName)
+    
+  }
   console.log('Uploading completed for ', chap)
   await uploadSub(chap, subLink)
   await deleteFile(fileSavePath)

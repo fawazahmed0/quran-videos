@@ -1,4 +1,4 @@
 asm-shaykhrafeequli
-39
-10
+60
+31
 26

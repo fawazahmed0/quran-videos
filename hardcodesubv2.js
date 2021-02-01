@@ -573,7 +573,7 @@ async function uploadVideo (pathToFile, lang, chapter, editionName) {
   } else {
     // Selecting playlist
     await page.evaluate(el => el.click(), playlist[0])
-    const playlistToSelectXPath = '//*[normalize-space(text())=\'' + playlistNameText + '\']'
+    const playlistToSelectXPath = '//*[normalize-space(text())="' + playlistNameText + '"]'
     await page.waitForXPath(playlistToSelectXPath)
     const playlistNameSelector = await page.$x(playlistToSelectXPath)
     await page.evaluate(el => el.click(), playlistNameSelector[0])

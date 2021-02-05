@@ -1,4 +1,4 @@
 mya-hashimtinmyint
-10
-8
+24
+22
 05

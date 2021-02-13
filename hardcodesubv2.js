@@ -119,6 +119,8 @@ const maxDuration = sixHoursMillis - sixtyMinsMillis
 
 const maxTitleLen = 100
 const maxDescLen = 5000
+// Multiply with this while checking remaining time
+const timeMultiplier = 1.35
 
 // stores the editionJSON from quran api
 let editionsJSON
@@ -360,7 +362,7 @@ function checkTimeSuffice (chap) {
   const randomNo = adjustedRandomArray[chap]
   // stop if uploaded files had reached the youtube upload limit or
   // remaining duration is not enought to hardcode the subtitles & upload
-  if (remainingDuration < currChapDuration * videoTimeRatio[randomNo]) { return false } else { return true }
+  if (remainingDuration < currChapDuration * videoTimeRatio[randomNo] * timeMultiplier) { return false } else { return true }
 }
 // reset the uploaded to 0 if todays date is different and update the day value
 function resetDayValues () {

@@ -120,7 +120,7 @@ const maxDuration = sixHoursMillis - sixtyMinsMillis
 const maxTitleLen = 100
 const maxDescLen = 5000
 // Multiply with this while checking remaining time
-const timeMultiplier = 1.35
+const timeMultiplier = 1.5
 
 // stores the editionJSON from quran api
 let editionsJSON

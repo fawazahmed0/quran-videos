@@ -4,7 +4,7 @@ name: CI
 # events but only for branch 1 and on start directory, command.txt file changes or by manually running the workflow from actions tab
 on:
   schedule:
-    - cron: "0 18 * * *"
+    - cron: "0 16 * * *"
 
   workflow_dispatch:
 

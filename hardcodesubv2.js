@@ -113,14 +113,14 @@ const beginTime = new Date().getTime()
 // Actions job timelimit of 6 hours
 const sixHoursMillis = 21600000
 // Slack for job timelimit for sixty minutes
-const sixtyMinsMillis = 4200000
+const sixtyMinsMillis = 3600000
 // max duration with slack, i.e 5hours
 const maxDuration = sixHoursMillis - sixtyMinsMillis
 
 const maxTitleLen = 100
 const maxDescLen = 5000
 // Multiply with this while checking remaining time
-const timeMultiplier = 1.8
+const timeMultiplier = 2
 
 // stores the editionJSON from quran api
 let editionsJSON

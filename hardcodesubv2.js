@@ -87,7 +87,7 @@ const videoTimeRatio = [0.14312820512820512, 0.35302564102564105, 0.229871794871
 // const avgVideoRatio = 0.3
 
 // stores the pixavideos index thats needs to be ignored, as they are distracting
-const ignorePixaVidIndex = [2, 10, 14]
+const ignorePixaVidIndex = [2, 10,12, 14]
 
 // Large size pixa indices, produces large size on video generation
 const largeSizePixaIndices = [2, 4, 7, 8, 10, 13, 14, 15, 16, 17]

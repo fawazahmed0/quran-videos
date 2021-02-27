@@ -1,4 +1,4 @@
 guj-rabilaalomari
-80
-40
+105
+65
 27

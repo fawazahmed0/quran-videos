@@ -605,6 +605,10 @@ async function uploadVideo (pathToFile, lang, chapter, editionName) {
   await next[0].click()
 
   await sleep(2000)
+  next = await page.$x(nextBtnXPath)
+  await next[0].click()
+
+  await sleep(2000)
 
   // Get publish button
   const publishXPath = '//*[normalize-space(text())=\'Publish\']/parent::*[not(@disabled)]'

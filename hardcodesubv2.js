@@ -550,7 +550,7 @@ async function uploadVideo (pathToFile, lang, chapter, editionName) {
   const childOption = await page.$x('//*[contains(text(),"No, it\'s")]')
   await childOption[0].click()
 
-  const moreOption = await page.$x('//*[normalize-space(text())=\'More options\']')
+  const moreOption = await page.$x('//*[normalize-space(text())=\'Show more\']')
   await moreOption[0].click()
   const playlist = await page.$x('//*[normalize-space(text())=\'Select\']')
   let createplaylistdone

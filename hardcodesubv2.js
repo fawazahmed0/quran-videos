@@ -655,10 +655,13 @@ async function getSubLink (title, page) {
   for (let i = 0; i < 2; i++) {
     try {
       const subtitlesTab = await page.$x(subtitlesTabXPath)
+      console.log("clicking subtitles tab")
       await page.evaluate(el => el.click(), subtitlesTab[0])
       await page.waitForNavigation()
       await page.waitForSelector('[id="video-title"]')
       await page.waitForFunction('document.querySelectorAll(\'[id="video-title"]\').length > 5')
+      console.log("title text is ",title)
+      console.log("fetching sublink")
       subLink = await page.evaluate(titletext => Array.from(document.querySelectorAll('[id="video-title"]')).map(e => [e.textContent.trim(), e.href]).filter(e => e[0]!=="" && titletext.toLowerCase().includes(e[0].toLowerCase()) && /.*?translations$/.test(e[1]))[0][1], title)
       break
     } catch (error) {

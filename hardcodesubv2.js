@@ -588,11 +588,12 @@ async function uploadVideo (pathToFile, lang, chapter, editionName) {
   // Add tags
   await page.focus('[placeholder="Add tag"]')
   await page.type('[placeholder="Add tag"]', tags.join(', ').substring(0, 495) + ', ')
+  console.log("video language ",videoLang )
   console.log("lang click")
   // Selecting video language
   const langHandler = await page.$x('//*[normalize-space(text())=\'Video language\']')
   await page.evaluate(el => el.click(), langHandler[0])
-
+  console.log("lang click 2")
   const langName = await page.$x('//*[normalize-space(text())=\'' + videoLang + '\']')
   await page.evaluate(el => el.click(), langName[langName.length - 1])
 

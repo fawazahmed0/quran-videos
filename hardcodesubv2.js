@@ -548,12 +548,15 @@ async function uploadVideo (pathToFile, lang, chapter, editionName) {
   await textBoxes[1].type(description.substring(0, maxDescLen))
 
   const childOption = await page.$x('//*[contains(text(),"No, it\'s")]')
+  console.log("child option click")
   await childOption[0].click()
 
   const moreOption = await page.$x('//*[normalize-space(text())=\'Show more\']')
+  console.log("more option click")
   await moreOption[0].click()
   const playlist = await page.$x('//*[normalize-space(text())=\'Select\']')
   let createplaylistdone
+  console.log("playlist click")
   if (chapter === 1) {
     // Creating new playlist
     // click on playlist dropdown
@@ -585,7 +588,7 @@ async function uploadVideo (pathToFile, lang, chapter, editionName) {
   // Add tags
   await page.focus('[placeholder="Add tag"]')
   await page.type('[placeholder="Add tag"]', tags.join(', ').substring(0, 495) + ', ')
-
+  console.log("lang click")
   // Selecting video language
   const langHandler = await page.$x('//*[normalize-space(text())=\'Video language\']')
   await page.evaluate(el => el.click(), langHandler[0])

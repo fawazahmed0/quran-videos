@@ -594,7 +594,8 @@ async function uploadVideo (pathToFile, lang, chapter, editionName) {
   const langHandler = await page.$x('//*[normalize-space(text())=\'Video language\']')
   await page.evaluate(el => el.click(), langHandler[0])
   console.log("lang click 2")
-  const langName = await page.$x('//*[normalize-space(text())=\'' + videoLang + '\']')
+  const langName = await page.$x('//*[normalize-space(translate(text(),"ABCDEFGHIJKLMNOPQRSTUVWXYZ","abcdefghijklmnopqrstuvwxyz"))=\'' + videoLang.toLowerCase() + '\']')
+  //const langName = await page.$x('//*[normalize-space(text())=\'' + videoLang + '\']')
   await page.evaluate(el => el.click(), langName[langName.length - 1])
 
   // click next button

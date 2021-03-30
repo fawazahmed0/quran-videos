@@ -597,16 +597,19 @@ async function uploadVideo (pathToFile, lang, chapter, editionName) {
   const nextBtnXPath = '//*[normalize-space(text())=\'Next\']/parent::*[not(@disabled)]'
   await page.waitForXPath(nextBtnXPath)
   let next = await page.$x(nextBtnXPath)
+  console.log("clicking first next button for chapter",chapter)
   await next[0].click()
   await sleep(2000)
   await page.waitForXPath(nextBtnXPath)
   // click next button
   next = await page.$x(nextBtnXPath)
   await next[0].click()
+  console.log("clicking second next button for chapter",chapter)
 
   await sleep(2000)
   next = await page.$x(nextBtnXPath)
   await next[0].click()
+  console.log("clicking third next button for chapter",chapter)
 
   await sleep(2000)
 
@@ -619,7 +622,7 @@ async function uploadVideo (pathToFile, lang, chapter, editionName) {
   const uploadedLinkHandle = await page.$('[href^="https://youtu.be"]')
   const uploadedLink = await page.evaluate(e => e.getAttribute('href'), uploadedLinkHandle)
   fs.appendFileSync(path.join(uploadLinkPath, editionName + '.txt'), 'chapter ' + chapter + ' ' + uploadedLink + '\n')
-
+  console.log("clicking publish button for chapter",chapter)
   // translate(text(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')
 
   await publish[0].click()

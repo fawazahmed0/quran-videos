@@ -621,7 +621,6 @@ async function uploadVideo (pathToFile, lang, chapter, editionName) {
   // Get publish button
   const publishXPath = '//*[normalize-space(text())=\'Publish\']/parent::*[not(@disabled)]'
   await page.waitForXPath(publishXPath)
-  const publish = await page.$x(publishXPath)
   // save youtube upload link
   await page.waitForSelector('[href^="https://youtu.be"]')
   const uploadedLinkHandle = await page.$('[href^="https://youtu.be"]')
@@ -629,8 +628,17 @@ async function uploadVideo (pathToFile, lang, chapter, editionName) {
   fs.appendFileSync(path.join(uploadLinkPath, editionName + '.txt'), 'chapter ' + chapter + ' ' + uploadedLink + '\n')
   console.log("clicking publish button for chapter",chapter)
   // translate(text(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')
-
-  await publish[0].click()
+  let publish;
+  for(let i=0;i<10;i++){
+    try {
+      publish = await page.$x(publishXPath)
+      await publish[0].click()
+      break
+    } catch (error) {
+      await page.waitForTimeout(5000)
+    }
+  
+  }
   // await page.waitForXPath('//*[contains(text(),"Finished processing")]', { timeout: 0})
   // Wait for closebtn to show up
   await page.waitForXPath(closeBtnXPath)

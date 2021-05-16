@@ -1,4 +1,4 @@
 snd-tajmehmoodamrot
-48
-48
-15
+72
+23
+16

@@ -1,4 +1,4 @@
 swe-knutbernstrom
-17
-52
-23
+32
+15
+24

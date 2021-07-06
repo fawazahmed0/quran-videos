@@ -5,7 +5,7 @@
 </p>
 
 
-**In the name of God, who have guided me to do this work and I seek refuge in him, sufficient is God as protector**
+**In the name of God, who have guided me to do this work**
 
 **Note:** This Project is currently work in progress
 

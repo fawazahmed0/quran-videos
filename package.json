@@ -5,10 +5,16 @@
   "main": "hardcodesub.js",
   "dependencies": {
     "puppeteer": "5.5.0",
-    "node-fetch": "2.6.1",
+ 
+    "node-fetch": "2.6.5",
     "puppeteer-extra": "3.1.15",
-    "puppeteer-extra-plugin-stealth": "2.9.0"
-  },
+     "puppeteer-extra-plugin-stealth": "2.9.0"
+   
+    "node-fetch": "2.6.1",
+    "puppeteer-extra": "3.2.3",
+    "puppeteer-extra-plugin-stealth": "2.6.5"
+ 
+   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/fawazahmed0/quran-videos.git"

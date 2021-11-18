@@ -5,9 +5,15 @@
   "main": "hardcodesub.js",
   "dependencies": {
     "puppeteer": "5.5.0",
+<<<<<<< HEAD
     "node-fetch": "2.6.5",
     "puppeteer-extra": "3.1.15",
     "puppeteer-extra-plugin-stealth": "2.9.0"
+=======
+    "node-fetch": "2.6.1",
+    "puppeteer-extra": "3.2.3",
+    "puppeteer-extra-plugin-stealth": "2.6.5"
+>>>>>>> renovate/puppeteer-extra-3.x
   },
   "repository": {
     "type": "git",

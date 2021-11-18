@@ -1,0 +1,56 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js install
+
+PATH: 
+  C:\Program Files\PowerShell\7-preview;C:\tools\ruby30\bin;C:\Python310\Scripts\;C:\Python310\;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\PowerShell\7-preview\preview;C:\ProgramData\chocolatey\bin;C:\tools\php80;C:\composer;C:\Program Files (x86)\Gpg4win\..\GnuPG\bin;C:\Program Files (x86)\Yarn\bin\;C:\Program Files\Docker\Docker\resources\bin;C:\ProgramData\DockerDesktop\version-bin;C:\Program Files\nodejs\;C:\Program Files\PowerShell\7\;C:\Program Files\Git\cmd;C:\Program Files\Go\bin;C:\Users\allah\scoop\shims;C:\Users\allah\AppData\Local\Microsoft\WindowsApps;C:\Users\allah\AppData\Local\GitHubDesktop\bin;C:\Users\allah\AppData\Roaming\Composer\vendor\bin;C:\Program Files\JetBrains\DataGrip 2021.2.4\bin;C:\Users\allah\AppData\Local\Yarn\bin;C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\bin;C:\Users\allah\AppData\Local\Programs\Hyper\resources\bin;C:\Users\allah\AppData\Roaming\npm;C:\Users\allah\go\bin
+
+Yarn version: 
+  1.22.15
+
+Node version: 
+  16.13.0
+
+Platform: 
+  win32 x64
+
+Trace: 
+  SyntaxError: C:\dev\www\quran-videos\package.json: Unexpected token < in JSON at position 168
+      at JSON.parse (<anonymous>)
+      at C:\Program Files (x86)\Yarn\lib\cli.js:1625:59
+      at Generator.next (<anonymous>)
+      at step (C:\Program Files (x86)\Yarn\lib\cli.js:310:30)
+      at C:\Program Files (x86)\Yarn\lib\cli.js:321:13
+
+npm manifest: 
+  {
+    "name": "quran-videos",
+    "version": "1.0.0",
+    "description": "Quran Recitation Videos",
+    "main": "hardcodesub.js",
+    "dependencies": {
+      "puppeteer": "5.5.0",
+  <<<<<<< HEAD
+      "node-fetch": "2.6.5",
+      "puppeteer-extra": "3.1.15",
+      "puppeteer-extra-plugin-stealth": "2.9.0"
+  =======
+      "node-fetch": "2.6.1",
+      "puppeteer-extra": "3.2.3",
+      "puppeteer-extra-plugin-stealth": "2.6.5"
+  >>>>>>> renovate/puppeteer-extra-3.x
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/fawazahmed0/quran-videos.git"
+    },
+    "bugs": {
+      "url": "https://github.com/fawazahmed0/quran-videos/issues"
+    },
+    "homepage": "https://github.com/fawazahmed0/quran-videos#readme"
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

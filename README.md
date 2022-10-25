@@ -5,7 +5,7 @@
 </p>
 
 
-**In the name of God, who have guided me to do this work**
+**In the name of God, who has guided me to do this work**
 
 ---
 #### Details:

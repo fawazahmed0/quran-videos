@@ -5,9 +5,7 @@
 </p>
 
 
-**In the name of God, who have guided me to do this work and I seek refuge in him, sufficient is God as protector**
-
-**Note:** This Project is currently work in progress
+**In the name of God, who has guided me to do this work**
 
 ---
 #### Details:
@@ -18,7 +16,7 @@ Everything is done automatically by a [program](https://github.com/fawazahmed0/q
 
 
 
-The uploaded videos will be available at [here](https://www.youtube.com/user/JavaDB9/playlists) and also the links will be available at [here](https://github.com/fawazahmed0/quran-videos/tree/main/uploaded).
+The uploaded videos are [here](https://www.youtube.com/user/JavaDB9/playlists) and also the links will be available at [here](https://github.com/fawazahmed0/quran-videos/tree/main/uploaded).
 
 ---
 #### References:

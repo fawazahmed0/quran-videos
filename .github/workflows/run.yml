@@ -3,8 +3,6 @@ name: CI
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for branch 1 and on start directory, command.txt file changes or by manually running the workflow from actions tab
 on:
-  schedule:
-    - cron: "0 12 * * *"
 
   workflow_dispatch:
 
@@ -29,20 +27,6 @@ jobs:
         working-directory: C:/quran-videos.git
         run: git pull
 
-      - name: Get cache directory for npm
-        id: cache-dir
-        working-directory: C:/quran-videos.git
-        shell: bash
-        run: echo "::set-output name=npmcache::$(npm config get cache)"
-
-      - name: Trying to use the old cache if available
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.cache-dir.outputs.npmcache }}
-          key: ${{ runner.os }}-cache-${{ hashFiles('**/package.json') }}
-          restore-keys: |
-            ${{ runner.os }}-cache-
-            ${{ runner.os }}-
 
       - name: download part
         working-directory: C:/quran-videos.git
@@ -103,20 +87,7 @@ jobs:
         working-directory: C:/quran-videos.git
         run: git pull
 
-      - name: Get cache directory for npm
-        id: cache-dir
-        working-directory: C:/quran-videos.git
-        shell: bash
-        run: echo "::set-output name=npmcache::$(npm config get cache)"
 
-      - name: Trying to use the old cache if available
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.cache-dir.outputs.npmcache }}
-          key: ${{ runner.os }}-cache-${{ hashFiles('**/package.json') }}
-          restore-keys: |
-            ${{ runner.os }}-cache-
-            ${{ runner.os }}-
 
       - name: download part
         working-directory: C:/quran-videos.git
@@ -177,20 +148,7 @@ jobs:
         working-directory: C:/quran-videos.git
         run: git pull
 
-      - name: Get cache directory for npm
-        id: cache-dir
-        working-directory: C:/quran-videos.git
-        shell: bash
-        run: echo "::set-output name=npmcache::$(npm config get cache)"
 
-      - name: Trying to use the old cache if available
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.cache-dir.outputs.npmcache }}
-          key: ${{ runner.os }}-cache-${{ hashFiles('**/package.json') }}
-          restore-keys: |
-            ${{ runner.os }}-cache-
-            ${{ runner.os }}-
 
       - name: download part
         working-directory: C:/quran-videos.git
@@ -251,20 +209,7 @@ jobs:
         working-directory: C:/quran-videos.git
         run: git pull
 
-      - name: Get cache directory for npm
-        id: cache-dir
-        working-directory: C:/quran-videos.git
-        shell: bash
-        run: echo "::set-output name=npmcache::$(npm config get cache)"
 
-      - name: Trying to use the old cache if available
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.cache-dir.outputs.npmcache }}
-          key: ${{ runner.os }}-cache-${{ hashFiles('**/package.json') }}
-          restore-keys: |
-            ${{ runner.os }}-cache-
-            ${{ runner.os }}-
 
       - name: download part
         working-directory: C:/quran-videos.git
